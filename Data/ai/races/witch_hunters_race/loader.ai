@@ -1,0 +1,229 @@
+----------------------------------------
+-- File: 'whloader.ai'
+-- Edited by Thudmeizer   @ 03.10.2011
+
+class 'witch_hunters_race'
+
+-- Constructor
+function witch_hunters_race:__init()
+
+end
+
+-- Returns the name of the race
+function witch_hunters_race:GetRaceName()
+	return "witch_hunters_race"
+end
+
+-- This function is called if witch hunters are the race being played
+function witch_hunters_race:LoadRace( eDifficulty )
+
+	-- Import strategies
+	import( 'Races/witch_hunters_race/Strategies/WHBuildBaseStrategy.ai' )
+	
+	-- Import strategy info
+	import( "Races/witch_hunters_race/Strategies/WHStrategyInfo.ai" )
+	
+	-- Import tactics
+	import( 'Races/witch_hunters_race/Tactics/WitchHuntersInfantryTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/WitchHuntersVehicleTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/SentinelBuilderTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/ArbiteMeleeTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/CanonessTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/AlmonessTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/BattleSisterTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/FemaleInquisitorTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/EversorTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/CherubimTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/CallidusTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/RetributorTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/RepentiaTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/SeraphimTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/ShieldMaidenTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/ArchoflagellantTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/LivingSaintTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/LivingSaintKatherineTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/SaintKatherineTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/SistersSentinelTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/ThroneTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/RedeemerTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/IncarceratorTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/ImmolatorTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/ExorcistTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/ExorcistSanctorumTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/NephilimTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/RepressorTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/WitchhuntersRhinoTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/ArbitesHQTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/AbbessSanctorumTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/InquisitionArmoriumTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/ReliquaryTactic.ai' )
+	import( 'Races/witch_hunters_race/Tactics/ArmoriumTactic.ai' )
+
+	return true
+end
+
+-- This function is called even if witch hunters are not the race being played
+function witch_hunters_race:LoadGlobalInfo()
+
+	-- Import info files
+	import( 'Races/witch_hunters_race/Info/WHunitstats.ai' )
+	
+	-- Add WitchHunters unit stats
+	table.insert(UnitStats, WitchHuntersUnitStats)
+	return true
+end
+
+-- Creates build base strategy
+function witch_hunters_race:CreateBuildBaseStrategy()
+	return WitchHuntersBuildBaseStrategy(BuildBaseStrategyInfo)
+end
+
+-- Creates a special tactic for a witch hunter unit
+function witch_hunters_race:CreateTactic(oSquadAI)
+
+	--Get unit name and class
+	local sUnitName = oSquadAI:GetSquadName()
+	local eClass = oSquadAI:GetStats():GetClass()
+	
+	-- Check if there is a special tactic for the unit available
+	if (sUnitName == "witch_hunters_squad_sentinel_builder") then
+		return SentinelBuilderTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_adeptus_arbites_combat_melee") then
+		return ArbiteMeleeTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_canoness" or sUnitName == "witch_hunters_squad_saint_praxedes") then
+		return CanonessTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_techcelestian") then
+		return AlmonessTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_battle_sister") then
+		return BattleSisterTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_female_inquisitor_command_squad") then
+		return FemaleInquisitorTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_eversor") then
+		return EversorTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_cherubim") then
+		return CherubimTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_callidus") then
+		return CallidusTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_retributor") then
+		return RetributorTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_seraphim") then
+		return SeraphimTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_shield_maiden") then
+		return ShieldMaidenTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_arcoflagellant") then
+		return ArchoflagellantTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_repentia") then
+		return RepentiaTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_incarcerator") then
+		return IncarceratorTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_celestine_saint") then
+		return LivingSaintTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_celestine_saint_katherine_armor") then
+		return LivingSaintKatherineTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_saint_katherine") then
+		return SaintKatherineTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_throne_judgement") then
+		return ThroneTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_land_raider_redeemer") then
+		return RedeemerTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_repressor") then
+		return RepressorTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_rhino") then
+		return WitchhuntersRhinoTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_sisters_sentinel") then
+		return SistersSentinelTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_immolator") then
+		return ImmolatorTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_exorcist") then
+		return ExorcistTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_exorcist_sanctorum") then
+		return ExorcistSanctorumTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_nephilim_aircraft") then
+		return NephilimTactic(oSquadAI)
+	elseif (sUnitName == "witch_hunters_squad_abbess_sanctorum_retinue") then
+		return AbbessSanctorumTactic(oSquadAI)
+	elseif (oSquadAI:IsEngineer()) then
+		return nil
+	elseif (eClass == UnitStatsAI.UC_VehicleLow or eClass == UnitStatsAI.UC_VehicleMed or eClass == UnitStatsAI.UC_VehicleHigh) then
+		return WitchHuntersVehicleTactic(oSquadAI)
+	end
+	return WitchHuntersInfantryTactic(oSquadAI)
+end
+
+-- Creates a base tactic
+function witch_hunters_race:CreateBaseTactic(oBuilding)
+
+	-- Get building name
+	local sBuildingName = oBuilding:GetBaseName()
+	
+	-- Check if their is a special tactic for the building available
+	if (sBuildingName == "witch_hunters_inquisition_armorium") then
+		return InquisitionArmoriumTactic(oBuilding)
+	elseif (sBuildingName == "witch_hunters_reliquary") then
+		return ReliquaryTactic(oBuilding)
+	elseif (sBuildingName == "witch_hunters_armorium") then
+		return ArmoriumTactic(oBuilding)
+	elseif (sBuildingName == "witch_hunters_adeptus_arbites_hq") then
+		return ArbitesHQTactic(oBuilding)
+	end
+	return nil
+end
+
+-- Returns a specific information
+function witch_hunters_race:GetInfo(sType)
+
+	-- Check info type
+	if (sType == "TurretPower") then
+		return 450
+	elseif (sType == "SupportAllyFactor") then
+		return 7 / 4
+	elseif (sType == "AttackModifier") then
+		return 0
+	elseif (sType == "CriticalRangeIncreasePerTier") then
+		return 10
+	elseif (sType == "MinArmyStrengthPerTier") then
+		return 750
+	elseif (sType == "AttackRatio") then
+		return 4 / 5
+	elseif (sType == "RetreatRatio") then
+		return 3 / 5
+	elseif (sType == "InvisibleBuildings") then
+		return false
+	elseif (sType == "HarassingLeader") then
+		return "witch_hunters_squad_canoness"
+	elseif (sType == "AutoConstructBuildings") then
+		return false
+	end
+	return nil
+end
+
+-- Returns the building type and threat
+function witch_hunters_race:GetBuildingType(sBuildingName)
+
+	-- Return race specific object string
+	if (sBuildingName == "witch_hunters_adeptus_arbites_hq") then
+		return "HQ", 0
+		
+	elseif (sBuildingName == "witch_hunters_generator") then
+		return "Generator", 0
+		
+	elseif (sBuildingName == "witch_hunters_thermo_generator") then
+		return "BiggerGenerator", 0
+		
+	elseif (sBuildingName == "witch_hunters_adeptus_mechanicus") then
+		return "VehicleBuilding", 0
+
+	elseif (sBuildingName == "witch_hunters_armorium") or (sBuildingName == "witch_hunters_inquisition_armorium") then
+		return "Armoury", 0
+		
+	elseif (sBuildingName == "witch_hunters_adeptus_arbites_listening_post") then
+		return "ListeningPost", 0
+
+	elseif (sBuildingName == "witch_hunters_turret_heavy_flamer") then
+		return "Turret", 300
+
+	--[[elseif (sBuildingName == "witch_hunters_brasero") then
+		return "Mine", 100]]
+	end
+	return nil, 0
+end

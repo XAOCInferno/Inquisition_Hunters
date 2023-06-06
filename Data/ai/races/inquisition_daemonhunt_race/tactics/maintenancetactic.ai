@@ -1,0 +1,234 @@
+----------------------------------------
+-- File: 'maintenancetactic.ai'
+-- Created by Gambit @ 24.11.2018
+
+class 'MaintenanceTactic' (EngineerTactic)
+
+Maintenance = {}
+
+function MaintenanceTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Maintenance Servitor Tactic")
+	self.m_iTransportable = 1
+
+	-- Engineer Tactic Settings, modify as required
+	self.go_to_post = false
+	self.m_vDestination = nil
+	self.iBusy = g_iGMT
+	self.iRepairSuperVehiclesWhenInCombat = true  --> Will repair super vehicles, even if in combat
+	self.iRepairStrongVehiclesWhenInCombat = true  --> Will also repair super vehicles if true
+	self.iRepairVehicleRange = 80   --> The range within which the squad will perform the vehicle repairs
+	self.isBuildingsRepairer  = true  --> Will also repair nearby structures if true
+	self.iFixBuildingsRange = 80  --> The range within which the squad will perform building duties
+	self:InitAbilities()
+end
+
+
+function MaintenanceTactic:InitAbilities()
+	if (Maintenance.sabotage_id == nil) then
+	    Maintenance.sabotage_id = cpu_manager.stats:GetAbilityID( "inquisition_sabotage" )	
+	end
+end
+
+
+function MaintenanceTactic:DoAbilities()
+	Ability.DoAbilityTarget( self.squad_ai, Maintenance.sabotage_id, Ability.Filters.CloseVehicleEnemy, 1 )
+	Ability.DoAbilityTargetEntity( self.squad_ai, Maintenance.sabotage_id, Ability.EntityFilters.CloseBaseEntityEnemy, 1)
+end
+
+
+-----------------------------------------
+-- Update tactic for dual-duty squads  --
+-----------------------------------------
+
+function MaintenanceTactic:Update()
+
+	-- State machine
+	if not Tactic.Update( self ) then
+		return false
+	end
+
+	-- Check if locked, and not attacked while being so, so that to fulfil his tasks
+	if (self.squad_ai:IsLocked() and not self.squad_ai:WasRecentlyHurt()) then
+		return true
+   	end
+
+	self:CheckForBroken()
+
+	-- Reinforce squads
+	self:Reinforce()
+
+	-- Upgrade weapons
+	self:Upgrade()
+
+	-- Do abilities even if this means interrupting engineer duties.
+	self:DoAbilities()
+
+	-- Perform engineer duties
+	if self:DoEngineerDuties() then
+		return true
+	end
+
+	-- Check if locked, and not attacked while being so, so that to fulfil his tasks
+	if (self.squad_ai:IsLocked() and not self.squad_ai:WasRecentlyHurt()) then
+		return true
+   	end
+
+	if self.squad_ai:CanJump() then
+		self.tolerance_default = self.squad_ai:GetJumpDistance()
+	else
+		self.tolerance_default = 100
+	end
+
+	self:SyncSubState()
+
+	-- If not already in substate
+	if (self.stateID == Tactic.StateID.NoState) then
+	   
+		-- Check dance mode
+		if (CpuManager.AISettings.iDancing == 2) then
+		 	self:CheckForDeath()
+			if (self.stateID == Tactic.StateID.NoState) then
+				self:CheckForDance()
+				if (self.stateID == Tactic.StateID.NoState) then
+					self:CheckForStealthTroops()
+				end
+			end
+		elseif (CpuManager.AISettings.iDancing == 1 and g_iGMT > self.m_iDancing + 10) then
+			self:CheckForDeath()
+			if (self.stateID == Tactic.StateID.NoState) then
+				self:CheckForDance()
+				if (self.stateID == Tactic.StateID.NoState) then
+					self:CheckForStealthTroops()
+				end
+			end
+		end
+	end
+
+	-- Check stance
+	self:UpdateStance()
+
+	-- If no tasks after a while, or attacked while building a structure, engage closest enemy.
+	if not (self:IsMoving() or self.squad_ai:IsInCombat()) and g_iGMT > self.iBusy + 50 then
+		self:EngageClosestEnemyIfNeeded()
+	end
+
+	-- Return success
+	return true
+end
+
+
+------------------------------------------------
+-- Code for dual-duty squads (also engineers) --
+------------------------------------------------
+
+-- Moves the squad to engage the enemy.
+function MaintenanceTactic:EngageClosestEnemyIfNeeded()
+    local oHurtVeh = self:GetDamagedVehicleWithin(256)
+    if (oHurtVeh ~= nil) then
+		self.iBusy = g_iGMT
+		self.squad_ai:DoMove(oHurtVeh:GetPosition())
+	else
+		self:GoToNextPost()
+	end
+end
+
+
+-- Performs the repair and building tasks
+function MaintenanceTactic:DoEngineerDuties()
+	-- Try to repair a nearby damaged vehicle. If no vehicle, find a damaged building
+	if self.squad_ai:CanRepair() then
+		-- First, find the closest vehicle that can be repaired
+		local oVehicleToRepair = self:GetDamagedVehicleWithin(self.iRepairVehicleRange)
+		if (oVehicleToRepair ~= nil) then
+			-- Prefer to repair a powerful vehicle, even in battle
+			local superVehicle = false
+			local strongVehicle = false
+			if self.iRepairSuperVehiclesWhenInCombat then
+				local vStats = oVehicleToRepair:GetStats()
+				if  vStats ~= nil then
+					local vClass = vStats:GetClass()
+					if vClass ~= nil then
+						if vClass == UnitStatsAI.UC_VehicleHigh then
+							superVehicle = true
+						end
+					end
+				end
+			elseif self.iRepairStrongVehiclesWhenInCombat then
+				local vStats = oVehicleToRepair:GetStats()
+				if  vStats ~= nil then
+					local vClass = vStats:GetClass()
+					if vClass ~= nil then
+						if vClass == UnitStatsAI.UC_VehicleMed then
+							strongVehicle = true
+						end
+					end
+				end
+			end
+			if (not self.squad_ai:IsInCombat() and strongVehicle) or superVehicle then
+				aitrace("EngineerTactic: Repairing vehicle...")
+				self.squad_ai:DoRepairSquad(oVehicleToRepair)
+				self.iBusy = g_iGMT
+				self.m_bBusy = true
+				return true
+			end
+		end
+		-- Then, find the closest building that can be repaired
+		if self.isBuildingsRepairer then
+			if not self.squad_ai:IsInCombat() then
+				local oBuildingToRepair = self:GetDamagedBuildingWithin(self.iFixBuildingsRange)
+				if (oBuildingToRepair ~= nil) then
+					aitrace("EngineerTactic: Repairing building...")
+					self.squad_ai:DoRepairBase(oBuildingToRepair)
+					self.iBusy = g_iGMT
+					self.m_bBusy = true
+					return true
+				end
+			end
+		end
+	end
+end
+
+
+-- Called directly to find an ally repairable and damaged squad within range.
+function MaintenanceTactic:GetDamagedVehicleWithin(iRange)
+local iEngineerSquadPosition = self.squad_ai:GetPosition()
+for oPlayer in cpu_manager.stats:GetPlayerStats() do
+	if not oPlayer:IsPlayerDead() then
+		if not cpu_manager.player_stats:IsEnemy(oPlayer) then
+			for oSquad in oPlayer:GetSquads() do
+				if oSquad:IsValid() then
+					if oSquad:CanBeRepaired() and oSquad:GetHealthPercentage() < 1.0 then
+						if distance_sqr(oSquad:GetPosition(),iEngineerSquadPosition) < iRange*iRange then 
+							return oSquad
+						end
+					end
+				end
+			end
+		end
+	end
+end
+return nil
+end
+
+
+-- Find an ally repairable and damaged building.
+function MaintenanceTactic:GetDamagedBuildingWithin(iRange)
+local iEngineerSquadPosition = self.squad_ai:GetPosition()
+for oPlayer in cpu_manager.stats:GetPlayerStats() do
+	if (not oPlayer:IsPlayerDead()) then
+		if (not cpu_manager.player_stats:IsEnemy(oPlayer)) then
+			for oBuilding in oPlayer:GetBases() do
+				if oBuilding:IsValid() then
+					if distance_sqr(oBuilding:GetPosition(),iEngineerSquadPosition) < iRange*iRange then
+						if (self.isBuildingsRepairer and oBuilding:CanBeRepaired() and oBuilding:GetHealthPercentage() < 1.0) then
+							return oBuilding
+						end
+					end
+				end
+			end
+		end
+	end
+end
+return nil
+end

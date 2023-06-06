@@ -1,0 +1,91 @@
+----------------------------------------
+-- File: 'witchhuntersrhinotactic.ai'
+-- Edited by Thudmeizer		@ 16.11.2011
+
+class 'WitchhuntersRhinoTactic' (WitchHuntersVehicleTactic)
+
+WitchhuntersRhino = {}
+
+--[[WitchhuntersRhinoAbility =
+{
+    HailersID = cpu_manager.stats:GetAbilityID("witch_hunters_rhino_laud_hailers")
+    ,RepairID = cpu_manager.stats:GetAbilityID("witch_hunters_rhino_repair")
+}]]
+
+function WitchhuntersRhinoTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Witchhunters Rhino Tactic")
+
+	-- Vehicle is a light transport
+	self.m_iTransportVehicle = 1
+	self.m_iTransportSlots = 2
+
+    --self.hailersLastUse = g_iGMT
+    --self.repairLastUse = g_iGMT
+end
+
+function WitchhuntersRhinoTactic:InitAbilities()
+
+	if (WitchhuntersRhino.smoke_id == nil) then
+		WitchhuntersRhino.smoke_id = cpu_manager.stats:GetAbilityID( "witch_hunters_landraider_smoke_launchers" )
+	end
+
+	--[[if (WitchhuntersRhino.hailers_id == nil) then
+		WitchhuntersRhino.hailers_id = cpu_manager.stats:GetAbilityID( "witch_hunters_rhino_laud_hailers" )
+	end
+
+	if (WitchhuntersRhino.repair_id == nil) then
+		WitchhuntersRhino.repair_id = cpu_manager.stats:GetAbilityID( "witch_hunters_rhino_repair" )
+	end]]
+end
+
+function WitchhuntersRhinoTactic:DoAbilities()
+
+	self:DoRhinoTargetWeapon()
+
+	if self.squad_ai:CanDoAbility(WitchhuntersRhino.smoke_id) then
+		local iRange = self.squad_ai:GetAbilityRange(WitchhuntersRhino.smoke_id)
+		local oUnit = Ability.Filters.CloseHurt(self.squad_ai:GetPosition(), iRange, 1)
+		if (oUnit ~= nil and oUnit:IsInCombat() and cpu_manager:GetUnitStrength(oUnit) > 150) then
+			self.squad_ai:DoSpecialAbilitySquad(WitchhuntersRhino.smoke_id, oUnit:GetSquad())
+		end
+	end
+
+    --self:DoWitchhuntersRhinoTargetWeapon()
+
+        --[[SelfUse: Reduces the morale recovery rate of the enemy's squads, effects only infantry.
+	Ability.DoAbilityArea( self.squad_ai, WitchhuntersRhino.hailers_id, Ability.Filters.CloseInfantryEnemy, 10, 5 )
+
+	-- Rhino Repair!
+	if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4) then
+
+		if (self.squad_ai:CanDoAbility( WitchhuntersRhino.repair_id )) then
+			self.squad_ai:DoSpecialAbility( WitchhuntersRhino.repair_id )
+		end
+	end]]
+end
+
+--[[function WitchhuntersRhinoTactic:DoWitchhuntersRhinoTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.hailersLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, WitchhuntersRhinoAbility.HailersID, Ability.Filters.CloseSquadEnemy, 10, 1 )
+            or Ability.DoAbilityArea( self.squad_ai, WitchhuntersRhinoAbility.HailersID, Ability.Filters.CloseCommanderEnemy, 10, 1 )
+            or Ability.DoAbilityArea( self.squad_ai, WitchhuntersRhinoAbility.HailersID, Ability.Filters.CloseMonsterEnemy, 10, 1 )
+            then
+                self.hailersLastUse = g_iGMT 
+            end
+        end
+    end
+
+    if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4) then
+
+        if ( g_iGMT > self.repairLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, WitchhuntersRhinoAbility.RepairID, Ability.Filters.CloseEnemy, 40, 1 )
+            then
+                self.repairLastUse = g_iGMT 
+            end
+        end
+    end
+end]]

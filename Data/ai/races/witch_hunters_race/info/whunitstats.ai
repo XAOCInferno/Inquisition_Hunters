@@ -1,0 +1,842 @@
+-----------------------------------
+-- File: 'witchhuntersunitstats.ai'
+-- Edited by Thudmeizer  @ 21.02.2009
+
+UnitStrengths.witch_hunters_squad_sentinel_builder = 60
+UnitStrengths.witch_hunters_squad_adeptus_arbites_combat_melee = 20
+UnitStrengths.witch_hunters_squad_adeptus_arbites_fire_support = 25
+UnitStrengths.witch_hunters_squad_zealot = 40
+UnitStrengths.witch_hunters_squad_battle_sister = 35
+UnitStrengths.witch_hunters_squad_seraphim = 40
+UnitStrengths.witch_hunters_squad_repentia = 85
+UnitStrengths.witch_hunters_squad_retributor = 95
+UnitStrengths.witch_hunters_squad_arcoflagellant = 120
+UnitStrengths.witch_hunters_squad_cherubim = 150
+UnitStrengths.witch_hunters_squad_callidus = 310
+UnitStrengths.witch_hunters_squad_eversor = 310
+UnitStrengths.witch_hunters_squad_celestian = 145
+UnitStrengths.witch_hunters_squad_shield_maiden = 120
+UnitStrengths.witch_hunters_squad_female_inquisitor_command_squad = 256
+UnitStrengths.witch_hunters_squad_abbess_sanctorum_retinue = 400
+UnitStrengths.witch_hunters_squad_canoness = 345
+UnitStrengths.witch_hunters_squad_saint_praxedes = 400
+UnitStrengths.witch_hunters_squad_techcelestian = 170
+UnitStrengths.witch_hunters_squad_rhino = 200
+UnitStrengths.witch_hunters_squad_sisters_sentinel = 200
+UnitStrengths.witch_hunters_squad_repressor = 250
+UnitStrengths.witch_hunters_squad_incarcerator = 350
+UnitStrengths.witch_hunters_squad_exorcist = 465
+UnitStrengths.witch_hunters_squad_exorcist_sanctorum = 450
+UnitStrengths.witch_hunters_squad_immolator = 495
+UnitStrengths.witch_hunters_squad_nephilim_aircraft = 300
+UnitStrengths.witch_hunters_squad_penitent_engine = 380
+UnitStrengths.witch_hunters_squad_dreadnought_exalted = 380
+UnitStrengths.witch_hunters_squad_throne_judgement = 550
+UnitStrengths.witch_hunters_squad_land_raider_redeemer = 800
+UnitStrengths.witch_hunters_squad_celestine_saint_katherine_armor = 1000
+UnitStrengths.witch_hunters_squad_celestine_saint = 1000
+UnitStrengths.witch_hunters_squad_saint_katherine = 1400
+
+LeaderStrengths.witch_hunters_squad_battle_sister = 75
+LeaderStrengths.witch_hunters_squad_seraphim = 75
+LeaderStrengths.witch_hunters_squad_repentia = 75
+LeaderStrengths.witch_hunters_squad_retributor = 75
+LeaderStrengths.witch_hunters_squad_celestian = 75
+LeaderStrengths.witch_hunters_squad_female_inquisitor_command_squad = 0
+LeaderStrengths.witch_hunters_squad_abbess_sanctorum_retinue = 100
+
+WitchHuntersUnitStats = 
+{
+
+	race = "witch_hunters_race",
+		{
+			name = "Sentinel Builder",
+			sbp_name = "witch_hunters_squad_sentinel_builder",
+			ebp_name = "witch_hunters_sentinel_builder",
+			class = UnitStatsAI.UC_LightInfantryHigh,
+			rating = 0.0,
+			potential =
+			{
+				{
+					name = "witch_hunters_sentinel_builder_claw",
+					effectiveness = GenerateUnitEffectiveness(2.0,2.0,2.0,2.5,2.6,0.8,1.6,2.0,1.7,1.7,1.7,0.2,0.2,0.2,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+			}
+		},
+		{
+			name = "Adeptus Arbites Combat Melee",
+			sbp_name = "witch_hunters_squad_adeptus_arbites_combat_melee",
+			ebp_name = "witch_hunters_adeptus_arbites_combat_melee",
+			class = UnitStatsAI.UC_LightInfantryLow,
+			rating = 1.7,
+			potential =
+			{
+				{
+					name = "witch_hunters_adeptus_arbites_bludgeon",
+					effectiveness = GenerateUnitEffectiveness(2.4,2.4,2.1,0.9,0.9,0.5,0.1,0.1,0.1,0.1,0.9,0.0,0.0,0.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+				{
+					name = "witch_hunters_adeptus_arbites_shock_shield",
+					effectiveness = GenerateUnitEffectiveness(2.0,2.0,2.0,2.5,2.6,0.8,1.6,2.0,1.7,1.7,1.7,0.2,0.2,0.2,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_ShortRanged,
+				},
+			}
+		},
+		{
+			name = "Adeptus Arbites Fire Support",
+			sbp_name = "witch_hunters_squad_adeptus_arbites_fire_support",
+			ebp_name = "witch_hunters_adeptus_arbites_fire_support",
+			class = UnitStatsAI.UC_LightInfantryMed,
+			rating = 1.9,
+			potential =
+			{
+				{
+					name = "witch_hunters_adeptus_arbites_shotgun",
+					effectiveness = GenerateUnitEffectiveness(2.7,2.7,2.5,2.0,2.0,0.1,0.1,0.1,2.0,1.5,1.9,0.2,0.1,0.1,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_adeptus_arbites_bolter_gun",
+					effectiveness = GenerateUnitEffectiveness(2.0,2.0,2.0,1.7,0.6,0.1,0.1,0.1,0.7,2.1,0.2,0.0,0.0,0.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_adeptus_arbites_grenadelauncher",
+					effectiveness = GenerateUnitEffectiveness(2.2,2.2,2.2,2.0,2.0,0.3,0.1,0.1,2.0,0.8,4.1,1.4,0.4,0.4,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_adeptus_arbites_heavy_stubber",
+					effectiveness = GenerateUnitEffectiveness(4.5,4.0,3.5,2.5,2.2,1.3,0.7,0.2,5.1,1.4,3.1,2.3,0.7,0.4,0.0,2.5,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_adeptus_arbites_plasma_gun",
+					effectiveness = GenerateUnitEffectiveness(2.0,2.1,2.4,5.0,5.4,2.9,2.5,2.8,4.0,3.8,3.6,2.7,0.9,0.5,0.0,2.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+				name = "witch_hunters_adeptus_arbites_grenadelauncher_krak",
+					effectiveness = GenerateUnitEffectiveness(1.5,1.5,1.8,2.0,1.5,4.5,5,6,1.3,1.3,1.1,3.0,3.0,2.4,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Zealots",
+			sbp_name = "witch_hunters_squad_zealot",
+			ebp_name = "witch_hunters_zealot",
+			class = UnitStatsAI.UC_LightInfantryHigh,
+			rating = 2.8,
+			potential =
+			{
+				{
+					name = "witch_hunters_bolter_tactical",
+					effectiveness = GenerateUnitEffectiveness(2.0,2.0,2.0,1.7,0.6,0.1,0.1,0.1,0.7,2.1,0.2,0.0,0.0,0.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_hellgun_zealot",
+					effectiveness = GenerateUnitEffectiveness(4.5,4.0,3.5,3.5,3.2,1.3,0.7,0.2,6.5,1.4,3.1,2.3,0.7,0.4,0.0,1.5,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_adeptus_arbites_plasma_gun",
+					effectiveness = GenerateUnitEffectiveness(2.0,2.1,2.4,5.0,5.4,2.9,2.5,2.8,4.0,3.8,3.6,2.7,0.9,0.5,0.0,2.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+				name = "witch_hunters_adeptus_arbites_grenadelauncher_krak",
+					effectiveness = GenerateUnitEffectiveness(1.5,1.5,1.8,2.0,1.5,4.5,5,6,1.3,1.3,1.1,3.0,3.0,2.4,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},		
+		{
+			name = "Battle Sister",
+			sbp_name = "witch_hunters_squad_battle_sister",
+			ebp_name = "witch_hunters_battle_sister",
+			class = UnitStatsAI.UC_HeavyInfantryMed,
+			rating = 2.5,
+			potential =
+			{
+				{
+					name = "witch_hunters_bolter_tactical",
+					effectiveness = GenerateUnitEffectiveness(3.3,3.5,3.2,3.2,3.2,0.3,0.1,0.1,2.2,0.9,1.3,1.5,0.4,0.4,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_flamer_tactical",
+					effectiveness = GenerateUnitEffectiveness(3.4,3.7,3.3,2.5,2.2,0.2,0.2,0.2,3.9,3.9,3.9,1.0,0.3,0.3,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_ShortRanged,
+				},
+				{
+					name = "witch_hunters_storm_bolter_tactical",
+					effectiveness = GenerateUnitEffectiveness(2.7,1.8,1.5,4.3,3.9,2.5,2.1,0.5,4.0,1.0,1.8,2.1,1.3,1.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Seraphim",
+			sbp_name = "witch_hunters_squad_seraphim",
+			ebp_name = "witch_hunters_seraphim",
+			class = UnitStatsAI.UC_HeavyInfantryMed,
+			rating = 2.6,
+			potential =
+			{
+				{
+					name = "witch_hunters_seraphim_twin_bolt_pistol",
+					effectiveness = GenerateUnitEffectiveness(3.3,3.6,3.6,3.3,3.7,0.2,0.1,0.1,2.0,0.6,1.3,0.5,0.4,0.4,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_seraphim_twin_flamer_pistol",
+					effectiveness = GenerateUnitEffectiveness(3.4,3.7,3.3,5.5,5.1,0.1,0.2,0.2,5.5,3.9,3.9,1.0,0.3,0.3,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_ShortRanged,
+				},
+				{
+					name = "witch_hunters_seraphim_twin_inferno_pistol",
+					effectiveness = GenerateUnitEffectiveness(2.1,2.7,2.4,4.0,3.8,3.0,3.0,2.9,3.6,2.6,1.5,3.0,3.9,3.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Cherubim",
+			sbp_name = "witch_hunters_squad_cherubim",
+			ebp_name = "witch_hunters_cherubim",
+			class = UnitStatsAI.UC_MonsterMed,
+			rating = 3.7,
+			potential =
+			{
+				{
+					name = "witch_hunters_cherubim_psychic_attack",
+					effectiveness = GenerateUnitEffectiveness(1,1.1,1.2,1.1,1.2,4,4.2,4.3,3.2,3.4,0.3,3,3,3,0.0,4,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_cherubim_psychic_attack_melee",
+					effectiveness = GenerateUnitEffectiveness(3.4,3.7,3.3,5.5,5.1,0.1,0.2,0.2,5.5,3.9,3.9,1.0,0.3,0.3,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+			}
+		},
+		{
+			name = "Repentia",
+			sbp_name = "witch_hunters_squad_repentia",
+			ebp_name = "witch_hunters_repentia",
+			class = UnitStatsAI.UC_LightInfantryHigh,
+			rating = 4.0,
+			potential =
+			{
+				{
+					name = "witch_hunters_repentia_eviscerator",
+					effectiveness = GenerateUnitEffectiveness(3.6,3.7,3.5,3.3,3.4,4.6,4.6,3.2,3.0,1.6,2.6,2.8,1.7,0.8,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+			}
+		},
+		{
+			name = "Retributor",
+			sbp_name = "witch_hunters_squad_retributor",
+			ebp_name = "witch_hunters_retributor",
+			class = UnitStatsAI.UC_HeavyInfantryHigh,
+			rating = 5.0,
+			potential =
+			{
+				{
+					name = "witch_hunters_retributor_heavy_bolter",
+					effectiveness = GenerateUnitEffectiveness(4.0,4.0,4.0,4.0,4.4,4.6,4.4,1.4,4.0,4.0,4.3,4.7,1.5,0.8,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_retributor_heavy_flamer",
+					effectiveness = GenerateUnitEffectiveness(4.9,4.4,4.2,4.6,4.6,1.2,0.9,0.4,4.9,4.6,4.2,2.1,0.9,1.1,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_ShortRanged,
+				},
+				{
+					name = "witch_hunters_retributor_multi_melta",
+					effectiveness = GenerateUnitEffectiveness(2.1,2.1,2.1,2.3,2.3,5.0,5.5,5.6,2.3,2.5,2.3,4.2,3.9,4.4,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Archoflagellant",
+			sbp_name = "witch_hunters_squad_arcoflagellant",
+			ebp_name = "witch_hunters_archoflagellant",
+			class = UnitStatsAI.UC_LightInfantryHigh,
+			rating = 5.0,
+			potential =
+			{
+				{
+					name = "witch_hunters_archoflagellant_cutting_claws",
+					effectiveness = GenerateUnitEffectiveness(4.3,4.2,4.1,4.0,4.0,4.9,4.8,2.7,4.0,4.0,4.4,4.8,4.0,3.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+			}
+		},
+		{
+			name = "Celestian",
+			sbp_name = "witch_hunters_squad_celestian",
+			ebp_name = "witch_hunters_celestian",
+			class = UnitStatsAI.UC_HeavyInfantryHigh,
+			rating = 5.5,
+			potential =
+			{
+				{
+					name = "witch_hunters_celestians_storm_bolter",
+					effectiveness = GenerateUnitEffectiveness(4.8,4.4,4.1,4.6,4.1,1.5,1.1,0.5,4.0,1.0,1.8,2.1,1.3,1.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_celestians_heavy_flamer",
+					effectiveness = GenerateUnitEffectiveness(4.9,4.8,4.2,5.1,4.6,1.2,0.9,0.4,5.9,5.6,4.2,2.1,0.9,1.1,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_ShortRanged,
+				},
+				{
+					name = "witch_hunters_celestians_melta_gun",
+					effectiveness = GenerateUnitEffectiveness(4.3,4.3,4.3,4.1,3.9,5.0,5.9,4.6,1.9,2.1,1.9,4.4,2.3,3.2,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Shield Maiden",
+			sbp_name = "witch_hunters_squad_shield_maiden",
+			ebp_name = "witch_hunters_shield_maiden",
+			class = UnitStatsAI.UC_HeavyInfantryMed,
+			rating = 5,
+			potential =
+			{
+				{
+					name = "witch_hunters_maidens_storm_bolter",
+					effectiveness = GenerateUnitEffectiveness(4.8,4.4,4.1,4.6,4.1,1.5,1.1,0.5,4.0,1.0,1.8,2.1,1.3,1.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_maidens_mace",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+			}
+		},
+		{
+			name = "Female Inquisitor",
+			sbp_name = "witch_hunters_squad_female_inquisitor_command_squad",
+			ebp_name = "witch_hunters_female_inquisitor",
+			class = UnitStatsAI.UC_Commander,
+			rating = 6.0,
+			potential =
+			{
+				{
+					name = "witch_hunters_female_inquisitor_stake_crossbow",
+					effectiveness = GenerateUnitEffectiveness(5.7,6.5,6.2,6.6,6.6,6.4,6.1,6.1,6.6,1.0,2.3,3.7,1.0,1.7,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_female_inquisitor_power_bludgeon",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+			}
+		},
+		{
+			name = "Callidus",
+			sbp_name = "witch_hunters_squad_callidus",
+			ebp_name = "witch_hunters_callidus",
+			class = UnitStatsAI.UC_Commander,
+			rating = 6.0,
+			potential =
+			{
+				{
+					name = "witch_hunters_callidus_neural_shredder",
+					effectiveness = GenerateUnitEffectiveness(6.5,6.0,6.5,math.random(5.9,6.7),math.random(5.9,6.7),math.random(5.9,6.7),math.random(5.9,6.7),math.random(5.9,6.7),6.5,6.0,6.5,6.0,6.5,6.0,6.5,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Eversor",
+			sbp_name = "witch_hunters_squad_eversor",
+			ebp_name = "witch_hunters_eversor",
+			class = UnitStatsAI.UC_Commander,
+			rating = 6.0,
+			potential =
+			{
+				{
+					name = "witch_hunters_eversor_executioner_pistol",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.5,6.0,math.random(5.9,6.7),math.random(5.9,6.7),math.random(5.9,6.7),math.random(5.9,6.7),math.random(5.9,6.7),6.0,6.5,6.0,6.5,6.0,6.0,0.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Canoness",
+			sbp_name = "witch_hunters_squad_canoness",
+			ebp_name = "witch_hunters_canoness",
+			class = UnitStatsAI.UC_Commander,
+			rating = 6.0,
+			potential =
+			{
+				{
+					name = "witch_hunters_canoness_combi_weapon_bolter",
+					effectiveness = GenerateUnitEffectiveness(5.7,6.5,4.2,3.6,3.6,0.4,0.1,0.1,3.6,1.0,2.3,3.7,1.0,1.7,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_canoness_combi_weapon_flamer",
+					effectiveness = GenerateUnitEffectiveness(7.0,7.0,7.0,4.0,4.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_canoness_combi_weapon_melta_gun",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,7.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_canoness_power_sword",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.7,3.4,1.7,6.0,6.2,6.8,6.0,2.8,1.9,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+				{
+					name = "witch_hunters_canoness_force_weapon",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+				{
+					name = "witch_hunters_canoness_psychic_hood",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_canoness_jetpack",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Abbess Sanctorum Retinue",
+			sbp_name = "witch_hunters_squad_abbess_sanctorum_retinue",
+			ebp_name = "witch_hunters_abbess_sanctorum",
+			class = UnitStatsAI.UC_Commander,
+			rating = 8.5,
+			potential =
+			{
+				{
+					name = "witch_hunters_inferno_pistol_abbess",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,7.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_canoness_praxedes_sceptre_of_vengeance",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+			}
+		},
+		{
+			name = "Saint Praxedes",
+			sbp_name = "witch_hunters_squad_saint_praxedes",
+			ebp_name = "witch_hunters_saint_praxedes",
+			class = UnitStatsAI.UC_Commander,
+			rating = 7.0,
+			potential =
+			{
+				{
+					name = "witch_hunters_canoness_praxedes_bolter",
+					effectiveness = GenerateUnitEffectiveness(5.7,6.5,4.2,3.6,3.6,0.4,0.1,0.1,3.6,1.0,2.3,3.7,1.0,1.7,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_canoness_praxedes_bolter_hellfire",
+					effectiveness = GenerateUnitEffectiveness(7.7,7.5,6.2,7.6,8.6,0.4,0.1,0.1,3.6,1.0,4.3,4.7,1.0,1.7,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_canoness_praxedes_power_sword",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.7,3.4,1.7,6.0,6.2,6.8,6.0,2.8,1.9,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+				{
+					name = "witch_hunters_canoness_praxedes_sceptre_of_vengeance",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+				{
+					name = "witch_hunters_canoness_psychic_hood",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_canoness_jetpack",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Almoness",
+			sbp_name = "witch_hunters_squad_techcelestian",
+			ebp_name = "witch_hunters_techcelestian",
+			class = UnitStatsAI.UC_Commander,
+			rating = 4.5,
+			potential =
+			{
+				{
+					name = "witch_hunters_techcelestian_bolt_pistol",
+					effectiveness = GenerateUnitEffectiveness(5.7,6.5,4.2,3.6,3.6,0.4,0.1,0.1,3.6,1.0,2.3,3.7,1.0,1.7,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_techcelestian_flame_pistol",
+					effectiveness = GenerateUnitEffectiveness(7.0,7.0,7.0,4.0,4.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_techcelestian_plasma_pistol",
+					effectiveness = GenerateUnitEffectiveness(2.0,2.1,2.4,5.0,5.4,2.9,2.5,2.8,4.0,3.8,3.6,2.7,0.9,0.5,0.0,2.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_techcelestian_melta_pistol",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.0,5.0,6.0,6.0,6.0,6.0,6.0,7.5,5.0,0.0,7.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_power_axe_techcelestian",
+					effectiveness = GenerateUnitEffectiveness(6.0,6.0,6.0,6.0,6.0,5.7,3.4,1.7,6.0,6.2,6.8,6.0,2.8,1.9,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+			}
+		},
+		{
+			name = "Rhino",
+			sbp_name = "witch_hunters_squad_rhino",
+			ebp_name = "witch_hunters_rhino",
+			class = UnitStatsAI.UC_VehicleLow,
+			rating = 4.0,
+			potential =
+			{
+				{
+					name = "witch_hunters_rhino_storm_bolter",
+					effectiveness = GenerateUnitEffectiveness(4.5,4.5,4.5,4.5,4.5,4.0,3.8,2.4,3.0,4.3,3.9,3.3,3.2,3.2,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_ShortRanged,
+				},
+			}
+		},
+		{
+			name = "Sentinel",
+			sbp_name = "witch_hunters_squad_sisters_sentinel",
+			ebp_name = "witch_hunters_sisters_sentinel",
+			class = UnitStatsAI.UC_VehicleLow,
+			rating = 4.0,
+			potential =
+			{
+				{
+					name = "witch_hunters_heavy_flamer_sentinel",
+					effectiveness = GenerateUnitEffectiveness(7.0,7.0,5.3,1.9,1.5,1.3,0.9,1.6,5.3,4.6,4.0,4.3,2.9,2.2,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_ShortRanged,
+				},
+				{
+					name = "witch_hunters_multi_laser_sentinel",
+					effectiveness = GenerateUnitEffectiveness(2.6,2.6,3.3,5.2,5.2,7.6,2.0,0.0,2.8,2.0,2.6,2.2,2.2,0.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_autocannon_sentinel",
+					effectiveness = GenerateUnitEffectiveness(3.6,3.6,7.3,5.2,5.2,7.6,2.0,0.0,2.8,1.0,1.6,2.2,2.2,0.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_rocket_launcher_sentinel",
+					effectiveness = GenerateUnitEffectiveness(5.6,5.6,7.3,5.2,5.2,3.6,2.0,0.0,2.8,1.0,1.6,2.2,2.2,0.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_missile_launcher_sentinel",
+					effectiveness = GenerateUnitEffectiveness(5.1,5.1,5.1,3.3,2.1,6.6,7.0,7.9,3.3,3.3,2.1,5.0,5.0,4.4,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_lascannon_sentinel",
+					effectiveness = GenerateUnitEffectiveness(5.0,5.1,5.0,4.9,5.1,8.6,8.6,5.6,5.0,5.7,5.2,6.5,5.7,5.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_plasma_cannon_sentinel",
+					effectiveness = GenerateUnitEffectiveness(4.0,4.2,4.2,5.8,6.2,5.6,5.7,5.3,4.1,1.3,4.6,4.1,2.8,2.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Repressor",
+			sbp_name = "witch_hunters_squad_repressor",
+			ebp_name = "witch_hunters_repressor",
+			class = UnitStatsAI.UC_VehicleLow,
+			rating = 5.0,
+			potential =
+			{
+				{
+					name = "witch_hunters_repressor_storm_bolter",
+					effectiveness = GenerateUnitEffectiveness(5.4,5.3,5.5,5.5,5.0,6.2,4.6,1.9,5.0,3.8,6.7,5.0,4.3,5.4,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_repressor_heavy_flamer",
+					effectiveness = GenerateUnitEffectiveness(5.9,5.4,5.7,5.7,5.6,1.2,0.9,0.4,5.9,5.6,6.2,2.1,0.9,1.1,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_ShortRanged,
+				},
+			}
+		},
+		{
+			name = "Sororitas Exorcist",
+			sbp_name = "witch_hunters_squad_exorcist",
+			ebp_name = "witch_hunters_exorcist",
+			class = UnitStatsAI.UC_VehicleMed,
+			rating = 5.2,
+			potential =
+			{
+				{
+					name = "witch_hunters_exorcist_missile_battery",
+					effectiveness = GenerateUnitEffectiveness(5.9,5.9,5.4,5.4,5.3,5.5,5.5,5.5,2.9,5.3,2.2,5.2,5.0,5.2,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Inquisition Exorcist",
+			sbp_name = "witch_hunters_squad_exorcist_sanctorum",
+			ebp_name = "witch_hunters_exorcist_sanctorum",
+			class = UnitStatsAI.UC_VehicleMed,
+			rating = 5,
+			potential =
+			{
+				{
+					name = "witch_hunters_exorcist_sanctorum_missile_battery",
+					effectiveness = GenerateUnitEffectiveness(5.9,5.9,5.4,5.4,5.3,5.5,5.5,5.5,2.9,5.3,2.2,5.2,5.0,5.2,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Incarcerator",
+			sbp_name = "witch_hunters_squad_incarcerator",
+			ebp_name = "witch_hunters_incarcerator",
+			class = UnitStatsAI.UC_VehicleMed,
+			rating = 5.5,
+			potential =
+			{
+				{
+					name = "witch_hunters_incarcerator_warp_fire_down",
+					effectiveness = GenerateUnitEffectiveness(5.8,6.0,5.9,5.8,5.9,0.5,1.5,0.2,5.8,2.0,2.6,1.5,1.0,0.2,0.0,1.8,0.0),
+					range = UnitStatsAI.RT_Ranged,
+			    },
+				{
+					name = "witch_hunters_incarcerator_warp_fire_up",
+					effectiveness = GenerateUnitEffectiveness(5.8,6.0,5.9,5.8,5.9,0.5,1.5,0.2,5.8,2.0,2.6,1.5,1.0,0.2,0.0,1.8,0.0),
+					range = UnitStatsAI.RT_Ranged,
+			    },
+			}
+		},
+		{
+			name = "Penitent Engine",
+			sbp_name = "witch_hunters_squad_penitent_engine",
+			ebp_name = "witch_hunters_penitent_engine",
+			class = UnitStatsAI.UC_VehicleMed,
+			rating = 5.6,
+			potential =
+			{
+				{
+					name = "witch_hunters_penitent_engine_flamer",
+					effectiveness = GenerateUnitEffectiveness(5.7,5.9,5.1,5.7,5.3,5.6,5.4,5.6,2.8,5.4,2.3,5.3,5.0,5.3,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_ShortRanged,
+				},
+			}
+		},
+		{
+			name = "Exalted Dreadnought",
+			sbp_name = "witch_hunters_squad_dreadnought_exalted",
+			ebp_name = "witch_hunters_dreadnought_exalted",
+			class = UnitStatsAI.UC_VehicleMed,
+			rating = 5.6,
+			potential =
+			{
+				{
+					name = "witch_hunters_dreadnought_incinerator_twin",
+					effectiveness = GenerateUnitEffectiveness(5.7,5.9,5.1,5.7,5.3,5.6,5.4,5.6,2.8,5.4,2.3,5.3,5.0,5.3,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_dreadnought_multi_melta",
+					effectiveness = GenerateUnitEffectiveness(5.0,5.0,5.1,2.5,6.7,7.0,6.5,6.7,4.1,3.5,6.6,6.0,6.0,6.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_dreadnought_plasma_cannon",
+					effectiveness = GenerateUnitEffectiveness(5.4,5.7,5.7,6.1,6.5,5.6,5.7,5.3,6.1,1.3,5.1,4.1,2.8,2.0,0.0,3.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_dreadnought_mighty_fist",
+					effectiveness = GenerateUnitEffectiveness(6.0,7.0,6.0,7.0,6.0,7.0,6.0,7.0,6.0,7.0,7.0,8.0,7.0,6.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+			}
+		},
+		{
+			name = "Immolator",
+			sbp_name = "witch_hunters_squad_immolator",
+			ebp_name = "witch_hunters_immolator",
+			class = UnitStatsAI.UC_VehicleHigh,
+			rating = 5.8,
+			potential =
+			{
+				{
+					name = "witch_hunters_immolator_twin_heavy_flamer",
+					effectiveness = GenerateUnitEffectiveness(5.6,5.5,5.4,5.0,5.9,5.9,5.9,5.9,5.0,5.0,5.0,5.1,5.2,5.1,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_ShortRanged,
+				},
+				{
+					name = "witch_hunters_immolator_twin_heavy_bolter",
+					effectiveness = GenerateUnitEffectiveness(5.8,5.8,5.8,5.9,3.5,1.0,1.0,1.0,6.9,6.1,4.9,2.5,2.0,2.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_immolator_twin_multi_melta",
+					effectiveness = GenerateUnitEffectiveness(5.0,5.0,5.1,2.5,6.7,7.0,6.5,6.7,4.1,3.5,6.6,6.0,6.0,6.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Nephilim",
+			sbp_name = "witch_hunters_squad_nephilim_aircraft",
+			ebp_name = "witch_hunters_nephilim_aircraft",
+			class = UnitStatsAI.UC_AirMed,
+			rating = 5.0,
+			potential =
+			{
+				{
+					name = "witch_hunters_assault_cannon_nephilim",
+					effectiveness = GenerateUnitEffectiveness(5.0,5.2,5.0,5.2,5.1,3.7,1.8,1.1,4.3,4.0,5.0,9.2,3.7,1.8,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_lascannon_twin_nephilim",
+					effectiveness = GenerateUnitEffectiveness(4.0,4.0,5.0,5.0,5.0,8.9,8.0,7.0,6.0,5.8,1.6,8.9,8.3,8.7,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_missile_launcher_nephilim",
+					effectiveness = GenerateUnitEffectiveness(5.1,5.1,5.1,3.3,2.1,6.6,7.0,7.9,3.3,3.3,2.1,5.0,5.0,4.4,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_missile_launcher_nephilim",
+					effectiveness = GenerateUnitEffectiveness(5.1,5.1,5.1,3.3,2.1,6.6,7.0,7.9,3.3,3.3,2.1,5.0,5.0,4.4,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Celestine Saint Katherine Armour",
+			sbp_name = "witch_hunters_squad_celestine_saint_katherine_armor",
+			ebp_name = "witch_hunters_celestine_saint_katherine_armor",
+			class = UnitStatsAI.UC_MonsterHigh,
+			rating = 9,
+			potential =
+			{
+				{
+					name = "witch_hunters_celestine_saint_ardent_blade",
+					effectiveness = GenerateUnitEffectiveness(7.0,8.0,7.0,8.0,7.0,8.0,7.0,8.0,7.0,8.0,7.0,8.0,7.0,8.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+			}
+		},
+		{
+			name = "Celestine Saint",
+			sbp_name = "witch_hunters_squad_celestine_saint",
+			ebp_name = "witch_hunters_celestine_saint",
+			class = UnitStatsAI.UC_MonsterHigh,
+			rating = 9,
+			potential =
+			{
+				{
+					name = "witch_hunters_celestine_saint_ardent_blade",
+					effectiveness = GenerateUnitEffectiveness(7.0,8.0,7.0,8.0,7.0,8.0,7.0,8.0,7.0,8.0,7.0,8.0,7.0,8.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+			}
+		},
+		{
+			name = "Saint Katherine",
+			sbp_name = "witch_hunters_squad_saint_katherine",
+			ebp_name = "witch_hunters_saint_katherine",
+			class = UnitStatsAI.UC_MonsterHigh,
+			rating = 10,
+			potential =
+			{
+				{
+					name = "witch_hunters_katherine_saint_blade",
+					effectiveness = GenerateUnitEffectiveness(8.0,9.0,8.0,9.0,8.0,9.0,8.0,9.0,8.0,9.0,8.0,9.0,8.0,9.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+			}
+		},
+		{
+			name = "Throne Of Judgement",
+			sbp_name = "witch_hunters_squad_throne_judgement",
+			ebp_name = "witch_hunters_throne_judgement",
+			class = UnitStatsAI.UC_VehicleHigh,
+			rating = 9,
+			potential =
+			{
+				{
+					name = "witch_hunters_throne_judgement_melta_gun",
+					effectiveness = GenerateUnitEffectiveness(9.0,9.0,9.0,8.0,9.0,8.0,9.0,8.0,9.0,8.0,9.0,8.0,9.0,8.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+			}
+		},
+		{
+			name = "Land Raider Redeemer",
+			sbp_name = "witch_hunters_squad_land_raider_redeemer",
+			ebp_name = "witch_hunters_land_raider_redeemer",
+			class = UnitStatsAI.UC_VehicleHigh,
+			rating = 9,
+			potential =
+			{
+				{
+					name = "witch_hunters_heavy_bolter_twin",
+					effectiveness = GenerateUnitEffectiveness(4.0,4.0,4.0,4.0,4.4,4.6,4.4,1.4,4.0,4.0,4.3,4.7,1.5,0.8,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_heavy_flamer_landraider_left",
+					effectiveness = GenerateUnitEffectiveness(4.9,4.4,4.2,4.6,4.6,1.2,0.9,0.4,4.9,4.6,4.2,2.1,0.9,1.1,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_ShortRanged,
+				},
+				{
+					name = "witch_hunters_heavy_flamer_landraider_right",
+					effectiveness = GenerateUnitEffectiveness(4.9,4.4,4.2,4.6,4.6,1.2,0.9,0.4,4.9,4.6,4.2,2.1,0.9,1.1,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_ShortRanged,
+				},
+				{
+					name = "witch_hunters_storm_bolter_landraider",
+					effectiveness = GenerateUnitEffectiveness(5.4,5.3,5.5,5.5,5.0,6.2,4.6,1.9,5.0,3.8,6.7,5.0,4.3,5.4,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "witch_hunters_multi_melta_landraider",
+					effectiveness = GenerateUnitEffectiveness(2.1,2.1,2.1,2.3,2.3,7.0,7.5,7.6,5.3,5.5,3.3,5.2,3.9,4.4,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				}
+			}
+		}
+}

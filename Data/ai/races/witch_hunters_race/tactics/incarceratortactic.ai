@@ -1,0 +1,62 @@
+----------------------------------------
+-- File: 'incarceratortactic.ai'
+-- Edited by Thudmeizer @ 13.03.2009
+
+class 'IncarceratorTactic' (WitchHuntersVehicleTactic)
+
+Incarcerator = {}
+
+function IncarceratorTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Incarcerator Tactic")
+
+	self.torture = false
+end
+
+function IncarceratorTactic:InitAbilities()
+
+        if (Incarcerator.horrortorture_id == nil) then
+		Incarcerator.horrortorture_id = cpu_manager.stats:GetAbilityID( "witch_hunters_incarcerator_horror_torture" )
+	end
+end
+
+function IncarceratorTactic:DoAbilities()
+
+	-- If using the ability, but must stop, then stop it.
+	if (self.squad_ai:IsUsingAbility(Incarcerator.horrortorture_id)) then
+		if ((not self.squad_ai:IsAttacking()) or (self.squad_ai:GetHealthPercentage() < 0.6)) then
+			self.squad_ai:DoSpecialAbility(Incarcerator.horrortorture_id)
+		end
+	-- If not using the ability, start using it if need be.
+	elseif (self.squad_ai:IsAttacking() and self.squad_ai:GetHealthPercentage() > 0.8) then
+		self.squad_ai:DoSpecialAbility(Incarcerator.horrortorture_id)
+	end
+
+	--[[Toggle: Hurt the damned Horror!!
+	local squad_pos = self.squad_ai:GetPosition()
+	if (((self.squad_ai:IsAttacking() and Ability.Filters.CloseEnemy( squad_pos, 20, 1 ) == nil)) and self.squad_ai:GetHealthPercentage() > 0.6 and self:IsMoving()) then 
+		if (self.squad_ai:CanDoAbility( Incarcerator.horrortorture_id )) then
+			self.squad_ai:DoSpecialAbility( Incarcerator.horrortorture_id )
+		end
+	end
+
+	--Toggle: Hurt the damned Horror!!
+	if (self.squad_ai:IsAttacking() and self.squad_ai:WasRecentlyHurt() and	self.squad_ai:GetHealthPercentage() > 0.4 and
+		self.squad_ai:CanDoAbility( Incarcerator.horrortorture_id )) then
+			self.squad_ai:DoSpecialAbility( Incarcerator.horrortorture_id )
+	end
+
+	--Toggle: Hurt the damned Horror!!
+	if (self.squad_ai:IsAttacking() and self.squad_ai:GetHealthPercentage() > 0.5 and not self.torture) then
+	
+		-- Turn on ability
+		self.squad_ai:DoSpecialAbility( Incarcerator.horrortorture_id )
+		self.torture = true
+	
+	elseif (self.torture and self.squad_ai:GetHealthPercentage() < 0.5) then
+		
+		-- Turn off ability
+		self.squad_ai:DoSpecialAbility( Incarcerator.horrortorture_id )
+		self.torture = false
+	end]]
+end

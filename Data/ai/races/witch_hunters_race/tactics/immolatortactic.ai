@@ -1,0 +1,53 @@
+----------------------------------------
+-- File: 'immolatortactic.ai'
+-- Edited by Thudmeizer @ 16.11.2011
+
+class 'ImmolatorTactic' (WitchHuntersVehicleTactic)
+
+Immolator = {}
+
+--[[ImmolatorAbility =
+{
+    HailersID = cpu_manager.stats:GetAbilityID("witch_hunters_immolator_laud_hailers")
+}]]
+
+function ImmolatorTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Immolator Tactic")
+
+	-- Vehicle is a light transport
+	self.m_iTransportVehicle = 3
+	self.m_iTransportSlots = 1
+
+    --self.hailersLastUse = g_iGMT
+end
+
+function ImmolatorTactic:InitAbilities()
+
+	 --[[if (Immolator.hailers_id == nil) then
+		Immolator.hailers_id = cpu_manager.stats:GetAbilityID( "witch_hunters_immolator_laud_hailers" )
+	 end]]
+end
+
+function ImmolatorTactic:DoAbilities()
+
+    self:DoImmolatorTargetWeapon()
+
+	--[[ Reduces the morale recovery rate of the enemy's squads, effects only infantry
+	Ability.DoAbilityArea( self.squad_ai, Immolator.hailers_id, Ability.Filters.CloseInfantryEnemy, 10, 5 )]]
+end
+
+--[[function ImmolatorTactic:DoImmolatorTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.hailersLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, ImmolatorAbility.HailersID, Ability.Filters.CloseSquadEnemy, 10, 1 )
+            or Ability.DoAbilityArea( self.squad_ai, ImmolatorAbility.HailersID, Ability.Filters.CloseCommanderEnemy, 10, 1 )
+            or Ability.DoAbilityArea( self.squad_ai, ImmolatorAbility.HailersID, Ability.Filters.CloseMonsterEnemy, 10, 1 )
+            then
+                self.hailersLastUse = g_iGMT 
+            end
+        end
+    end
+end]]

@@ -1,0 +1,14 @@
+----------------------------------------
+-- File: 'armoriumtactic.ai'
+-- Edited by Thudmeizer		@ 03.10.2011
+
+class 'ArmoriumTactic' (BaseTactic)
+
+function ArmoriumTactic:__init( base_ai ) super( base_ai )
+
+	self:SetName("Armorium Tactic")
+end
+
+function ArmoriumTactic:CanDeepStrikeTroops()
+	return true
+end

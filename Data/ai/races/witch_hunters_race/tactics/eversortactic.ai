@@ -1,0 +1,79 @@
+----------------------------------------
+-- File: 'eversortactic.ai'
+-- Edited by Thudmeizer @ 16.11.2011
+
+class 'EversorTactic' (WitchHuntersInfantryTactic)
+
+Eversor = {}
+
+--[[EversorAbility =
+{
+    MeltaID = cpu_manager.stats:GetAbilityID("witch_hunters_eversor_melta_bombs")
+    ,BerserkID = cpu_manager.stats:GetAbilityID("witch_hunters_eversor_berserk")
+}]]
+
+function EversorTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Eversor Tactic")
+
+    --self.meltaLastUse = g_iGMT
+    --self.berserkLastUse = g_iGMT
+end
+
+function EversorTactic:IsAttacker()
+	return self:IsCommanderAttacker()
+end
+
+function EversorTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+function EversorTactic:InitAbilities()
+
+	 --[[if (Eversor.grenade_id == nil) then
+		Eversor.grenade_id = cpu_manager.stats:GetAbilityID( "witch_hunters_eversor_melta_bombs" )
+	 end
+
+	 if (Eversor.berserk_id == nil) then
+		Eversor.berserk_id = cpu_manager.stats:GetAbilityID( "witch_hunters_eversor_berserk" )
+	 end]]
+end
+
+function EversorTactic:DoAbilities()
+
+    --self:DoEversorTargetWeapon()
+     self:DoAssassinEversorUseAbility()
+
+	--[[Ability.DoAbilityTarget(self.squad_ai, Eversor.grenade_id, Ability.Filters.CloseVehicleEnemy, 1)
+	Ability.DoAbilityTargetEntity(self.squad_ai, Eversor.grenade_id, Ability.EntityFilters.CloseBaseEntityEnemy, 1)
+
+	Ability.DoAbilityArea(self.squad_ai, Eversor.berserk_id, Ability.Filters.CloseVehicleEnemy, 10, 1)
+	Ability.DoAbilityArea(self.squad_ai, Eversor.berserk_id, Ability.Filters.CloseCommanderEnemy, 10, 1)]]
+
+	--[[ Try to activate Eversor dance
+	if (self.squad_ai:IsInCombat() and self.squad_ai:CanMeleeDance()) then
+		self.squad_ai:DoMeleeDance()
+	end]]
+end
+
+--[[function EversorTactic:DoEversorTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.meltaLastUse + 30 ) then
+            if Ability.DoAbilityTarget( self.squad_ai, EversorAbility.MeltaID, Ability.Filters.CloseVehicleEnemy, 1 )
+            or Ability.DoAbilityTargetEntity( self.squad_ai, EversorAbility.MeltaID, Ability.EntityFilters.CloseBaseEntityEnemy, 1 )
+            then
+                self.meltaLastUse = g_iGMT 
+            end
+        end
+
+        if ( g_iGMT > self.berserkLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, EversorAbility.BerserkID, Ability.Filters.CloseVehicleEnemy, 10, 1 )
+            or Ability.DoAbilityAreaEntity( self.squad_ai, EversorAbility.BerserkID, Ability.EntityFilters.CloseBaseEntityEnemy, 1 )
+            then
+                self.berserkLastUse = g_iGMT 
+            end
+        end
+    end
+end]]

@@ -1,0 +1,70 @@
+----------------------------------------
+-- File: 'callidustactic.ai'
+-- Edited by Thudmeizer @ 16.11.2011
+
+class 'CallidusTactic' (WitchHuntersInfantryTactic)
+
+Callidus = {}
+
+--[[CallidusAbility =
+{
+    PolymorphineID = cpu_manager.stats:GetAbilityID("witch_hunters_callidus_polymorphine")
+    ,TouchID = cpu_manager.stats:GetAbilityID("witch_hunters_callidus_assassin_touch")
+}]]
+
+function CallidusTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Callidus Tactic")
+
+    --self.polymorphineLastUse = g_iGMT
+    --self.touchLastUse = g_iGMT
+end
+
+function CallidusTactic:IsAttacker()
+	return self:IsCommanderAttacker()
+end
+
+function CallidusTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+function CallidusTactic:InitAbilities()
+
+	 --[[if (Callidus.polymorphine_id == nil) then
+		Callidus.polymorphine_id = cpu_manager.stats:GetAbilityID( "witch_hunters_callidus_polymorphine" )
+	 end
+
+	 if (Callidus.touch_id == nil) then
+		Callidus.touch_id = cpu_manager.stats:GetAbilityID( "witch_hunters_callidus_assassin_touch" )
+	 end]]
+end
+
+function CallidusTactic:DoAbilities()
+
+    --self:DoCallidusTargetWeapon()
+     self:DoAssassinCallidusUseAbility()
+
+	--[[Ability.DoAbilityArea( self.squad_ai, Callidus.polymorphine_id, Ability.Filters.CloseSquadEnemy, 10, 2 )
+	Ability.DoAbilityTarget( self.squad_ai, Callidus.touch_id, Ability.Filters.CloseCommanderEnemy, 1 )]]
+end
+
+--[[function CallidusTactic:DoCallidusTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.polymorphineLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, CallidusAbility.PolymorphineID, Ability.Filters.CloseSquadEnemy, 10, 1 )
+            or Ability.DoAbilityArea( self.squad_ai, CallidusAbility.PolymorphineID, Ability.Filters.CloseCommanderEnemy, 10, 1 ) 
+            then
+                self.polymorphineLastUse = g_iGMT 
+            end
+        end
+
+        if ( g_iGMT > self.touchLastUse + 30 ) then
+            if Ability.DoAbilityTarget( self.squad_ai, CallidusAbility.TouchID, Ability.Filters.CloseCommanderEnemy, 1 )
+            then
+                self.touchLastUse = g_iGMT 
+            end
+        end
+    end
+end]]

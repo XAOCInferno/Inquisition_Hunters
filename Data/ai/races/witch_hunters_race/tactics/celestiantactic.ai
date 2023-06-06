@@ -1,0 +1,49 @@
+----------------------------------------
+-- File: 'celestiantactic.ai'
+-- Edited by Thudmeizer @ 16.11.2011
+
+class 'CelestianTactic' (WitchHuntersInfantryTactic)
+
+Celestian = {}
+
+--[[CelestianAbility =
+{
+    LightID = cpu_manager.stats:GetAbilityID("witch_hunters_actoffaith_emperor_light")
+}]]
+
+function CelestianTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Celestian Tactic")
+
+    --self.lightLastUse = g_iGMT
+end
+
+function CelestianTactic:InitAbilities()
+
+	 --[[if (Celestian.emperor_id == nil) then
+		Celestian.emperor_id = cpu_manager.stats:GetAbilityID( "witch_hunters_actoffaith_emperor_light" )
+	 end]]
+end
+
+function CelestianTactic:DoAbilities()
+
+	self:DoCelestianUseWeapon()
+    --self:DoCelestianTargetWeapon()
+
+	--[[if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.8) then
+		Ability.DoAbility( self.squad_ai, Celestian.emperor_id, Ability.PredicateFilters.IsInCombat )
+	end]]
+end
+
+--[[function CelestianTactic:DoCelestianTargetWeapon()
+
+    if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.5) then
+
+        if ( g_iGMT > self.lightLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, CelestianAbility.LightID, Ability.Filters.CloseEnemy, 40, 1 )
+            then
+                self.lightLastUse = g_iGMT 
+            end
+        end
+    end
+end]]

@@ -1,0 +1,383 @@
+----------------------------------------
+-- File: 'witchhuntersinfo.ai'
+-- Edited by Thudmeizer	@ 30.09.2013
+-- Edited by Gambit	@ 05.09.2015
+
+BuildBaseStrategyInfo = 
+{	
+	witch_hunters_race =
+	{
+		post_builder = 1,
+		flag_capture = 2,
+
+		-- Reserve this amount for building units, reinforcing and upgrading
+		req_reserve = 100,
+		
+		--need at least this at all times
+		squad_cap_threshold = 2,
+
+		--need at least this at all times
+		support_cap_threshold = 3,
+
+		--used to calculate wants for engineers
+		Engineers =
+		{
+			--number of engineers we're aiming for
+			want = 2,
+		},
+
+		-- Is used to modify the army strength in the build programs (Allows faster balancing adjustments)
+		ArmyStrengthModifier = 1.0,
+		
+		-- Item-Syntax: Min. Tier, Min. Requisition, Min. Power, Min. ArmyStrength, Object-Count, Object-Type, Object-Name
+		BuildPrograms =
+		{
+			-- Research Count: 31
+ 			-- Adepta Sororitas Strategy 1 (Ecclesiarchy)
+			{
+				{ 1, 260, 0, 0, 1,			"Building",	"witch_hunters_covent_military" },
+				{ 1, 135, 0, 0, 2,			"Building",	"witch_hunters_generator" },
+				{ 1, 100, 0, 0, 1,			"Unit",		"witch_hunters_squad_adeptus_arbites_combat_melee" },
+				{ 1, 120, 0, 0, 1,			"Unit",		"witch_hunters_squad_adeptus_arbites_fire_support" },
+				{ 1, 90, 0, 0, 2,			"Unit",		"witch_hunters_squad_sentinel_builder" },
+				{ 1, 140, 0, 0, 1,			"Unit",		"witch_hunters_squad_battle_sister" },
+				{ 1, 350, 0, 0, 1,			"Building",	"witch_hunters_adeptus_arbites_hq" },
+				{ 1, 100, 75, 0, 75,		"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_1" },
+				{ 1, 135, 0, 0, 3,			"Building",	"witch_hunters_generator" },
+				{ 1, 200, 50, 0, 1,			"Unit",		"witch_hunters_squad_canoness" },
+				{ 1, 90, 25, 0, 1,			"Unit",		"witch_hunters_squad_female_inquisitor_command_squad" },
+				{ 1, 140, 0, 100, 2,		"Unit",		"witch_hunters_squad_battle_sister" },
+				{ 1, 150, 50, 200, 100,		"Addon",	"witch_hunters_shrine_mother_saint" },
+				{ 1, 90, 0, 200, 3,			"Unit",		"witch_hunters_squad_sentinel_builder" },
+				{ 1, 200, 20, 350, 2,		"Unit",		"witch_hunters_squad_seraphim" },
+				{ 1, 75, 25, 400, 100,		"Addon",	"witch_hunters_shrine_glory" },
+				{ 1, 260, 60, 450, 1,		"Unit",		"witch_hunters_squad_celestian" },
+				{ 1, 225, 225, 500, 1,		"Building",	"witch_hunters_reliquary" },		-- Tier II
+				{ 1, 350, 0, 550, 4,		"Building",	"witch_hunters_generator" },
+				{ 1, 200, 100, 600, 1,		"Building",	"witch_hunters_adeptus_mechanicus" },
+				{ 1, 100, 50, 650, 1,		"Building",	"witch_hunters_armorium" },
+				{ 1, 90, 45, 700, 1,		"Building",	"witch_hunters_turret_heavy_flamer" },
+				{ 1, 100, 50, 800, 100,		"Addon",	"witch_hunters_hq_inquisition_drop_pod" },
+				{ 1, 175, 50, 1000, 50, 	"Addon",	"witch_hunters_adeptus_arbites_hq_repressor_defense" },
+
+				{ 2, 100, 70, 0, 1,			"Unit",		"witch_hunters_squad_repressor" },
+				{ 2, 120, 120, 0, 1,		"Unit",		"witch_hunters_squad_rhino" },
+				{ 2, 125, 0, 0, 1,			"Research",	"witch_hunters_support_cap_research" },
+				{ 2, 140, 0, 0, 3,			"Unit",		"witch_hunters_squad_battle_sister" },
+				{ 2, 100, 200, 0, 2,		"Unit",		"witch_hunters_squad_exorcist" },
+				{ 2, 200, 20, 0, 1,			"Unit",		"witch_hunters_squad_repentia" },
+				{ 2, 150, 50, 0, 1,			"Unit",		"witch_hunters_squad_cherubim" },
+				{ 2, 200, 20, 350, 2,		"Unit",		"witch_hunters_squad_seraphim" },
+				{ 2, 75, 350, 400, 1,		"Research",	"witch_hunters_adeptus_arbites_requisition_research" },
+				{ 2, 400, 40, 450, 1,		"Research",	"witch_hunters_adepta_sororitas_power_research" },
+				{ 2, 260, 60, 500, 2,		"Unit",		"witch_hunters_squad_celestian" },
+				{ 2, 340, 340, 800, 1,		"Research",	"witch_hunters_shrine_faith_shield" },		-- Tier III
+				{ 2, 600, 0, 700, 2,		"Building",	"witch_hunters_covent_military" },
+				{ 2, 450, 0, 750, 6,		"Building",	"witch_hunters_generator" },
+				{ 2, 90, 45, 300, 100,  	"Addon",	"witch_hunters_adeptus_arbites_hq_bolter_defense_right" },
+				{ 2, 90, 45, 750, 2,		"Building",	"witch_hunters_turret_heavy_flamer" },
+				{ 2, 90, 45, 300, 100,  	"Addon",	"witch_hunters_adeptus_arbites_hq_bolter_defense_left" },
+				{ 2, 0, 100, 850, 35,		"TurretAddon","witch_hunters_turret_melta" },
+				{ 2, 20, 80, 850, 100,		"TurretAddon","witch_hunters_turret_damage" },
+				{ 2, 100, 75, 750, 100,		"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_1" },
+				{ 2, 1000, 0, 1000, 2,		"Building",	"witch_hunters_adeptus_arbites_hq" },
+				{ 2, 260, 300, 950, 50,		"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_2" },
+				{ 2, 90, 45, 1200, 3,		"Building",	"witch_hunters_turret_heavy_flamer" },
+
+				{ 3, 300, 100, 0, 1,		"Unit",		"witch_hunters_squad_retributor" },
+				{ 3, 140, 300, 0, 1,		"Unit",		"witch_hunters_squad_immolator" },
+				{ 3, 140, 0, 0, 3,			"Unit",		"witch_hunters_squad_battle_sister" },
+				{ 3, 180, 0, 400, 1,		"Research",	"witch_hunters_research_sororitas_true_aim" },
+				{ 3, 700, 0, 600, 1,		"Research",	"witch_hunters_adepta_sororitas_power_research_2" },
+				{ 3, 200, 20, 350, 2,		"Unit",		"witch_hunters_squad_seraphim" },
+				{ 3, 200, 20, 0, 1,			"Unit",		"witch_hunters_squad_repentia" },
+				{ 3, 600, 0, 700, 3,		"Building",	"witch_hunters_covent_military" },
+				{ 3, 100, 500, 600, 1,		"Research",	"witch_hunters_adeptus_arbites_requisition_research_2" },
+				{ 3, 450, 450, 950, 100,	"Addon",	"witch_hunters_inquisition_call_up" },		-- Tier IV
+				{ 3, 50, 250, 800, 100,		"Addon",	"witch_hunters_turret_stealth" },
+				{ 3, 150, 150, 0, 1,		"Research",	"witch_hunters_shrine_living_saint" },
+				{ 3, 700, 0, 1000, 10,		"Building",	"witch_hunters_generator" },
+				{ 3, 260, 60, 500, 2,		"Unit",		"witch_hunters_squad_celestian" },
+				{ 3, 400, 300, 1000, 75,	"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_2" },
+				{ 3, 90, 45, 1250, 6,		"Building",	"witch_hunters_turret_heavy_flamer" },
+
+				{ 4, 400, 400, 0, 1,		"Unit",		"witch_hunters_squad_celestine_saint" },
+				{ 4, 140, 300, 0, 2,		"Unit",		"witch_hunters_squad_immolator" },
+				{ 4, 140, 0, 0, 3,			"Unit",		"witch_hunters_squad_battle_sister" },
+				{ 4, 1500, 0, 1200, 12,		"Building",	"witch_hunters_generator" },
+				{ 4, 200, 20, 350, 2,		"Unit",		"witch_hunters_squad_seraphim" },
+				{ 4, 260, 60, 500, 2,		"Unit",		"witch_hunters_squad_celestian" },
+				{ 4, 200, 20, 0, 1,			"Unit",		"witch_hunters_squad_repentia" },
+				{ 4, 600, 300, 1050, 100,	"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_2" },
+				{ 4, 1500, 0, 1300, 5,		"Building",	"witch_hunters_covent_military" },
+				{ 4, 400, 200, 1300, 3,		"Building",	"witch_hunters_adeptus_mechanicus" },
+				{ 4, 2300, 0, 1350, 5,		"Building",	"witch_hunters_adeptus_arbites_hq" },
+				{ 4, 575, 450, 1350, 100,	"Addon",	"witch_hunters_adeptus_arbites_hq_repressor_defense" },
+				{ 4, 2000, 0, 1400, 16,		"Building",	"witch_hunters_generator" },
+				{ 4, 400, 200, 1400, 30,	"Building",	"witch_hunters_turret_heavy_flamer" },
+				{ 4, 2000, 2000, 1500, 100,	"Addon",	"witch_hunters_inquisition_call_up" }
+			},
+			-- Research Count: 30 
+ 			-- Ordo Hereticus Strategy 2 (Inquisition, Mixed Army)
+			{
+				{ 1, 100, 0, 0, 1,			"Unit",		"witch_hunters_squad_adeptus_arbites_combat_melee" },
+				{ 1, 120, 0, 0, 2,			"Unit",		"witch_hunters_squad_adeptus_arbites_fire_support" },
+				{ 1, 135, 0, 0, 1,			"Building",	"witch_hunters_generator" },
+				{ 1, 260, 0, 0, 1,			"Building",	"witch_hunters_covent_military" },
+				{ 1, 100, 50, 0, 100,		"Addon",	"witch_hunters_hq_inquisition_drop_pod" },
+				{ 1, 90, 25, 0, 1,			"Unit",		"witch_hunters_squad_female_inquisitor_command_squad" },
+				{ 1, 90, 0, 0, 2,			"Unit",		"witch_hunters_squad_sentinel_builder" },
+				{ 1, 140, 0, 0, 2,			"Unit",		"witch_hunters_squad_battle_sister" },
+				{ 1, 250, 0, 0, 3,			"Building",	"witch_hunters_generator" },
+				{ 1, 350, 0, 0, 1,			"Building",	"witch_hunters_adeptus_arbites_hq" },
+				{ 1, 100, 75, 0, 75,		"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_1" },
+				{ 1, 90, 0, 200, 3,			"Unit",		"witch_hunters_squad_sentinel_builder" },
+				{ 1, 75, 25, 250, 100,		"Addon",	"witch_hunters_shrine_glory" },
+				{ 1, 200, 20, 300, 1,		"Unit",		"witch_hunters_squad_seraphim" },
+				{ 1, 300, 100, 300, 1,		"Unit",		"witch_hunters_squad_canoness" },
+				{ 1, 175, 50, 350, 100, 	"Addon",	"witch_hunters_adeptus_arbites_hq_repressor_defense" },
+				{ 1, 450, 0, 350, 4,		"Building",	"witch_hunters_generator" },
+				{ 1, 225, 225, 400, 1,		"Building",	"witch_hunters_reliquary" },		-- Tier II
+				{ 1, 150, 50, 400, 100,		"Addon",	"witch_hunters_shrine_mother_saint" },
+				{ 1, 260, 60, 450, 1,		"Unit",		"witch_hunters_squad_celestian" },
+				{ 1, 200, 100, 500, 1,		"Building",	"witch_hunters_adeptus_mechanicus" },
+				{ 1, 100, 50, 600, 1,		"Building",	"witch_hunters_inquisition_armorium" },
+				{ 1, 90, 45, 750, 1,		"Building",	"witch_hunters_turret_heavy_flamer" },
+
+				{ 2, 120, 0, 0, 3,			"Unit",		"witch_hunters_squad_adeptus_arbites_fire_support" },
+				{ 2, 100, 0, 0, 2,			"Unit",		"witch_hunters_squad_adeptus_arbites_combat_melee" },
+				{ 2, 210, 290, 0, 1,		"Unit",		"witch_hunters_squad_penitent_engine" },
+				{ 2, 100, 70, 0, 1,			"Unit",		"witch_hunters_squad_repressor" },
+				{ 2, 120, 45, 0, 2,			"Unit",		"witch_hunters_squad_arcoflagellant" },
+				{ 2, 120, 120, 0, 1,		"Unit",		"witch_hunters_squad_rhino" },
+				{ 2, 200, 20, 0, 1,			"Unit",		"witch_hunters_squad_seraphim" },
+				{ 2, 125, 0, 0, 1,			"Research",	"witch_hunters_support_cap_research" },
+				{ 2, 100, 200, 0, 1,		"Unit",		"witch_hunters_squad_exorcist_sanctorum" },
+				{ 2, 75, 350, 350, 1,		"Research",	"witch_hunters_adeptus_arbites_requisition_research" },
+				{ 2, 400, 40, 300, 1,		"Research",	"witch_hunters_adepta_sororitas_power_research" },
+				{ 2, 260, 60, 400, 2,		"Unit",		"witch_hunters_squad_celestian" },
+				{ 2, 340, 340, 700, 1,		"Research",	"witch_hunters_shrine_faith_shield" },		-- Tier III
+				{ 2, 400, 0, 500, 6,		"Building",	"witch_hunters_generator" },
+				{ 2, 600, 0, 650, 2,		"Building",	"witch_hunters_covent_military" },
+				{ 2, 90, 45, 400, 100,  	"Addon",	"witch_hunters_adeptus_arbites_hq_bolter_defense_right" },
+				{ 2, 90, 45, 750, 2,		"Building",	"witch_hunters_turret_heavy_flamer" },
+				{ 2, 90, 45, 400, 100,  	"Addon",	"witch_hunters_adeptus_arbites_hq_bolter_defense_left" },
+				{ 2, 1000, 0, 750, 2,		"Building",	"witch_hunters_adeptus_arbites_hq" },
+				{ 2, 600, 0, 800, 10,		"Building",	"witch_hunters_generator" },
+				{ 2, 20, 80, 850, 35,		"TurretAddon","witch_hunters_turret_damage" },
+				{ 2, 0, 100, 850, 100,		"TurretAddon","witch_hunters_turret_melta" },
+				{ 2, 100, 75, 850, 100,		"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_1" },
+				{ 2, 300, 300, 950, 50,		"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_2" },
+				{ 2, 90, 45, 1200, 3,		"Building",	"witch_hunters_turret_heavy_flamer" },
+
+				{ 3, 120, 35, 0, 1,			"Research",	"witch_hunters_research_officio_assassinorum" },
+				{ 3, 150, 330, 0, 1,		"Unit",		"witch_hunters_squad_incarcerator" },
+				{ 3, 180, 0, 500, 1,		"Research",	"witch_hunters_research_sororitas_true_aim" },
+				{ 3, 700, 0, 1000, 1,		"Research",	"witch_hunters_adepta_sororitas_power_research_2" },
+				{ 3, 100, 500, 600, 1,		"Research",	"witch_hunters_adeptus_arbites_requisition_research_2" },
+				{ 3, 450, 450, 900, 100,	"Addon",	"witch_hunters_inquisition_call_up" },		-- Tier IV
+				{ 3, 50, 250, 800, 100,		"Addon",	"witch_hunters_turret_stealth" },
+				{ 3, 400, 300, 1000, 75,	"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_2" },
+				{ 3, 700, 0, 1150, 12,		"Building",	"witch_hunters_generator" },
+				{ 3, 90, 45, 1200, 4,		"Building",	"witch_hunters_turret_heavy_flamer" },
+
+				{ 4, 400, 400, 0, 1,		"Unit",		"witch_hunters_squad_throne_judgement" },
+				{ 4, 150, 150, 0, 1,		"Research",	"witch_hunters_research_inquisitorial_arrival" },
+				{ 4, 150, 330, 0, 2,		"Unit",		"witch_hunters_squad_incarcerator" },
+				{ 4, 1500, 0, 1000, 12,		"Building",	"witch_hunters_generator" },
+				{ 4, 600, 300, 1050, 100,	"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_2" },
+				{ 4, 400, 200, 1100, 30,	"Building",	"witch_hunters_turret_heavy_flamer" },
+				{ 4, 575, 450, 1350, 100,	"Addon",	"witch_hunters_adeptus_arbites_hq_repressor_defense" },
+				{ 4, 2000, 0, 1100, 16,		"Building",	"witch_hunters_generator" },
+				{ 4, 1500, 0, 1100, 5,		"Building",	"witch_hunters_covent_military" },
+				{ 4, 400, 200, 1100, 3,		"Building",	"witch_hunters_adeptus_mechanicus" },
+				{ 4, 2200, 0, 1150, 5,		"Building",	"witch_hunters_adeptus_arbites_hq" },
+				{ 4, 2000, 2000, 1200, 100,	"Addon",	"witch_hunters_inquisition_call_up" }
+			},
+			-- Research Count: 30 
+ 			-- Ordo Hereticus Strategy 3 (Inquisition, Arbites Army)
+			{
+				{ 1, 350, 0, 0, 1,			"Building",	"witch_hunters_adeptus_arbites_hq" },
+				{ 1, 100, 0, 0, 2,			"Unit",		"witch_hunters_squad_adeptus_arbites_combat_melee" },
+				{ 1, 120, 0, 0, 3,			"Unit",		"witch_hunters_squad_adeptus_arbites_fire_support" },
+				{ 1, 135, 0, 0, 2,			"Building",	"witch_hunters_generator" },
+				{ 1, 90, 0, 0, 2,			"Unit",		"witch_hunters_squad_sentinel_builder" },
+				{ 1, 100, 75, 0, 75,		"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_1" },
+				{ 1, 90, 25, 0, 1,			"Unit",		"witch_hunters_squad_female_inquisitor_command_squad" },
+				{ 1, 100, 70, 100, 1,		"Unit",		"witch_hunters_squad_repressor" },
+				{ 1, 100, 50, 200, 1,		"Addon",	"witch_hunters_hq_inquisition_drop_pod" },
+				{ 1, 90, 0, 200, 3,			"Unit",		"witch_hunters_squad_sentinel_builder" },
+				{ 1, 150, 0, 200, 1,		"Research",	"witch_hunters_squad_cap_research" },
+				{ 1, 90, 0, 250, 4,			"Unit",		"witch_hunters_squad_sentinel_builder" },
+				{ 1, 100, 0, 250, 3,		"Unit",		"witch_hunters_squad_adeptus_arbites_combat_melee" },
+				{ 1, 120, 0, 250, 5,		"Unit",		"witch_hunters_squad_adeptus_arbites_fire_support" },
+				{ 1, 225, 225, 300, 1,		"Building",	"witch_hunters_reliquary" },		-- Tier II
+				{ 1, 350, 0, 300, 4,		"Building",	"witch_hunters_generator" },
+				{ 1, 175, 50, 400, 1,		"Addon",	"witch_hunters_adeptus_arbites_hq_repressor_defense" },
+				{ 1, 200, 50, 350, 1,		"Unit",		"witch_hunters_squad_canoness" },
+				{ 1, 75, 100, 400, 1,		"Research",	"witch_hunters_research_arbites_maximum_support" },
+				{ 1, 350, 100, 500, 1,		"Building",	"witch_hunters_adeptus_mechanicus" },
+				{ 1, 100, 50, 500, 1,		"Building",	"witch_hunters_inquisition_armorium" },
+				{ 1, 900, 0, 650, 2,		"Building",	"witch_hunters_adeptus_arbites_hq" },
+
+				{ 2, 100, 0, 0, 3,			"Unit",		"witch_hunters_squad_adeptus_arbites_combat_melee" },
+				{ 2, 120, 0, 0, 5,			"Unit",		"witch_hunters_squad_adeptus_arbites_fire_support" },
+				{ 2, 210, 290, 0, 1,		"Unit",		"witch_hunters_squad_penitent_engine" },
+				{ 2, 200, 50, 0, 1,			"Unit",		"witch_hunters_squad_canoness" },
+				{ 2, 120, 120, 0, 1,		"Unit",		"witch_hunters_squad_rhino" },
+				{ 2, 120, 45, 0, 1,			"Unit",		"witch_hunters_squad_arcoflagellant" },
+				{ 2, 75, 75, 0, 1,			"Research",	"witch_hunters_research_arbites_squad_support" },
+				{ 2, 75, 350, 300, 1,		"Research",	"witch_hunters_adeptus_arbites_requisition_research" },
+				{ 2, 300, 40, 350, 1,		"Research",	"witch_hunters_adepta_sororitas_power_research" },
+				{ 2, 550, 0, 350, 6,		"Building",	"witch_hunters_generator" },
+				{ 2, 150, 0, 400, 1,		"Research",	"witch_hunters_squad_cap_research_1" },
+				{ 2, 125, 0, 550, 1,		"Research",	"witch_hunters_support_cap_research" },
+				{ 2, 340, 340, 650, 1,		"Research",	"witch_hunters_shrine_faith_shield" },		-- Tier III
+				{ 2, 400, 0, 600, 1,		"Building",	"witch_hunters_covent_military" },
+				{ 2, 100, 75, 750, 100,		"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_1" },
+				{ 2, 90, 45, 500, 50,  		"Addon",	"witch_hunters_adeptus_arbites_hq_bolter_defense_right" },
+				{ 2, 90, 45, 500, 50,  		"Addon",	"witch_hunters_adeptus_arbites_hq_bolter_defense_left" },
+				{ 2, 90, 45, 900, 3,		"Building",	"witch_hunters_turret_heavy_flamer" },
+				{ 2, 700, 0, 800, 10,		"Building",	"witch_hunters_generator" },
+				{ 2, 75, 25, 900, 100,		"Addon",	"witch_hunters_shrine_glory" },
+				{ 2, 260, 300, 900, 50,		"TurretAddon",	"witch_hunters_adeptus_arbites_listening_post_addon_2" },
+				{ 2, 150, 50, 900, 100,		"Addon",	"witch_hunters_shrine_mother_saint" },
+
+				{ 3, 120, 35, 0, 1,			"Research",	"witch_hunters_research_officio_assassinorum" },
+				{ 3, 120, 0, 0, 6,			"Unit",		"witch_hunters_squad_adeptus_arbites_fire_support" },
+				{ 3, 120, 45, 0, 1,			"Unit",		"witch_hunters_squad_arcoflagellant" },
+				{ 3, 210, 290, 0, 1,		"Unit",		"witch_hunters_squad_penitent_engine" },
+				{ 3, 120, 45, 0, 2,			"Unit",		"witch_hunters_squad_arcoflagellant" },
+				{ 3, 150, 330, 0, 1,		"Unit",		"witch_hunters_squad_incarcerator" },
+				{ 3, 200, 50, 0, 1,			"Unit",		"witch_hunters_squad_canoness" },
+				{ 3, 100, 50, 200, 100,		"Addon",	"witch_hunters_hq_inquisition_drop_pod" },
+				{ 3, 175, 50, 400, 100,		"Addon",	"witch_hunters_adeptus_arbites_hq_repressor_defense" },
+				{ 3, 100, 500, 500, 1,		"Research",	"witch_hunters_adeptus_arbites_requisition_research_2" },
+				{ 3, 700, 0, 750, 1,		"Research",	"witch_hunters_adepta_sororitas_power_research_2" },
+				{ 3, 450, 450, 800, 1,		"Addon",	"witch_hunters_inquisition_call_up" },		-- Tier IV
+				{ 3, 50, 250, 800, 100,		"Addon",	"witch_hunters_turret_stealth" },
+				{ 3, 20, 80, 750, 35,		"TurretAddon","witch_hunters_turret_damage" },
+				{ 3, 0, 100, 750, 100,		"TurretAddon","witch_hunters_turret_melta" },
+				{ 3, 90, 45, 800, 100,  	"Addon",	"witch_hunters_adeptus_arbites_hq_bolter_defense_right" },
+				{ 3, 90, 45, 800, 100,  	"Addon",	"witch_hunters_adeptus_arbites_hq_bolter_defense_left" },
+				{ 3, 260, 300, 950, 75,		"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_2" },
+				{ 3, 90, 45, 900, 4,		"Building",	"witch_hunters_turret_heavy_flamer" },
+				{ 3, 1000, 0, 900, 3,		"Building",	"witch_hunters_adeptus_arbites_hq" },
+
+				{ 4, 120, 0, 0, 6,			"Unit",		"witch_hunters_squad_adeptus_arbites_fire_support" },
+				{ 4, 210, 290, 0, 1,		"Unit",		"witch_hunters_squad_penitent_engine" },
+				{ 4, 120, 45, 0, 3,			"Unit",		"witch_hunters_squad_arcoflagellant" },
+				{ 4, 400, 400, 0, 1,		"Unit",		"witch_hunters_squad_throne_judgement" },
+				{ 4, 100, 125, 0, 1,		"Research",	"witch_hunters_research_arbites_squad_support_2" },
+				{ 4, 150, 150, 0, 1,		"Research",	"witch_hunters_research_inquisitorial_arrival" },
+				{ 4, 200, 50, 0, 1,			"Unit",		"witch_hunters_squad_canoness" },
+				{ 4, 200, 90, 800, 30,		"Building",	"witch_hunters_turret_heavy_flamer" },
+				{ 4, 400, 150, 975, 100,	"TurretAddon","witch_hunters_adeptus_arbites_listening_post_addon_2" },
+				{ 4, 1500, 0, 700, 3,		"Building",	"witch_hunters_covent_military" },
+				{ 4, 1500, 0, 800, 12,		"Building",	"witch_hunters_generator" },
+				{ 4, 400, 200, 800, 3,		"Building",	"witch_hunters_adeptus_mechanicus" },
+				{ 4, 1400, 0, 850, 5,		"Building",	"witch_hunters_adeptus_arbites_hq" },
+				{ 4, 575, 450, 850, 100,	"Addon",	"witch_hunters_adeptus_arbites_hq_repressor_defense" },
+				{ 4, 2000, 0, 850, 16,		"Building",	"witch_hunters_generator" },
+				{ 4, 180, 0, 900, 1,		"Research",	"witch_hunters_research_sororitas_true_aim" },
+				{ 4, 2000, 0, 900, 5,		"Building",	"witch_hunters_covent_military" },
+				{ 4, 2000, 2000, 900, 100,	"Addon",	"witch_hunters_inquisition_call_up" }
+			}
+		},
+		
+		SquadLimits = 
+		{
+			standard = 
+			{
+				witch_hunters_squad_sentinel_builder = 4,
+				witch_hunters_squad_adeptus_arbites_combat_melee = math.random( 2,4 ),
+				witch_hunters_squad_adeptus_arbites_fire_support = math.random( 3,4 ),
+				witch_hunters_squad_battle_sister = math.random( 3,4 ),
+				witch_hunters_squad_seraphim = math.random( 2,3 ),
+				witch_hunters_squad_celestian = math.random( 2,3 ),
+				witch_hunters_squad_shield_maiden = 1,
+				witch_hunters_squad_repentia = 2,
+				witch_hunters_squad_retributor = 1,
+				witch_hunters_squad_cherubim = math.random( 1,2 ),
+				witch_hunters_squad_arcoflagellant = math.random( 2,3 ),
+				witch_hunters_squad_callidus = 1,
+				witch_hunters_squad_eversor = 1,
+				witch_hunters_squad_female_inquisitor_command_squad = 1,
+				witch_hunters_squad_canoness = 1,
+				witch_hunters_squad_saint_praxedes = 1,
+				witch_hunters_squad_techcelestian = 1,
+				witch_hunters_squad_rhino = math.random( 2,3 ),
+				witch_hunters_squad_sisters_sentinel = math.random( 1,math.random( 2,3 ) ), 
+				witch_hunters_squad_repressor = 1,
+				witch_hunters_squad_exorcist = 2,
+				witch_hunters_squad_exorcist_sanctorum = 2,
+				witch_hunters_squad_nephilim_aircraft = math.random( 2,4 ),
+				witch_hunters_squad_incarcerator = 2,
+				witch_hunters_squad_immolator = 3,
+				witch_hunters_squad_penitent_engine = math.random( 2,3 ),
+				witch_hunters_squad_dreadnought_exalted = 1,
+				witch_hunters_squad_celestine_saint_katherine_armor = 1,
+				witch_hunters_squad_celestine_saint = 1,
+				witch_hunters_squad_saint_katherine = 0,
+				witch_hunters_squad_throne_judgement = 1,
+				witch_hunters_squad_land_raider_redeemer = 1,
+			 }
+		}
+	},
+}
+
+BuildOrderStrategyInfo = 
+{
+	witch_hunters_race =
+	{
+		Basic =
+		{
+			{ "flag_capture" }, { "flag_capture" },
+			{ "flag_capture" },
+			{ "squad", "witch_hunters_squad_adeptus_arbites_combat_melee" },
+			{ "squad", "witch_hunters_squad_adeptus_arbites_combat_melee" },
+			{ "squad", "witch_hunters_squad_adeptus_arbites_fire_support" },
+			{ "squad", "witch_hunters_squad_sentinel_builder" },
+			{ "post_builder" }, { "post_builder" },
+		      --{ "building", "witch_hunters_covent_military", true },
+		      --{ "building", "witch_hunters_generator", true }
+		},
+		 
+		QuickStart =
+		{
+			{ "flag_capture" }, { "flag_capture" },
+			{ "flag_capture" },
+			{ "squad", "witch_hunters_squad_adeptus_arbites_combat_melee" },
+			{ "squad", "witch_hunters_squad_sentinel_builder" },
+			{ "squad", "witch_hunters_squad_adeptus_arbites_combat_melee" },
+			{ "squad", "witch_hunters_squad_sentinel_builder" },
+			{ "squad", "witch_hunters_squad_adeptus_arbites_fire_support" },
+			{ "post_builder" }, { "post_builder" },
+		      --{ "building", "witch_hunters_covent_military", true },
+			{ "building", "witch_hunters_adeptus_arbites_hq", true },
+			{ "squad", "witch_hunters_squad_sentinel_builder" },
+			{ "building", "witch_hunters_generator" }
+		},
+		 
+		LargeMap =
+		{
+			{ "flag_capture" }, { "flag_capture" }, 
+			{ "flag_capture" }, { "flag_capture" }, 
+			{ "squad", "witch_hunters_squad_adeptus_arbites_combat_melee" },
+			{ "squad", "witch_hunters_squad_adeptus_arbites_combat_melee" },
+			{ "squad", "witch_hunters_squad_adeptus_arbites_fire_support" },
+			{ "squad", "witch_hunters_squad_sentinel_builder" },
+			{ "post_builder" }, { "post_builder" },
+		      --{ "building", "witch_hunters_covent_military", true },
+		      --{ "building", "witch_hunters_generator", true }
+		}
+	},
+}
+
+AttackStrategyInfo = 
+{
+	witch_hunters_race =
+	{
+		MinArmyStrength = 750,
+	},
+}

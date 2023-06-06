@@ -1,0 +1,671 @@
+-------------------------------------------
+-- File: 'WitchHuntersbuildbasestrategy.ai'
+-- Edited by Thudmeizer  @ 25.10.2015
+-- Heavily updated by Gambit @ 25.08.2015
+
+class 'WitchHuntersBuildBaseStrategy' (BuildBaseStrategy)
+
+function WitchHuntersBuildBaseStrategy:__init( baseinfo ) super( baseinfo )
+
+	-- Add detector units (Best first, worst last)
+	self:AddDetectorUnit("witch_hunters_squad_callidus")
+	self:AddDetectorUnit("witch_hunters_squad_eversor")
+	self:AddDetectorUnit("witch_hunters_squad_cherubim")
+	self:AddDetectorUnit("witch_hunters_squad_celestian")
+	self:AddDetectorUnit("witch_hunters_squad_female_inquisitor_command_squad")
+	self:AddDetectorUnit("witch_hunters_squad_canoness")
+	self:AddDetectorUnit("witch_hunters_squad_saint_praxedes")
+	self:AddDetectorUnit("witch_hunters_squad_throne_judgement")
+	self:AddDetectorUnit("witch_hunters_squad_celestine_saint")
+	self:AddDetectorUnit("witch_hunters_squad_techcelestian")
+	self:AddDetectorUnit("witch_hunters_squad_dreadnought_exalted")
+	self:AddDetectorUnit("witch_hunters_squad_saint_katherine")
+end
+
+function WitchHuntersBuildBaseStrategy:ChooseBuildProgram()
+
+	-- Check build program count
+	if (table.getn(self.info.BuildPrograms) ~= 3) then
+		return BuildBaseStrategy.ChooseBuildProgram(self)
+	end
+
+	-- Inquisition branch strategies control variable - used because Inq has two strategies.
+	local inqBranchChosen = false
+
+	-- Try to maintain the same strategy, on AI re-initiation (Save->Load, Change Players, etc.)
+	-- Only if strategy 2 or 3 was previously chosen, recalculate. If strategy 1 was, return 1.
+	for oBuilding in military_manager:GetBases() do
+		if (oBuilding:IsValid()) then
+			local oBuildingName = oBuilding:GetBaseName()
+			if oBuildingName == "witch_hunters_armorium" then return 1
+			elseif oBuildingName == "witch_hunters_inquisition_armorium" then inqBranchChosen = true
+			end
+		end
+	end
+	if (cpu_manager.cpu_player:IsResearchComplete("witch_hunters_research_repentia_righteous_zeal") or
+	cpu_manager.cpu_player:IsResearchComplete("witch_hunters_research_canoness_mantle_orphelia") or
+	cpu_manager.cpu_player:IsResearchComplete("witch_hunters_research_canoness_liber_heresius") or
+	cpu_manager.cpu_player:IsResearchComplete("witch_hunters_research_cherubim_infiltrate") or
+	cpu_manager.cpu_player:IsResearchComplete("witch_hunters_research_sororitas_dominion") or
+	cpu_manager.cpu_player:IsResearchComplete("witch_hunters_research_sororitas_maximum_health")) then
+		return 1
+	elseif -- (cpu_manager.cpu_player:IsResearchComplete("witch_hunters_research_assassin_infiltrate") or
+	(cpu_manager.cpu_player:IsResearchComplete("witch_hunters_research_arbites_squad_support") or
+	cpu_manager.cpu_player:IsResearchComplete("witch_hunters_research_inquisitorial_arrival") or
+	cpu_manager.cpu_player:IsResearchComplete("witch_hunters_research_female_inquisitor_exagrammic_wards") or
+	cpu_manager.cpu_player:IsResearchComplete("witch_hunters_research_archoflagellant_implant_injectors") or
+	cpu_manager.cpu_player:IsResearchComplete("witch_hunters_research_female_inquisitor_scourging")) then
+		inqBranchChosen = true
+	end
+
+	-- Strategy 1: Adepta Sororitas Strategy
+	-- Strategy 2: Ordo Hereticus Strategy - Inquisition Mixed Army
+	-- Strategy 3: Ordo Hereticus Strategy - Inquisition Arbites Army
+
+	
+	-- Base probabilities (%) for each strategy.
+	--local strategy1, strategy2, strategy3 = 45, 35, 20
+	local strategy1, strategy2, strategy3 = 100, 60, 45
+	local oRace = ""
+
+	-- 1] Modify strategy probability modifiers, based upon all the enemy races
+	for oPlayer in cpu_manager.stats:GetPlayerStats() do
+		if not oPlayer:IsPlayerDead() then
+			if cpu_manager.player_stats:IsEnemy(oPlayer) then
+				oRace = oPlayer:GetPlayerRaceName()
+				if oRace == "deamons_race" then
+					strategy1 = strategy1 + 50
+				elseif oRace == "chaos_marine_race" or oRace == "khorne_marine_race" or oRace == "night_lords_race" or
+				oRace == "thousand_sons_race" then
+					strategy1 = strategy1 + 25
+				elseif oRace == "inquisition_daemonhunt_race" or oRace == "sisters_race" or oRace == "witch_hunters_race" then
+					strategy2 = strategy2 + 40
+				elseif oRace == "darkangels_race" or oRace == "mechanicus_race" or oRace == "salamanders_race" or
+				oRace == "space_marine_race" or oRace == "space_wolves_race" or oRace == "ss_blood_angels_race" or oRace == "templar_race" then
+					strategy2 = strategy2 + 20
+				elseif oRace == "elysian_guard_race" or oRace == "guard_race" or oRace == "imperial_guard_mod_race" or
+				oRace == "ork_race" or oRace == "orka_race" or oRace == "renegade_guard_race" or oRace == "steel_legion_race" then
+					strategy3 = strategy3 + 30
+				end
+			end
+		end
+	end
+
+	-- 2] Modify strategy probability modifiers, according to the closest enemy race
+	oRace = cpu_manager:FindClosestEnemyPlayer(false):GetPlayerRaceName()		
+	if oRace == "deamons_race" then
+		strategy1 = strategy1 + 80
+	elseif oRace == "elysian_guard_race" or oRace == "guard_race" or oRace == "imperial_guard_mod_race" or
+	oRace == "ork_race" or oRace == "orka_race" or oRace == "renegade_guard_race" or oRace == "steel_legion_race" then
+		strategy3 = strategy3 + 40
+	end
+
+	-- 3] Modify probability modifier in accordance with the map size
+	local sMapSize = self:GetMapSize()
+	if sMapSize == "small" then
+		strategy3 = strategy3 + 25
+	elseif sMapSize == "medium" then
+		strategy2 = strategy2 + 10
+	else
+		strategy1 = strategy1 + 35
+	end
+	
+	-- Now choose a program
+
+	if inqBranchChosen then
+	-- If Inq branch was previously chosen, only strategies 2 and 3 are available
+		local iRandom = math.random(1, strategy2 + strategy3)
+		if (iRandom <= strategy2) then
+		-- Strategy 2: Ordo Hereticus Strategy - Inquisition Mixed Army
+			return 2
+		else
+		-- Strategy 3: Ordo Hereticus Strategy - Inquisition Arbites Army
+			return 3
+		end
+	else
+	-- Normal, initial strategy choice
+		local iRandom = math.random(1, strategy1 + strategy2 + strategy3)
+		if (iRandom <= strategy1) then
+		-- Strategy 1: Adepta Sororitas Strategy
+			return 1
+		elseif (iRandom <= strategy2) then
+		-- Strategy 2: Ordo Hereticus Strategy - Inquisition Mixed Army
+			return 2
+		else
+		-- Strategy 3: Ordo Hereticus Strategy - Inquisition Arbites Army
+			return 3
+		end
+	end
+
+end
+
+function WitchHuntersBuildBaseStrategy:EvaluateSquadCap()
+
+	-- Check squad cap
+	if (self:CheckSquadCap(300, 0)) then
+		
+		local tBuildType = CpuBuildType()
+		tBuildType.btype = CpuPrerequisites.BT_Research
+		
+		if (not cpu_manager.cpu_player:IsResearchComplete( "witch_hunters_squad_cap_research" )) then
+			tBuildType.name = "witch_hunters_squad_cap_research"
+		elseif not cpu_manager.cpu_player:IsResearchComplete( "witch_hunters_squad_cap_research_1" ) then
+			tBuildType.name = "witch_hunters_squad_cap_research_1"
+		else
+			return
+		end
+		
+		if (self:TryBuild( tBuildType )) then
+			aitrace("BuildController: Dynamic research of "..tBuildType.name)
+		end
+	end
+	
+	-- Check support cap
+	if (self:CheckSupportCap(150, 300)) then
+		
+		local tBuildType = CpuBuildType()
+		tBuildType.btype = CpuPrerequisites.BT_Research
+		
+		if (not cpu_manager.cpu_player:IsResearchComplete( "witch_hunters_support_cap_research" )) then
+			tBuildType.name = "witch_hunters_support_cap_research"
+		elseif (not cpu_manager.cpu_player:IsResearchComplete( "witch_hunters_support_cap_research_1" )) then
+			tBuildType.name = "witch_hunters_support_cap_research_1"
+		elseif (not cpu_manager.cpu_player:IsResearchComplete( "witch_hunters_support_cap_research_2" )) then
+			tBuildType.name = "witch_hunters_support_cap_research_2"
+		elseif (not cpu_manager.cpu_player:IsResearchComplete( "witch_hunters_support_cap_research_3" )) then
+			tBuildType.name = "witch_hunters_support_cap_research_3"
+		else
+			return
+		end
+		
+		if (self:TryBuild( tBuildType )) then
+			aitrace("BuildController: Dynamic research of "..tBuildType.name)
+		end
+	end
+end
+
+function WitchHuntersBuildBaseStrategy:GetBuildingName( sType )
+
+	-- Return race specific object string
+	if (sType == "HQ") then
+		return "witch_hunters_adeptus_arbites_hq"
+
+	elseif (sType == "Generator") then
+		return "witch_hunters_generator" 
+
+	elseif (sType == "BiggerGenerator") then
+		return "witch_hunters_thermo_generator"
+		
+	elseif (sType == "VehicleBuilding") then
+		return "witch_hunters_adeptus_mechanicus"
+		
+	elseif (sType == "ListeningPost") then
+		return "witch_hunters_adeptus_arbites_listening_post"
+		
+	elseif (sType == "Turret") then
+		return "witch_hunters_turret_heavy_flamer"
+
+	elseif (sType == "Mine") then
+		return nil
+		--return "witch_hunters_brasero"
+	end
+	return nil
+end
+
+function WitchHuntersBuildBaseStrategy:GetAddonBuilding( sType )
+
+	if (sType == "witch_hunters_adeptus_arbites_hq_bolter_defense_left") then
+		return "witch_hunters_adeptus_arbites_hq"
+
+	elseif (sType == "witch_hunters_adeptus_arbites_hq_bolter_defense_right") then
+		return "witch_hunters_adeptus_arbites_hq"
+		
+	elseif (sType == "witch_hunters_adeptus_arbites_hq_repressor_defense") then
+		return "witch_hunters_adeptus_arbites_hq"
+
+	elseif (sType == "witch_hunters_hq_inquisition_drop_pod") then
+		return "witch_hunters_adeptus_arbites_hq"
+
+	elseif (sType == "witch_hunters_inquisition_call_up") then
+		return "witch_hunters_adeptus_arbites_hq"
+	
+	elseif (sType == "witch_hunters_adeptus_arbites_listening_post_addon_1") then
+		return "witch_hunters_adeptus_arbites_listening_post"
+	
+	elseif (sType == "witch_hunters_adeptus_arbites_listening_post_addon_2") then
+		return "witch_hunters_adeptus_arbites_listening_post"
+
+	elseif (sType == "witch_hunters_shrine_glory") then
+		return "witch_hunters_covent_military"
+		
+	elseif (sType == "witch_hunters_shrine_mother_saint") then
+		return "witch_hunters_covent_military"
+
+	elseif (sType == "witch_hunters_turret_damage" or sType == "witch_hunters_turret_melta" or sType == "witch_hunters_turret_stealth") then
+		return "witch_hunters_turret_heavy_flamer"
+		
+	end	
+
+	return nil
+end
+
+-- Arkhan 11.2005: Returns the squad cap and support cap of the given squad
+function WitchHuntersBuildBaseStrategy:GetUnitStats(sSquadName)
+
+	if (sSquadName == "witch_hunters_squad_adeptus_arbites_combat_melee") then
+		return 1, 0
+	elseif (sSquadName == "witch_hunters_squad_adeptus_arbites_fire_support") then
+		return 2, 0
+	elseif (sSquadName == "witch_hunters_squad_zealot") then
+		return 2, 0
+	elseif (sSquadName == "witch_hunters_squad_battle_sister") then
+		return 2, 0
+	elseif (sSquadName == "witch_hunters_squad_seraphim") then
+		return 2, 0
+	elseif (sSquadName == "witch_hunters_squad_arcoflagellant") then
+		return 2, 0
+	elseif (sSquadName == "witch_hunters_squad_cherubim") then
+		return 2, 0
+	elseif (sSquadName == "witch_hunters_squad_repentia") then
+		return 3, 0
+	elseif (sSquadName == "witch_hunters_squad_celestian") then
+		return 2, 0
+	elseif (sSquadName == "witch_hunters_squad_shield_maiden") then
+		return 2, 0
+	elseif (sSquadName == "witch_hunters_squad_repressor") then
+		return 0, 1
+	elseif (sSquadName == "witch_hunters_squad_rhino") then
+		return 0, 1
+	elseif (sSquadName == "witch_hunters_squad_sisters_sentinel") then
+		return 2, 0
+	elseif (sSquadName == "witch_hunters_squad_exorcist") then
+		return 0, 3
+	elseif (sSquadName == "witch_hunters_squad_exorcist_sanctorum") then
+		return 0, 3
+	elseif (sSquadName == "witch_hunters_squad_nephilim_aircraft") then
+		return 0, 3
+	elseif (sSquadName == "witch_hunters_squad_retributor") then
+		return 0, 3
+	elseif (sSquadName == "witch_hunters_squad_penitent_engine") then
+		return 0, 3
+	elseif (sSquadName == "witch_hunters_squad_dreadnought_exalted") then
+		return 0, 3
+	elseif (sSquadName == "witch_hunters_squad_incarcerator") then
+		return 0, 4
+	elseif (sSquadName == "witch_hunters_squad_immolator") then
+		return 0, 4
+	elseif (sSquadName == "witch_hunters_squad_celestine_saint") then
+		return 3, 0
+	elseif (sSquadName == "witch_hunters_squad_saint_katherine") then
+		return 5, 0
+	elseif (sSquadName == "witch_hunters_squad_celestine_saint_katherine_armor") then
+		return 3, 0
+	elseif (sSquadName == "witch_hunters_squad_throne_judgement") then
+		return 0, 3
+	elseif (sSquadName == "witch_hunters_squad_land_raider_redeemer") then
+		return 0, 3
+	end
+	return 0, 0
+end
+
+function WitchHuntersBuildBaseStrategy:UpdateTierLevel()
+
+	-- Reset tier level
+	self.tierLevel = 1
+
+	-- Prepare
+	local iHQAddon2ID = cpu_manager.stats:GetAddOnID("witch_hunters_inquisition_call_up")
+	local oStats = cpu_manager.stats:GetPlayerStatsFromID( cpu_manager.player_id )
+	
+	-- Check for tier 2 and 3
+	if (cpu_manager.cpu_player:IsResearchComplete("witch_hunters_shrine_faith_shield")) then
+	    self.tierLevel = 3
+	elseif (self:GetBuildingCountByName("witch_hunters_reliquary") > 0) then
+	    self.tierLevel = 2
+	end
+	
+	-- Check HQ's for tier 4 addon
+	for oBase in oStats:GetBases() do
+
+		-- Check for valid building
+		if (oBase:IsValid() and not oBase:IsListeningPost()) then
+	
+		  	-- Check for tier 4 addon
+			if (oBase:HasAddOn(iHQAddon2ID)) then
+				self.tierLevel = 4
+				return
+			end
+		end
+	end
+end
+
+-- Arkhan 01.2006: Inherited method to check if an addon is a tier addon
+function WitchHuntersBuildBaseStrategy:IsTierAddon( sName, iTargetTier )
+
+	-- Check addon name and target tier
+	if (sName == "witch_hunters_inquisition_call_up" and iTargetTier == 4) then
+		return true
+	end
+	return false
+end
+
+-- Arkhan 01.2006: Method to check if force tech should be computed
+function WitchHuntersBuildBaseStrategy:ForceTech()
+
+	-- Check time
+	if (g_iGMT < 60 * CpuManager.ForceTech.StartTier1) then
+		return false
+	end
+	
+	-- Check ressources
+	local iRequisition = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Requisition )
+	local iPower = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Power )
+
+	-- Check tier
+	local iTierLevel = self:GetTierLevel()
+	if (iTierLevel == 1) then
+
+		-- Check resources
+		if (iRequisition > 600 and iPower > 200) then
+			return false
+		end
+		return not self.m_bHQAddon1
+
+	elseif (iTierLevel == 2) then
+
+		-- Check build channel for advanced complex
+		iID = cpu_manager.stats:GetBuildingID("witch_hunters_armorium")
+		iID_2 = cpu_manager.stats:GetBuildingID("witch_hunters_inquisition_armorium")
+		local bHasTechBuilding = false
+		for oBuildChannel in build_manager:GetBuildChannelAIs() do
+		
+			-- Check building ID
+			if (oBuildChannel:GetBlueprintID() == iID) or (oBuildChannel:GetBlueprintID() == iID_2) then
+				bHasTechBuilding = true
+				break
+			end
+		end
+		if (not bHasTechBuilding) then
+			return true
+		end
+		
+		-- Check time
+		if (g_iGMT > 60 * CpuManager.ForceTech.StartTier2 and (iRequisition < 600 or iPower < 600)) then
+			return true
+		end
+		
+	elseif (iTierLevel == 3) then	
+
+		-- Check time
+		if (g_iGMT > 60 * CpuManager.ForceTech.StartTier3 and (iRequisition < 600 or iPower < 600)) then
+			return true
+		end
+	end
+	return false
+end
+
+function WitchHuntersBuildBaseStrategy:BuildFlexible()
+  
+	-- Dynamic research
+	-- Item-Syntax: ResearchName, MinTier, RequisitionCost, PowerCost, MinSquadCap, MinSupportCap, SquadName, SquadMinCount
+	local iArmyStrength = cpu_manager:GetArmyStrength()
+
+	-- Compute tier 1 researches
+	if (self.tierLevel >= 1) then
+		
+		-- Compute bonus researches
+		if (iArmyStrength >= 750) then
+	
+			-- Compute battle sister researches
+			if (self:CountSquads("witch_hunters_squad_battle_sister") >= 2) then
+				self:DynamicResearch("witch_hunters_research_actoffaith_hand_emperor", 1, 75, 0, 4, 0, nil, 0)
+				self:DynamicResearch("witch_hunters_research_adepta_sororitas_frag_grenade", 1, 75, 25, 4, 0, nil, 0)
+			end
+
+			-- Compute seraphim researches
+			if (self:CountSquads("witch_hunters_squad_seraphim") >= 1) then
+				self:DynamicResearch("witch_hunters_research_actoffaith_spirit_martyr", 1, 75, 0, 4, 0, nil, 0)
+			end
+
+			-- Compute celestian researches
+			if (self:CountSquads("witch_hunters_squad_celestian") >= 1) then
+				self:DynamicResearch("witch_hunters_research_celestian_holy_hatred", 1, 100, 100, 4, 0, nil, 0)
+				self:DynamicResearch("witch_hunters_research_actoffaith_emperor_light", 1, 75, 0, 4, 0, nil, 0)
+			end
+		end
+
+		-- Compute canoness researches
+		if self:CountSquads("witch_hunters_squad_canoness") >= 1
+		or self:CountSquads("witch_hunters_squad_saint_praxedes") >= 1 then
+			self:DynamicResearch("witch_hunters_research_canoness_jetpack", 1, 50, 25, 4, 0, nil, 0)
+			self:DynamicResearch("witch_hunters_research_canoness_psychic_hood", 1, 45, 20, 4, 0, nil, 0)
+		end
+
+		-- Compute arbite researches
+		if (self:CountSquads("witch_hunters_squad_adeptus_arbites_combat_melee") >= 2 or self:CountSquads("witch_hunters_squad_adeptus_arbites_fire_support") >= 1) then
+			self:DynamicResearch("witch_hunters_research_arbites_upgrade_mental", 1, 100, 50, 0, 0, nil, 0) 
+		end
+	end
+
+	-- Compute tier 2 researches
+	if (self.tierLevel >= 2) then
+		
+		-- Compute arbite researches
+		if (self:CountSquads("witch_hunters_squad_adeptus_arbites_combat_melee") >= 2 or self:CountSquads("witch_hunters_squad_adeptus_arbites_fire_support") >= 1) then
+	      		self:DynamicResearch("witch_hunters_research_arbites_maximum_support", 2, 75, 100, 0, 0, nil, 0) 
+		end
+
+		-- Compute rhino/powerlift researches
+		if (self:CountSquads("witch_hunters_squad_rhino") >= 1 or self:CountSquads("witch_hunters_squad_sentinel_builder") >= 2) then
+			self:DynamicResearch("witch_hunters_research_rhino_repair", 3, 125, 50, 0, 0, nil, 0)
+		end
+
+		-- Compute Sentinel researches
+		if (self:CountSquads("witch_hunters_squad_sisters_sentinel") > 0) then
+			self:DynamicResearch("witch_hunters_research_sentinel_armor", 3, 100, 60, 0, 0, nil, 0)
+		end
+
+		if (self:GetBuildingCountByName("witch_hunters_inquisition_armorium") >= 1) then
+
+			-- Compute arbite inquisition researches
+			if (self:CountSquads("witch_hunters_squad_adeptus_arbites_combat_melee") >= 2 or self:CountSquads("witch_hunters_squad_adeptus_arbites_fire_support") >= 1) then
+				self:DynamicResearch("witch_hunters_research_arbites_squad_support", 2, 75, 75, 0, 0, nil, 0)
+			end
+
+			-- Compute command squad researches
+			if (self:CountSquads("witch_hunters_squad_female_inquisitor_command_squad") >= 1) then
+	       			self:DynamicResearch("witch_hunters_research_female_inquisitor_exagrammic_wards", 2, 100, 100, 0, 0, nil, 0)
+			end
+		end
+
+		if (self:GetBuildingCountByName("witch_hunters_armorium") >= 1) then
+		
+			-- Compute battle sister researches
+			if (self:CountSquads("witch_hunters_squad_battle_sister") >= 2) then
+				self:DynamicResearch("witch_hunters_research_sororitas_dominion", 2, 75, 75, 0, 0, nil, 0)
+			end
+
+			-- Compute canoness researches
+			if self:CountSquads("witch_hunters_squad_canoness") >= 1
+			or self:CountSquads("witch_hunters_squad_saint_praxedes") >= 1 then
+				self:DynamicResearch("witch_hunters_research_canoness_mantle_orphelia", 2, 100, 25, 0, 0, nil, 0)
+			end
+		end
+
+		-- Compute melta researches
+		if (self:CountSquads("witch_hunters_squad_seraphim") >= 1) then
+			self:DynamicResearch("witch_hunters_research_adepta_sororitas_melta_bomb", 2, 100, 50, 4, 0, nil, 0)
+		end
+
+		-- Compute bonus researches
+		if (iArmyStrength >= 1250) then
+	
+			if (self:GetBuildingCountByName("witch_hunters_armorium") >= 1) then
+
+				-- Compute battle sister researches
+				if (self:CountSquads("witch_hunters_squad_battle_sister") >= 1) then
+					self:DynamicResearch("witch_hunters_research_sororitas_maximum_health", 2, 100, 50, 0, 0, nil, 0)
+				end
+			end
+		end
+	end
+
+	-- Compute tier 3 researches
+	if (self.tierLevel >= 3) then
+
+		-- Compute battle sister researches
+		if (self:CountSquads("witch_hunters_squad_battle_sister") >= 2) then
+			self:DynamicResearch("witch_hunters_research_sororitas_true_aim", 3, 200, 0, 0, 0, nil, 0)
+		end
+
+		-- Compute repentia researches
+		if (self:CountSquads("witch_hunters_squad_repentia") >= 1) then
+			self:DynamicResearch("witch_hunters_research_repentia_righteous_zeal", 3, 100, 100, 0, 0, nil, 0) 
+		end
+
+		-- Compute retributor researches
+		if (self:CountSquads("witch_hunters_squad_retributor") >= 1) then
+			self:DynamicResearch("witch_hunters_research_actoffaith_divine_guidance", 3, 75, 0, 0, 0, nil, 0)
+		end
+
+		-- Compute repentia researches
+		if (self:CountSquads("witch_hunters_squad_repentia") >= 1) then
+			self:DynamicResearch("witch_hunters_research_actoffaith_the_passion", 3, 75, 0, 0, 0, nil, 0)
+		end
+
+		if (self:GetBuildingCountByName("witch_hunters_inquisition_armorium") >= 1) then
+			-- Compute command squad researches
+			if (self:CountSquads("witch_hunters_squad_female_inquisitor_command_squad") >= 1) then
+       				self:DynamicResearch("witch_hunters_research_female_inquisitor_scourging", 3, 50, 40, 0, 0, nil, 0)
+			end
+			self:DynamicResearch("witch_hunters_research_officio_assassinorum", 3, 120, 35, 0, 0, nil, 0)
+		end
+
+		-- Compute arcoflagellant researches
+		if (self:CountSquads("witch_hunters_squad_arcoflagellant") >= 1) then
+	       		self:DynamicResearch("witch_hunters_research_archoflagellant_implant_injectors", 3, 100, 50, 0, 0, nil, 0)
+		end
+
+		--[[ Compute assassin researches
+		if (self:CountSquads("witch_hunters_squad_eversor") >= 1 or self:CountSquads("witch_hunters_squad_callidus") >= 1) then
+	       		self:DynamicResearch("witch_hunters_research_assassin_infiltrate", 3, 100, 150, 0, 0, nil, 0)
+		end]]
+
+		-- Compute cherubim researches
+		if self:CountSquads("witch_hunters_squad_cherubim") >= 1 then
+	       		self:DynamicResearch("witch_hunters_research_cherubim_infiltrate", 3, 150, 100, 0, 0, nil, 0)
+		end
+
+		if (self:GetBuildingCountByName("witch_hunters_armorium") >= 1) then
+			-- Compute canoness researches
+			if self:CountSquads("witch_hunters_squad_canoness") >= 1
+			or self:CountSquads("witch_hunters_squad_saint_praxedes") >= 1 then
+				self:DynamicResearch("witch_hunters_research_canoness_liber_heresius", 3, 80, 40, 0, 0, nil, 0)
+			end
+			self:DynamicResearch("witch_hunters_research_techcelestian_equipment", 3, 150, 120, 0, 0, nil, 0)
+		end
+
+		-- Compute immolator researches
+		if (self:CountSquads("witch_hunters_squad_immolator") >= 1) then
+			self:DynamicResearch("witch_hunters_research_immolator_holy_icon", 3, 100, 25, 0, 0, nil, 0) 
+		end
+
+		-- Compute exorcist researches
+		if (self:CountSquads("witch_hunters_squad_exorcist") > 0 or self:CountSquads("witch_hunters_squad_exorcist_sanctorum") > 0) then
+			self:DynamicResearch("witch_hunters_research_exorcist_armor", 3, 150, 75, 0, 0, nil, 0)
+		end
+
+		-- Compute incarcerator researches
+		if (self:CountSquads("witch_hunters_squad_incarcerator") >= 1) then
+			self:DynamicResearch("witch_hunters_research_incarcerator_horror_torture", 3, 75, 150, 0, 0, nil, 0)
+		end
+
+		-- Upgrade all LPs to addon2, if requirements are met
+		-- sAddonName, iAddonCount, iMinTier, iRequisitionCost, iPowerCost, iMinSquadCap, iMinSupportCap, sSquadName, iSquadMinCount, bSingleTier
+		self:DynamicAddon( "witch_hunters_adeptus_arbites_listening_post_addon_2", 100, 3, 800, 400, 0, 0, nil, nil, false)
+	end
+
+	-- Compute tier 4 researches
+	if (self.tierLevel >= 4) then
+
+		-- Compute arbite inquisition researches
+		if (self:CountSquads("witch_hunters_squad_adeptus_arbites_combat_melee") + self:CountSquads("witch_hunters_squad_adeptus_arbites_fire_support") >= 3) then
+			self:DynamicResearch("witch_hunters_research_arbites_squad_support_2", 4, 100, 125, 0, 0, nil, 0)
+		end
+
+		-- Compute saint researches
+		if (self:CountSquads("witch_hunters_squad_celestine_saint") >= 1) then
+			self:DynamicResearch("witch_hunters_research_celestine_saint_katherine_armor", 4, 250, 200, 0, 0, nil, 0 )
+		end
+	end
+
+	-- Restrict dynamic builds to hard difficulty or higher
+	if (CpuManager.AISettings.bMultiBuildings) then
+	
+		-- Dynamic buildings
+		-- Item-Syntax: BuildingName, BuildingCount, MinTier, MinRequisition, MinPower, MinSquadCap, MinSupportCap
+		self:DynamicBuild("witch_hunters_covent_military", 2, 3, 450, 0, 0, 0)
+		self:DynamicBuild("witch_hunters_covent_military", 3, 4, 900, 0, 0, 0)
+		self:DynamicBuild("witch_hunters_adeptus_mechanicus", 2, 3, 600, 100, 0, 0)
+		self:DynamicBuild("witch_hunters_adeptus_mechanicus", 3, 4, 1200, 200, 0, 0)
+		self:DynamicBuild("witch_hunters_adeptus_arbites_hq", 2, 3, 900, 400, 0, 0)
+	end
+end
+
+-- Arkhan Nov.2006: Return placement type for buildings
+function WitchHuntersBuildBaseStrategy:GetPlacementType(iBuildingID)
+	
+	-- Check building
+    if (cpu_manager:IsHQ(iBuildingID)) then
+		local count = self:GetBuildingCountByName("witch_hunters_adeptus_arbites_hq", false)
+		local friend = cpu_manager:FindClosestFriendPlayer()
+		if friend == nil then
+			-- Lone Player
+			if count == 0 and not cpu_manager:HQThreat() then
+				return "HQ"
+			else
+				return "Safeplace"
+			end
+		else
+			-- Has allies
+			if count > 0 or cpu_manager:HQThreat() then
+				return "HQ"
+			else
+				return "Safeplace"
+			end
+		end
+	elseif (iBuildingID == cpu_manager.stats:GetBuildingID("witch_hunters_covent_military") or
+			iBuildingID == cpu_manager.stats:GetBuildingID("witch_hunters_armorium") or
+			iBuildingID == cpu_manager.stats:GetBuildingID("witch_hunters_inquisition_armorium") or
+			iBuildingID == cpu_manager.stats:GetBuildingID("witch_hunters_adeptus_mechanicus")) then
+		return "Military"
+	elseif (iBuildingID == cpu_manager.stats:GetBuildingID("witch_hunters_reliquary")) then
+		return "BaseBack"
+	elseif (cpu_manager:IsTurret(iBuildingID)) then
+		if math.random(1,3) == 1 then return "Front1"
+		else return "Front2" end
+	--[[elseif (cpu_manager:IsMine(iBuildingID)) then
+		return "Mine"]]	
+	elseif (cpu_manager:IsGenerator(iBuildingID)) then
+		return "BaseBack"
+	end
+	return "Basic"
+end
+
+-- Arkhan 11.2006: Virtual method for checking out relic units
+function WitchHuntersBuildBaseStrategy:RelicRequired(sName)
+
+	-- Check name
+	if (sName == "witch_hunters_squad_celestine_saint") then
+		return true
+	elseif (sName == "witch_hunters_squad_saint_katherine") then
+		return true
+	elseif (sName == "witch_hunters_squad_throne_judgement") then
+		return true
+	elseif (sName == "witch_hunters_squad_land_raider_redeemer") then
+		return true
+	elseif (sName == "witch_hunters_research_celestine_saint_katherine_armor") then
+		return true
+	end
+	return false
+end

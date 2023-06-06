@@ -1,0 +1,91 @@
+----------------------------------------
+-- File: 'nephilimtactic.ai'
+-- Edited by Gambit @ 18.12.2018
+
+class 'NephilimTactic' (WitchHuntersVehicleTactic)
+
+Nephilim = {}
+
+
+function NephilimTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Nephilim Tactic")
+
+	-- Used for the stuck check code for the squads that can jump
+	self.initialPosition = self.squad_ai:GetPosition()
+end
+
+
+function NephilimTactic:InitAbilities()
+end
+
+
+function NephilimTactic:DoAbilities()
+
+	-- Jump squads' unstuck code call. Put ANYWHERE in the DoAbilities() function
+	-- Checks jump-able stuck squads, and force them to jump nearby
+	if self.squad_ai:CanJump() then
+		self:SolveStuckCase()
+	end
+end
+
+
+-- Unstuck Code --------------------------------------------------
+function NephilimTactic:SolveStuckCase()
+	local iPosition = self.squad_ai:GetPosition()
+	if iPosition.x ~= self.initialPosition.x or iPosition.z ~= self.initialPosition.z then
+	-- NOT stuck, update previous position and return, we are all good
+		self.initialPosition = iPosition
+		return
+	end
+
+	-- If we got here, the squad is NOT moving. See if it is simply waiting, or is stuck!
+	local state = self.squad_ai:GetTactic():GetState()
+	if (self.squad_ai:IsInStateMove() or self.squad_ai:IsInStateAttackMove() or state == "Attack") and not self.squad_ai:IsInCombat()
+	and iPosition.x == self.initialPosition.x and iPosition.z == self.initialPosition.z then
+	-- STUCK!!!!! Run the unstuck code
+		self:ForceSquadJumpNear(iPosition)
+	end
+	-- Update previous position anyway
+	self.initialPosition = self.squad_ai:GetPosition()
+end
+
+
+function NephilimTactic:ForceSquadJumpNear(pos)
+	local iPos = self.squad_ai:GetPosition()
+	local vJumpPosition = self.squad_ai:GetPosition()
+	local jumpDist = self.squad_ai:GetJumpDistance()
+	local jumpDistSqr = jumpDist * jumpDist
+	local vDir = cpu_manager:GetDirectionToEnemy(pos)
+	-- First, try an unstuck jump TOWARDS the enemy 
+	-- Try to jump somewhere near, perform 30 checks in total, for a viable position
+	for i = 1, 12 do
+		-- Create a jump position
+		vJumpPosition.x = pos.x + vDir.x * math.random(10, jumpDist)
+		vJumpPosition.z = pos.z + vDir.z * math.random(10, jumpDist)
+		-- Check if target position is in range and if unit is able to jump to target position
+		local iDistanceSqr = distance_sqr(vJumpPosition, iPos)
+		if iDistanceSqr < jumpDistSqr and self.squad_ai:CanJumpToPosition(vJumpPosition) then
+			-- Jump to position
+			self.squad_ai:DoJump(vJumpPosition)
+			self.last_jump = g_iGMT
+			self.m_iLastGatherMove = self.last_jump - 10
+			return
+		end
+	end
+	-- Then try any random nearby place, as a secondary option
+	for i = 1, 18 do
+		-- Create a jump position
+		vJumpPosition.x = pos.x + 0.7 * math.random(-jumpDist, jumpDist)
+		vJumpPosition.z = pos.z + 0.7 * math.random(-jumpDist, jumpDist)
+		-- Check if target position is in range and if unit is able to jump to target position
+		local iDistanceSqr = distance_sqr(vJumpPosition, iPos)
+		if iDistanceSqr < jumpDistSqr and self.squad_ai:CanJumpToPosition(vJumpPosition) then
+			-- Jump to position
+			self.squad_ai:DoJump(vJumpPosition)
+			self.last_jump = g_iGMT
+			self.m_iLastGatherMove = self.last_jump - 10
+			return
+		end
+	end
+end

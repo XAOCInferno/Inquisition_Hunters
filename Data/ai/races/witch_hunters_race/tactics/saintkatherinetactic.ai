@@ -1,0 +1,46 @@
+----------------------------------------
+-- File: 'saintkatherinetactic.ai'
+-- Edited by Gambit @ 09.03.2019
+
+class 'SaintKatherineTactic' (WitchHuntersInfantryTactic)
+
+SaintKatherine = {}
+
+function SaintKatherineTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Living Saint Katherine Tactic")
+	self.timeOfLastProtectionCast = g_iGMT - 15
+end
+
+
+function SaintKatherineTactic:AlwaysAttack()
+	return (g_iGMT > self.timeOfLastProtectionCast + 14)
+end
+
+
+function SaintKatherineTactic:InitAbilities()
+
+	-- Init ability ID's
+	if SaintKatherine.ardent_flame_id == nil then
+		SaintKatherine.ardent_flame_id = cpu_manager.stats:GetAbilityID( "witch_hunters_katherine_ardent_flame" )
+		SaintKatherine.protector_id = cpu_manager.stats:GetAbilityID( "witch_hunters_katherine_the_protector" )
+	end
+end
+
+
+function SaintKatherineTactic:DoAbilities()
+	if g_iGMT < self.timeOfLastProtectionCast + 2 then return end
+	if self.squad_ai:IsInCombat() then
+		if self.squad_ai:CanDoAbility(SaintKatherine.protector_id) and self.squad_ai:GetHealthPercentage() > 0.6 then
+			if cpu_manager.cpu_player:FindFirstHurtSquad(self.squad_ai:GetPosition(), 30) ~= nil then
+				self.squad_ai:DoSpecialAbility(SaintKatherine.protector_id)
+				self.timeOfLastProtectionCast = g_iGMT
+				return
+			end
+		end
+
+		if self.squad_ai:CanDoAbility(SaintKatherine.ardent_flame_id) then
+			Ability.DoAbilityPos( self.squad_ai, SaintKatherine.ardent_flame_id, Ability.Filters.CloseMonsterEnemy, 1 )
+		end
+	end
+end

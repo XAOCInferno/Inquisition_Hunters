@@ -1,0 +1,31 @@
+----------------------------------------
+-- File: 'exorcistsanctorumtactic.ai'
+-- Edited by Gambit @ 12.29.2018
+
+class 'ExorcistSanctorumTactic' (WitchHuntersVehicleTactic)
+
+SanctorumTactic = {}
+
+function ExorcistSanctorumTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Exorcist Sanctorum Tactic")
+end
+
+
+function ExorcistSanctorumTactic:InitAbilities()
+
+	if SanctorumTactic.missiles_id == nil then
+		SanctorumTactic.missiles_id = cpu_manager.stats:GetAbilityID( "witch_hunters_sanctorum_vengeance_missiles" )
+	end
+end
+
+
+function ExorcistSanctorumTactic:DoAbilities()
+
+	if self.squad_ai:IsInCombat() and self.squad_ai:CanDoAbility(SanctorumTactic.missiles_id) then
+		if Ability.DoAbilityPos( self.squad_ai, SanctorumTactic.missiles_id, Ability.Filters.CloseSquadEnemy, 3 )
+		or Ability.DoAbilityPos( self.squad_ai, SanctorumTactic.missiles_id, Ability.Filters.CloseMonsterEnemy, 2 )
+		or Ability.DoAbilityPos( self.squad_ai, SanctorumTactic.missiles_id, Ability.Filters.CloseVehicleEnemy, 1 ) then
+		end
+	end
+end

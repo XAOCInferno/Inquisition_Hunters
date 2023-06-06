@@ -1,0 +1,14 @@
+----------------------------------------
+-- File: 'arbiteshqtactic.ai'
+-- Edited by Gambit		@ 09.09.2014
+
+class 'ArbitesHQTactic' (BaseTactic)
+
+function ArbitesHQTactic:__init( base_ai ) super( base_ai )
+
+	self:SetName("Arbites HQ Tactic")
+end
+
+function ArbitesHQTactic:CanDeepStrikeTroops()
+	return true
+end

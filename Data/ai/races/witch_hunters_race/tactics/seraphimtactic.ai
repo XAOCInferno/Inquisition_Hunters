@@ -1,0 +1,110 @@
+----------------------------------------
+-- File: 'seraphimtactic.ai'
+-- Edited by Thudmeizer @ 16.11.2011
+
+class 'SeraphimTactic' (WitchHuntersInfantryTactic)
+
+Seraphim = {}
+
+--[[SeraphimAbility =
+{
+    MeltaID = cpu_manager.stats:GetAbilityID("witch_hunters_adepta_sororitas_melta_bombs")
+    ,SpiritID = cpu_manager.stats:GetAbilityID("witch_hunters_actoffaith_spirit_martyr")
+    ,VeteranID = cpu_manager.stats:GetAbilityID("witch_hunters_sister_veteran_seraphim")
+}]]
+
+function SeraphimTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Seraphim Tactic")
+
+    --self.meltaLastUse = g_iGMT
+    --self.spiritLastUse = g_iGMT
+    --self.veteranLastUse = g_iGMT
+end
+
+function SeraphimTactic:InitAbilities()
+
+	 --[[if (Seraphim.grenades_id == nil) then
+		Seraphim.grenades_id = cpu_manager.stats:GetAbilityID( "witch_hunters_adepta_sororitas_melta_bombs" )
+	 end
+
+	 if (Seraphim.spirit_id == nil) then
+		Seraphim.spirit_id = cpu_manager.stats:GetAbilityID( "witch_hunters_actoffaith_spirit_martyr" )
+	 end
+
+	 if (Seraphim.rapidfire_id == nil) then
+		Seraphim.rapidfire_id = cpu_manager.stats:GetAbilityID( "witch_hunters_sister_veteran_seraphim" )
+	 end]]
+
+	 if (Seraphim.visage_id == nil) then
+		Seraphim.visage_id = cpu_manager.stats:GetAbilityID( "witch_hunters_seraphim_angelic_visage" )
+	 end
+end
+
+function SeraphimTactic:DoAbilities()
+
+    self:DoThrowGrenades()
+    self:DoSeraphimsUseWeapon()
+    --self:DoSeraphimTargetWeapon()
+
+	--[[Ability.DoAbilityTarget(self.squad_ai, Seraphim.grenades_id, Ability.Filters.CloseVehicleEnemy, 1)
+	Ability.DoAbilityTargetEntity(self.squad_ai, Seraphim.grenades_id, Ability.EntityFilters.CloseBaseEntityEnemy, 1)
+
+	-- Check if we can use spirit ability
+	if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.8 and self.squad_ai:GetNumTroopers() >= 4) then
+		Ability.DoAbility( self.squad_ai, Seraphim.spirit_id, Ability.PredicateFilters.IsInCombat )
+	end
+	
+	-- Check if we can use rapid fire
+	Ability.DoAbility(self.squad_ai, Seraphim.rapidfire_id, Ability.PredicateFilters.IsInCombat)]]
+	
+	-- Check if we can use morale restore ability
+	if (self.squad_ai:CanDoAbility(Seraphim.visage_id)) then
+		
+		-- Self Use: Boost morale squad by increasing morale of all nearby allied squads but prevents them from using jetpacks
+		local oAlliedSquad = cpu_manager.cpu_player:FindFirstHurtSquad(self.squad_ai:GetPosition(), 15)
+		if (oAlliedSquad ~= nil and oAlliedSquad:GetMoralePercentage() < 0.8) then
+			
+			-- Switch on visage ability
+			if (not self.squad_ai:IsUsingAbility(Seraphim.visage_id)) then
+				self.squad_ai:DoSpecialAbility(Seraphim.visage_id)
+			end
+			
+		elseif (self.squad_ai:IsUsingAbility(Seraphim.visage_id)) then
+			
+			-- Switch off visage ability
+			self.squad_ai:DoSpecialAbility(Seraphim.visage_id)
+		end
+	end
+end
+
+--[[function SeraphimTactic:DoSeraphimTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.meltaLastUse + 30 ) then
+            if Ability.DoAbilityTarget( self.squad_ai, SeraphimAbility.MeltaID, Ability.Filters.CloseVehicleEnemy, 1 )
+            or Ability.DoAbilityTargetEntity( self.squad_ai, SeraphimAbility.MeltaID, Ability.EntityFilters.CloseBaseEntityEnemy, 1 )
+            then
+                self.meltaLastUse = g_iGMT 
+            end
+        end
+
+        if ( g_iGMT > self.veteranLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, SeraphimAbility.VeteranID, Ability.Filters.CloseEnemy, 20, 5 )
+            then
+                self.veteranLastUse = g_iGMT 
+            end
+        end
+    end
+
+    if (self.squad_ai:IsInCombat() and self.squad_ai:GetNumTroopers() >= 7) then
+
+        if ( g_iGMT > self.spiritLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, SeraphimAbility.SpiritID, Ability.Filters.CloseEnemy, 15, 5 )
+            then
+                self.spiritLastUse = g_iGMT 
+            end
+        end
+    end
+end]]

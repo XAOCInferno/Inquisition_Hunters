@@ -1,0 +1,170 @@
+----------------------------------------
+-- File: 'Canonesstactic.ai'
+-- Edited by Thudmeizer @ 16.11.2011
+
+class 'CanonessTactic' (WitchHuntersInfantryTactic)
+
+Canoness = {}
+
+--[[CanonessAbility =
+{
+    HeresiusID = cpu_manager.stats:GetAbilityID("witch_hunters_canoness_liber_heresius")
+    ,OpheliaID = cpu_manager.stats:GetAbilityID("witch_hunters_canoness_mantle_ophelia")
+}]]
+
+function CanonessTactic:__init( squad_ai ) super( squad_ai )
+
+       self:SetName("Canoness Tactic")
+
+    --self.heresiusLastUse = g_iGMT
+    --self.opheliaLastUse = g_iGMT
+end
+
+-- Canoness is allowed to retreat even directly after a jump
+function CanonessTactic:SetTarget( target, variant_type )
+
+	self.variant_type = variant_type
+	self.target = Vector3f(target)
+	self.m_iMoveDelay = 0
+	self.last_jump = 0
+end
+
+-- Assassinate win condition -- never attack
+function CanonessTactic:IsAttacker()
+	return (not cpu_manager.assassinate and self:IsCommanderAttacker())
+end
+
+-- Assassinate win condition -- never defend
+function CanonessTactic:IsDefender()
+	return (not cpu_manager.assassinate and self:IsCommanderDefender())
+end
+
+-- Assassinate win condition -- never jump into combat
+function CanonessTactic:JumpAttack()
+
+	if (not cpu_manager.assassinate) then
+		Tactic.JumpAttack(self)
+	end
+end
+
+function CanonessTactic:InitAbilities()
+
+	if Canoness.brazier_id == nil then
+		Canoness.brazier_id = cpu_manager.stats:GetAbilityID( "witch_hunters_brasero" )
+	end
+
+	--[[if (Canoness.heresius_id == nil) then
+		Canoness.heresius_id = cpu_manager.stats:GetAbilityID( "witch_hunters_canoness_liber_heresius" )
+		Canoness.ophelia_id = cpu_manager.stats:GetAbilityID( "witch_hunters_canoness_mantle_ophelia" )
+	end]]
+end
+
+function CanonessTactic:DoAbilities()
+
+	self:DoCanonessUseWeapon()
+
+	if self.squad_ai:CanDoAbility(Canoness.brazier_id) then
+		if resource_manager:GetResourceAmount():Get(ResourceAmount.RT_Requisition) > 300
+		and resource_manager:GetResourceAmount():Get(ResourceAmount.RT_Power) > 300 then
+			local iPos = self.squad_ai:GetPosition()
+			local vDir = cpu_manager:GetDirectionToEnemy(iPos)
+			iPos.x = iPos.x + vDir.x * math.random(1, 5)
+			iPos.z = iPos.z + vDir.z * math.random(1, 5)
+			if cpu_manager.cpu_player:FindFirstBaseEnemy(iPos, 10, 1) == nil
+			and resource_manager:FindFirstStrategicPoint(iPos, 10) == nil
+			and not self:IsAlliedBuildingWithin(iPos, 10) then
+				self.squad_ai:DoSpecialAbilityPos(Canoness.brazier_id, iPos)
+			end
+		end
+	end
+
+    --self:DoCanonessTargetWeapon()
+	--[[SelfUse: Kills fog of war on entire map for a short time but Canoness cannot move
+	Ability.DoAbility( self.squad_ai, Canoness.heresius_id, Ability.Filters.IsInCombat )
+
+	--SelfUse: Keeps user alive when fatally hurt
+	if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4) then
+
+		if (self.squad_ai:CanDoAbility(Canoness.ophelia_id)) then
+			self.squad_ai:DoSpecialAbility(Canoness.ophelia_id)
+		end	  
+	end]]
+end
+
+--[[function CanonessTactic:DoCanonessTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.heresiusLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, CanonessAbility.HeresiusID, Ability.Filters.CloseEnemy, 30, 1 )
+            then
+                self.heresiusLastUse = g_iGMT 
+            end
+        end
+    end
+
+    if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4) then
+
+        if ( g_iGMT > self.opheliaLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, CanonessAbility.OpheliaID, Ability.Filters.CloseEnemy, 40, 1 )
+            then
+                self.opheliaLastUse = g_iGMT 
+            end
+        end
+    end
+end]]
+
+function CanonessTactic:Upgrade()
+
+	-- Check if we have free resources
+	if (not Tactic.Options.can_reinforce) then
+		return
+	end
+	
+	-- If I am broken, don't upgrade!
+	if (self:IsAffectedByMorale() and self.squad_ai:IsBroken()) then
+		return
+	end
+	
+	if (not self.squad_ai:IsReinforcing()) then
+	
+		-- Upgrade if possible
+		if (self.squad_ai:HasUpgradableTrooper() and self.squad_ai:GetNumTroopers() > 0) then
+			local class_type = cpu_manager:GetFirstEnemyPlayer():GetMajorityClassType()
+			self.squad_ai:DoBestUpgrade( class_type )
+		end
+	end
+end
+
+function CanonessTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+	
+	-- State machine
+	if (not InfantryTactic.Update( self )) then
+		return
+	end
+
+	-- Check if we are in serious trouble
+	self:EmergencyRetreat()
+end
+
+
+function CanonessTactic:IsAlliedBuildingWithin(iPos, iRange)
+	for oPlayer in cpu_manager.stats:GetPlayerStats() do
+		if not oPlayer:IsPlayerDead() then
+			if not cpu_manager.player_stats:IsEnemy(oPlayer) then
+				for oBuilding in oPlayer:GetBases() do
+					if oBuilding:IsValid() then
+						if distance_sqr(oBuilding:GetPosition(),iPos) < iRange*iRange then
+							return true
+						end
+					end
+				end
+			end
+		end
+	end
+	return false
+end

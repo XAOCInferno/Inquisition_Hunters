@@ -1,0 +1,59 @@
+----------------------------------------
+-- File: 'abbesssanctorumtactic.ai'
+-- Edited by Thudmeizer   @ 16.11.2011
+
+class 'AbbessSanctorumTactic' (WitchHuntersInfantryTactic)
+
+AbbessSanctorum = {}
+
+function AbbessSanctorumTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Abbess Sanctorum Retinue Tactic")
+
+    self.m_iTransportable = 1	--Rhino
+end
+
+
+function AbbessSanctorumTactic:IsAttacker()
+	return self:IsCommanderAttacker()
+end
+
+
+function AbbessSanctorumTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+
+function AbbessSanctorumTactic:InitAbilities()
+
+	--[[ Init ability ID's
+	if AbbessSanctorum.ability_id == nil then
+		AbbessSanctorum.ability_id = cpu_manager.stats:GetAbilityID( "" )	
+	end]]
+end
+
+
+function AbbessSanctorumTactic:DoAbilities()
+
+end
+
+
+function AbbessSanctorumTactic:Reinforce()
+
+	if not self.squad_ai:IsReinforcing() then
+		-- Always try for the actual leader first
+		if self.squad_ai:CanReinforce( false, 0 ) then
+		   self.squad_ai:DoReinforce( false, 0 )
+		   return
+		end
+
+		if self.squad_ai:GetLeaderCount(0) == 0 and self.squad_ai:CanReinforce( true, 0 ) then
+			self.squad_ai:DoReinforce( true, 0 )
+			return
+		end
+
+		if self.squad_ai:GetLeaderCount(1) == 0 and self.squad_ai:CanReinforce( true, 1 ) then
+			self.squad_ai:DoReinforce( true, 1 )
+		end
+	end
+end

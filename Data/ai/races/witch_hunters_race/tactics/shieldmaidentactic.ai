@@ -1,0 +1,80 @@
+----------------------------------------
+-- File: 'shieldmaidentactic.ai'
+-- Edited by Gambit @ 30.12.2018
+
+class 'ShieldMaidenTactic' (WitchHuntersInfantryTactic)
+
+ShieldMaiden = {}
+
+function ShieldMaidenTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Shield Maidens Tactic")
+
+	self.m_iTransportable = 2	--Repressor
+
+	-- Assume squad just entrenched/retrenched
+	self.m_iLastEntrenchTime = g_iGMT
+end
+
+
+function ShieldMaidenTactic:InitAbilities()
+
+	if ShieldMaiden.flash_grenades_id == nil then
+		ShieldMaiden.flash_grenades_id = cpu_manager.stats:GetAbilityID( "witch_hunters_adeptus_arbites_grenades" )
+		ShieldMaiden.smoke_grenades_id = cpu_manager.stats:GetAbilityID( "witch_hunters_adeptus_arbites_smoke_grenades" )
+		ShieldMaiden.imperial_edict_id = cpu_manager.stats:GetAbilityID( "witch_hunters_imperial_edict" )
+	end
+end
+
+
+function ShieldMaidenTactic:DoAbilities()
+
+	if self.squad_ai:IsInCombat() then
+		if self.squad_ai:CanDoAbility(ShieldMaiden.imperial_edict_id) then
+			if Ability.DoAbilityTarget( self.squad_ai, ShieldMaiden.imperial_edict_id, Ability.Filters.CloseCommanderEnemy, 1 )
+			or Ability.DoAbilityTarget( self.squad_ai, ShieldMaiden.imperial_edict_id, Ability.Filters.CloseSquadEnemy, 1 ) then end
+		end
+
+		if self.squad_ai:CanDoAbility(ShieldMaiden.flash_grenades_id) then
+			if Ability.DoAbilityTarget( self.squad_ai, ShieldMaiden.flash_grenades_id, Ability.Filters.CloseSquadEnemy, 1 )
+			or Ability.DoAbilityTarget( self.squad_ai, ShieldMaiden.flash_grenades_id, Ability.Filters.CloseCommanderEnemy, 1 ) then end
+		end
+
+		if self.squad_ai:CanDoAbility(ShieldMaiden.smoke_grenades_id) then
+			-- Search a squad
+			local iRange = self.squad_ai:GetAbilityRange(ShieldMaiden.smoke_grenades_id)
+			local oUnit = Ability.Filters.CloseHurt(self.squad_ai:GetPosition(), iRange, 1)
+			if oUnit ~= nil and oUnit:IsInCombat() then
+				self.squad_ai:DoSpecialAbilitySquad(ShieldMaiden.smoke_grenades_id, oUnit:GetSquad())
+			end
+		end
+	end
+
+	-- Try to entrench
+	self:DoEntrenchAbility()
+end
+
+
+function ShieldMaidenTactic:DoEntrenchAbility()
+
+	-- Check if we can entrench
+	if (self.squad_ai:CanEntrench(true)) then
+		-- Don't entrench too fast after a retrench
+		if (g_iGMT < self.m_iLastEntrenchTime + 12) then
+			return
+		end
+		-- Check situation, entrench if needed
+		if (self.squad_ai:IsUnderAttack() and self.squad_ai:IsAttacking() and (Ability.Filters.CloseInfantryEnemy( self.squad_ai:GetPosition(), 5, 1 ) ~= nil or Ability.Filters.CloseCommanderEnemy( self.squad_ai:GetPosition(), 5, 1 ) ~= nil)) then
+			self.squad_ai:DoEntrench(true)
+		end
+	end
+	
+	-- Check if we can retrench
+	if (self.squad_ai:CanEntrench(false)) then
+		-- Check situation, retrench if needed
+		if ((not self.squad_ai:IsUnderAttack()) or (self.squad_ai:GetHealthPercentage() < 0.6 and self.squad_ai:IsBroken()) or self.squad_ai:GetHealthPercentage() < 0.3 or Ability.Filters.CloseEnemy(self.squad_ai:GetPosition(), 16, 1) == nil) then
+			self.squad_ai:DoEntrench(false)
+			self.m_iLastEntrenchTime = g_iGMT
+		end
+	end
+end

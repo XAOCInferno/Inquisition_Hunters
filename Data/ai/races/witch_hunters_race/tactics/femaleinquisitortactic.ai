@@ -1,0 +1,156 @@
+----------------------------------------
+-- File: 'femaleinquisitortactic.ai'
+-- Edited by Thudmeizer   @ 16.11.2011
+
+class 'FemaleInquisitorTactic' (WitchHuntersInfantryTactic)
+
+FemaleInquisitor = {}
+
+--[[FemaleInquisitorAbility =
+{
+    ShieldID = cpu_manager.stats:GetAbilityID("witch_hunters_adepta_sororitas_shield_faith")
+    ,ScourgingID = cpu_manager.stats:GetAbilityID("witch_hunters_scourging")
+    ,PsychicID = cpu_manager.stats:GetAbilityID("witch_hunters_cherubim_psychic_attack")
+}]]
+
+function FemaleInquisitorTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Female Inquisitor Tactic")
+
+    --self.shieldLastUse = g_iGMT
+    --self.scourgingLastUse = g_iGMT
+    --self.psychicLastUse = g_iGMT
+end
+
+function FemaleInquisitorTactic:IsAttacker()
+	return self:IsCommanderAttacker()
+end
+
+function FemaleInquisitorTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+function FemaleInquisitorTactic:InitAbilities()
+
+	--[[ Init ability ID's
+	if (FemaleInquisitor.shieldfaith_id == nil) then
+		FemaleInquisitor.shieldfaith_id = cpu_manager.stats:GetAbilityID( "witch_hunters_adepta_sororitas_shield_faith" )	
+	end
+
+	if (FemaleInquisitor.scourging_id == nil) then
+		FemaleInquisitor.scourging_id = cpu_manager.stats:GetAbilityID( "witch_hunters_scourging" )	
+	end
+
+	if (FemaleInquisitor.psychic_id == nil) then
+		FemaleInquisitor.psychic_id = cpu_manager.stats:GetAbilityID( "witch_hunters_cherubim_psychic_attack" )
+	end]]
+end
+
+function FemaleInquisitorTactic:DoAbilities()
+
+	self:DoFemaleInquisitorUseWeapon()
+    --self:DoFemaleInquisitorTargetWeapon()
+
+	--[[if (self.squad_ai:IsBroken() or (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.5)) then
+		Ability.DoAbility( self.squad_ai, FemaleInquisitor.shieldfaith_id, Ability.PredicateFilters.IsInCombat )
+	end
+
+	-- Try to use orbital bombardment
+	Ability.DoAbilityPos(self.squad_ai, FemaleInquisitor.scourging_id, Ability.Filters.CloseEnemy, 16)
+
+	-- Try to use psychic attack on enemy (Cherubim)
+	Ability.DoAbilityTarget( self.squad_ai, FemaleInquisitor.psychic_id, Ability.Filters.CloseSquadEnemy, 1 )
+	Ability.DoAbilityTarget( self.squad_ai, FemaleInquisitor.psychic_id, Ability.Filters.CloseCommanderEnemy, 1 )
+	Ability.DoAbilityTarget( self.squad_ai, FemaleInquisitor.psychic_id, Ability.Filters.CloseMonsterEnemy, 1 )
+	Ability.DoAbilityTarget( self.squad_ai, FemaleInquisitor.psychic_id, Ability.Filters.CloseVehicleEnemy, 1 )]]
+
+end
+
+--[[function FemaleInquisitorTactic:DoFemaleInquisitorTargetWeapon()
+
+    if (self.squad_ai:IsBroken() or (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.5)) then
+
+        if ( g_iGMT > self.shieldLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, FemaleInquisitorAbility.ShieldID, Ability.Filters.CloseEnemy, 30, 1 )
+            then
+                self.shieldLastUse = g_iGMT 
+            end
+        end
+    end
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.scourgingLastUse + 30 ) then
+            if Ability.DoAbilityPos( self.squad_ai, FemaleInquisitorAbility.ScourgingID, Ability.Filters.CloseEnemy, 10 )
+            then
+                self.scourgingLastUse = g_iGMT 
+            end
+        end
+
+        if ( g_iGMT > self.psychicLastUse + 30 ) then
+            if Ability.DoAbilityTarget( self.squad_ai, FemaleInquisitorAbility.PsychicID, Ability.Filters.CloseSquadEnemy, 1 )
+            or Ability.DoAbilityTarget( self.squad_ai, FemaleInquisitorAbility.PsychicID, Ability.Filters.CloseCommanderEnemy, 1 ) 
+            or Ability.DoAbilityTarget( self.squad_ai, FemaleInquisitorAbility.PsychicID, Ability.Filters.CloseMonsterEnemy, 1 )
+            or Ability.DoAbilityTarget( self.squad_ai, FemaleInquisitorAbility.PsychicID, Ability.Filters.CloseVehicleEnemy, 1 )
+            then
+                self.psychicLastUse = g_iGMT 
+            end
+        end
+    end
+end]]
+
+function FemaleInquisitorTactic:Reinforce()
+
+  --always try for the actual leader first
+	if not self.squad_ai:IsReinforcing() then
+		if self.squad_ai:CanReinforce( false, 0 ) then
+		   self.squad_ai:DoReinforce( false, 0 )
+		end
+	end
+
+	if not self.squad_ai:IsReinforcing() then
+
+		-- try for different types of squad members
+		local cherubimIndex = 0
+		local hospitallerIndex = 1
+		local crusaderIndex = 2
+
+		local numCherubims = self.squad_ai:GetLeaderCount( cherubimIndex )
+		local numHospitallers = self.squad_ai:GetLeaderCount( hospitallerIndex )
+		local numCrusaders = self.squad_ai:GetLeaderCount( crusaderIndex )
+
+		-- Desired number of each leader type
+		local desiredCherubims = math.random(0,2)
+		local desiredHospitallers = math.random(0,2) 
+		local desiredCrusaders = math.random(0,2)
+
+		-- Desired order of reinforcing
+		if numCherubims < desiredCherubims then
+			if self.squad_ai:CanReinforce( true, cherubimIndex ) then
+				self.squad_ai:DoReinforce( true, cherubimIndex )
+			end
+		elseif numHospitallers < desiredHospitallers then
+			if self.squad_ai:CanReinforce( true, hospitallerIndex ) then
+				self.squad_ai:DoReinforce( true, hospitallerIndex )
+			end
+		elseif numCrusaders < desiredCrusaders then
+			if self.squad_ai:CanReinforce( true, crusaderIndex ) then
+				self.squad_ai:DoReinforce( true, crusaderIndex )
+			end
+		end
+	end
+end
+
+function FemaleInquisitorTactic:Update()
+
+   if self:IsComplete() then
+      return
+   end
+   
+	--state machine
+	if not InfantryTactic.Update( self ) then
+		return
+	end
+end
+
+

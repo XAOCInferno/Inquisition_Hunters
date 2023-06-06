@@ -1,0 +1,79 @@
+----------------------------------------
+-- File: 'thronetactic.ai'
+-- Edited by Thudmeizer @ 16.11.2011
+
+class 'ThroneTactic' (WitchHuntersVehicleTactic)
+
+Throne = {}
+
+--[[ThroneAbility =
+{
+    MandateID = cpu_manager.stats:GetAbilityID("witch_hunters_throne_judgement_inquisitorial_mandate")
+    ,RosariusID = cpu_manager.stats:GetAbilityID("witch_hunters_throne_judgement_rosarius")
+}]]
+
+function ThroneTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Throne Tactic")
+
+    --self.mandateLastUse = g_iGMT
+    --self.rosariusLastUse = g_iGMT
+end
+
+function ThroneTactic:IsAttacker()
+	return self:IsCommanderAttacker()
+end
+
+function ThroneTactic:IsDefender()
+	return self:IsCommanderDefender()
+end
+
+function ThroneTactic:InitAbilities()
+
+        --[[if (Throne.mandate_id == nil) then
+		Throne.mandate_id = cpu_manager.stats:GetAbilityID( "witch_hunters_throne_judgement_inquisitorial_mandate" )
+	end
+
+        if (Throne.rosarius_id == nil) then
+		Throne.rosarius_id = cpu_manager.stats:GetAbilityID( "witch_hunters_throne_judgement_rosarius" )
+	end]]
+end
+
+function ThroneTactic:DoAbilities()
+
+    self:DoThroneTargetWeapon()
+
+        --[[SelfUse: Increases combat skills of nearby troops
+	Ability.DoAbility( self.squad_ai, Throne.mandate_id, Ability.Filters.IsInCombat )
+
+        --SelfUse: Protection from ranged attacks
+	if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4) then
+
+		if (self.squad_ai:CanDoAbility( Throne.rosarius_id )) then
+			self.squad_ai:DoSpecialAbility( Throne.rosarius_id )
+		end
+	end]]
+end
+
+--[[function ThroneTactic:DoThroneTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.mandateLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, ThroneAbility.MandateID, Ability.Filters.CloseEnemy, 20, 5 )
+            then
+                self.mandateLastUse = g_iGMT 
+            end
+        end
+    end
+
+    if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4) then
+
+        if ( g_iGMT > self.rosariusLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, ThroneAbility.RosariusID, Ability.Filters.CloseEnemy, 40, 1 )
+            then
+                self.rosariusLastUse = g_iGMT 
+            end
+        end
+    end
+end]]

@@ -1,0 +1,57 @@
+----------------------------------------
+-- File: 'cherubimtactic.ai'
+-- Edited by Thudmeizer @ 31.08.2011
+
+class 'CherubimTactic' (WitchHuntersInfantryTactic)
+
+Cherubim = {}
+
+CherubimAbility =
+{
+    PsychicID = cpu_manager.stats:GetAbilityID("witch_hunters_cherubim_psychic_attack")
+}
+
+function CherubimTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Cherubim Tactic")
+
+    self.psychicLastUse = g_iGMT
+end
+
+function CherubimTactic:InitAbilities()
+
+	 --[[if (Cherubim.psychic_id == nil) then
+		Cherubim.psychic_id = cpu_manager.stats:GetAbilityID( "witch_hunters_cherubim_psychic_attack" )
+	 end]]
+end
+
+function CherubimTactic:DoAbilities()
+
+    self:DoCherubimTargetWeapon()
+
+	--[[ Try to use psychic attack on enemy
+	Ability.DoAbilityTarget( self.squad_ai, Cherubim.psychic_id, Ability.Filters.CloseSquadEnemy, 1 )
+	Ability.DoAbilityTarget( self.squad_ai, Cherubim.psychic_id, Ability.Filters.CloseCommanderEnemy, 1 )
+	Ability.DoAbilityTarget( self.squad_ai, Cherubim.psychic_id, Ability.Filters.CloseMonsterEnemy, 1 )
+	Ability.DoAbilityTarget( self.squad_ai, Cherubim.psychic_id, Ability.Filters.CloseVehicleEnemy, 1 )]]
+end
+
+function CherubimTactic:DoCherubimTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.psychicLastUse + 20 ) then
+            if Ability.DoAbilityTarget( self.squad_ai, CherubimAbility.PsychicID, Ability.Filters.CloseSquadEnemy, 1 )
+            or Ability.DoAbilityTarget( self.squad_ai, CherubimAbility.PsychicID, Ability.Filters.CloseCommanderEnemy, 1 ) 
+            or Ability.DoAbilityTarget( self.squad_ai, CherubimAbility.PsychicID, Ability.Filters.CloseMonsterEnemy, 1 )
+            or Ability.DoAbilityTarget( self.squad_ai, CherubimAbility.PsychicID, Ability.Filters.CloseVehicleEnemy, 1 )
+            then
+                self.psychicLastUse = g_iGMT 
+            end
+        end
+    end
+end
+
+function CherubimTactic:CanOnlyDecap()
+	 return true
+end

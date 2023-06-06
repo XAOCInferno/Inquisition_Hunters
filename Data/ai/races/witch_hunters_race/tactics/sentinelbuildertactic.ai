@@ -1,0 +1,217 @@
+----------------------------------------
+-- File: 'sentinelbuilderTactic.ai'
+-- Created by Thudmeizer @ 21.02.2009
+
+class 'SentinelBuilderTactic' (EngineerTactic)
+
+SentinelBuilder = {}
+
+function SentinelBuilderTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Sentinel Builder Tactic")
+
+	-- Squad is able to deepstrike	
+	self.m_iDeepStrikeBlueprintID = cpu_manager.stats:GetBuildingID("witch_hunters_adeptus_arbites_hq")
+
+end
+
+function SentinelBuilderTactic:IsAttacker()
+	return false
+end
+
+function SentinelBuilderTactic:IsDefender()
+
+	-- Don't defend in higher tiers or if we are too far away from home
+	if (cpu_manager:GetTierLevel() > 2 or distance_sqr(self.squad_ai:GetPosition(), cpu_manager.start_pos) > sqr(60)) then
+		return false
+	end
+	
+	-- Don't start to defend if we are severely damaged
+	if (self.squad_ai:GetHealthPercentage() < 0.4 and not self.squad_ai:IsLocked()) then
+		return false
+	end
+	return (cpu_manager:HQThreat() or self.squad_ai:IsUsingAbility(SentinelBuilder.combatboost_id))
+end
+
+function SentinelBuilderTactic:IsAffectedByMorale()
+	return false
+end
+
+function SentinelBuilderTactic:InitAbilities()
+
+	if (SentinelBuilder.combatboost_id == nil) then
+		SentinelBuilder.combatboost_id = cpu_manager.stats:GetAbilityID( "witch_hunters_sentinel_combat" )
+	end
+
+	if (SentinelBuilder.full_repair_id == nil) then
+		SentinelBuilder.full_repair_id = cpu_manager.stats:GetAbilityID( "witch_hunters_builder_repair" )
+	end
+end
+
+function SentinelBuilderTactic:CheckForDeath()
+
+end
+
+function SentinelBuilderTactic:CheckForDance()
+
+end
+
+function SentinelBuilderTactic:GatherMove(vPos)
+
+end
+
+function SentinelBuilderTactic:DoAbilities()
+
+	if self.squad_ai:GetHealthPercentage() < 0.6 then
+		if (self.squad_ai:CanDoAbility(SentinelBuilder.full_repair_id) and not self.squad_ai:IsInCombat()
+		and not cpu_manager.terrain_analyzer:HasThreat(self.squad_ai:GetPosition(), 30)) then
+			self.squad_ai:DoSpecialAbility(SentinelBuilder.full_repair_id)
+		end
+	elseif self.squad_ai:GetHealthPercentage() < 0.9 then
+		if (self.squad_ai:CanDoAbility(SentinelBuilder.full_repair_id) and not self.squad_ai:IsInCombat()
+		and not cpu_manager.terrain_analyzer:HasThreat(self.squad_ai:GetPosition(), 50)) then
+			self.squad_ai:DoSpecialAbility(SentinelBuilder.full_repair_id)
+		end
+	end
+
+	-- Check if we can use ability
+	if (self.squad_ai:CanDoAbility(SentinelBuilder.combatboost_id)) then
+		
+		-- Check if we are in range of home base
+		local bInHomeRange = (distance_sqr(self.squad_ai:GetPosition(), cpu_manager.start_pos) < sqr(60))
+		
+		-- Check for close enemies
+		local oEnemy = cpu_manager.cpu_player:FindFirstEnemy(self.squad_ai:GetPosition(), 10, 1)
+		
+		-- Switch on combat ability if we have to defend our base against close enemies
+		if (self.squad_ai:IsLocked() and self.squad_ai:IsBuilding() == 0 and bInHomeRange and
+			oEnemy ~= nil and not self.squad_ai:IsUsingAbility(SentinelBuilder.combatboost_id)) then 
+		
+			-- Switch on combat ability
+			self.squad_ai:DoSpecialAbility(SentinelBuilder.combatboost_id)
+			self.m_iMoveDelay = g_iGMT
+			self.squad_ai:DoStop()
+			
+		-- Switch off combat ability if there's no close enemy unit or we are too far away from home
+		elseif (self.squad_ai:IsUsingAbility(SentinelBuilder.combatboost_id) and (oEnemy == nil or not bInHomeRange)) then
+
+			-- Switch off combat ability		
+			self.squad_ai:DoSpecialAbility(SentinelBuilder.combatboost_id)
+			self.m_iMoveDelay = 0
+			self.squad_ai:DoStop()
+		end
+	end
+end
+
+function SentinelBuilderTactic:DefendBase()
+
+	-- Check move delay
+	local vSquadPos = self.squad_ai:GetPosition()
+	local iDistance = distance_sqr(cpu_manager.start_pos, vSquadPos)
+	if (g_iGMT < self.m_iMoveDelay + 5 and self:IsMoving()) then
+		return
+	end
+
+	-- If we are too far away from home, then make a simple move
+	if (iDistance > sqr(60)) then
+		cpu_manager:DoMove(self.squad_ai, cpu_manager.start_pos, false, "DefendBase")
+		self.m_iMoveDelay = g_iGMT
+		return
+	end
+	
+	-- Check if we are fighting
+	if (self.squad_ai:IsAttacking()) then
+		return
+	end
+	
+	-- Check for close enemies
+	local oUnit = cpu_manager.cpu_player:FindFirstEnemy(self.target, 35, 1)
+	local bClose = (oUnit ~= nil and distance_sqr(vSquadPos, oUnit:GetPosition()) < sqr(10))
+	local bInRange = (oUnit ~= nil and distance_sqr(cpu_manager.start_pos, oUnit:GetPosition()) < sqr(60))
+	if (bClose and bInRange) then
+		
+		-- Stop movement
+		if (self:IsMoving()) then
+			self.squad_ai:DoStop()
+		end
+		self.m_iMoveDelay = g_iGMT
+		return
+	end
+	
+	-- Check for target unit	
+	if (oUnit == nil or not bInRange) then
+		oUnit = cpu_manager.cpu_player:FindFirstEnemy(cpu_manager.start_pos, 60, 1)
+	end
+	
+	-- Attack enemy unit
+	if (oUnit ~= nil) then
+		cpu_manager:DoMove(self.squad_ai, oUnit:GetPosition(), true, "DefendBase")
+		return
+	end
+	
+	-- Move to base center if we're hurt or not close enough
+	if (iDistance > sqr(25) or self.squad_ai:WasRecentlyHurt()) then
+		cpu_manager:DoMove(self.squad_ai, cpu_manager.start_pos, true, "DefendBase")
+		return
+	end
+
+	-- Stop movement
+	if (self:IsMoving()) then
+		self.squad_ai:DoStop()
+	end
+end
+
+function SentinelBuilderTactic:BeginRetreatState()
+
+	-- Defend base
+	self:DefendBase()
+
+	-- Set holding sub-state
+	Tactic.SetSubState(self, self.HoldState, "Holding")
+end
+
+function SentinelBuilderTactic:BeginHoldState()
+
+	-- Defend base
+	self:DefendBase()
+
+	-- Set attacking sub-state
+	Tactic.SetSubState( self, self.HoldState, "Holding" )
+end
+
+function SentinelBuilderTactic:BeginAttackState()
+
+	-- Defend base
+	self:DefendBase()
+
+	-- Set attacking sub-state
+	Tactic.SetSubState( self, self.AttackingState, "Attacking" )
+end
+
+function SentinelBuilderTactic:HoldState()
+
+	-- If I'm idle or was hurt, restart
+	if (self.squad_ai:IsIdle() or not self:IsMoving() or self.squad_ai:WasRecentlyHurt()) then
+		Tactic.SetState( self, self:GetState() )
+	end
+end
+
+function SentinelBuilderTactic:AttackingState()
+	
+	-- If I'm idle or was hurt, restart
+	if (self.squad_ai:IsIdle() or not self:IsMoving() or self.squad_ai:WasRecentlyHurt()) then
+		Tactic.SetState( self, self:GetState() )
+	end
+end
+
+function SentinelBuilderTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+	
+	-- State machine
+	if (not EngineerTactic.Update(self)) then
+		return
+	end
+end

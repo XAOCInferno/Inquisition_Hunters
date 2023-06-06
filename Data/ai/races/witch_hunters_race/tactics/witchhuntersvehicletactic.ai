@@ -1,0 +1,138 @@
+---------------------------------------
+-- File: 'witchhuntersvehicletactic.ai'
+-- Edited by Thudmeizer   @ 16.11.2011
+
+class 'WitchHuntersVehicleTactic' (VehicleTactic)
+
+WitchHuntersVehicleAbility =
+{
+-- Rhino
+    HailersAID = cpu_manager.stats:GetAbilityID("witch_hunters_rhino_laud_hailers")
+    ,RepairID = cpu_manager.stats:GetAbilityID("witch_hunters_rhino_repair")
+
+-- Exorcist
+   ,VolleyID = cpu_manager.stats:GetAbilityID("witch_hunters_exorcist_volley")
+
+-- Immolator
+   ,HailersID = cpu_manager.stats:GetAbilityID("witch_hunters_immolator_laud_hailers")
+
+-- Throne Of Judgement
+    ,MandateID = cpu_manager.stats:GetAbilityID("witch_hunters_throne_judgement_inquisitorial_mandate")
+    ,RosariusID = cpu_manager.stats:GetAbilityID("witch_hunters_throne_judgement_rosarius")
+}
+
+function WitchHuntersVehicleTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("WitchHunters Vehicle Tactic")
+
+    self.hailersALastUse = g_iGMT
+    self.repairLastUse = g_iGMT
+    self.volleyLastUse = g_iGMT
+    self.hailersLastUse = g_iGMT
+    self.mandateLastUse = g_iGMT
+    self.rosariusLastUse = g_iGMT
+end
+
+function WitchHuntersVehicleTactic:DoAbilities()
+
+	self:DoRhinoTargetWeapon()
+	self:DoExorcistTargetWeapon()
+	self:DoImmolatorTargetWeapon()
+	self:DoThroneTargetWeapon()
+
+	-- Call basic DoAbilities methods
+	VehicleTactic.DoAbilities(self)
+end
+
+function WitchHuntersVehicleTactic:DoRhinoTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.hailersALastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, WitchHuntersVehicleAbility.HailersAID, Ability.Filters.CloseSquadEnemy, 10, 1 )
+            or Ability.DoAbilityArea( self.squad_ai, WitchHuntersVehicleAbility.HailersAID, Ability.Filters.CloseCommanderEnemy, 10, 1 )
+            or Ability.DoAbilityArea( self.squad_ai, WitchHuntersVehicleAbility.HailersAID, Ability.Filters.CloseMonsterEnemy, 10, 1 )
+            then
+                self.hailersALastUse = g_iGMT 
+            end
+        end
+    end
+
+    if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.4) then
+
+        if ( g_iGMT > self.repairLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, WitchHuntersVehicleAbility.RepairID, Ability.Filters.CloseEnemy, 40, 1 )
+            then
+                self.repairLastUse = g_iGMT 
+            end
+        end
+    end
+end
+
+function WitchHuntersVehicleTactic:DoExorcistTargetWeapon()
+
+	if self.squad_ai:IsInCombat() then
+		local iPower = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Power )
+		if ( iPower >= 600 or (iPower >= 300 and g_iGMT > self.volleyLastUse + 130) ) then
+			if Ability.DoAbilityTarget( self.squad_ai, WitchHuntersVehicleAbility.VolleyID, Ability.Filters.CloseInfantryEnemy, 1 )
+			or Ability.DoAbilityTarget( self.squad_ai, WitchHuntersVehicleAbility.VolleyID, Ability.Filters.CloseVehicleEnemy, 1 )
+			or Ability.DoAbilityTarget( self.squad_ai, WitchHuntersVehicleAbility.VolleyID, Ability.Filters.CloseCommanderEnemy, 1 ) 
+			or Ability.DoAbilityTarget( self.squad_ai, WitchHuntersVehicleAbility.VolleyID, Ability.Filters.CloseMonsterEnemy, 1 ) then
+				self.volleyLastUse = g_iGMT 
+			end
+		end
+	end
+end
+
+function WitchHuntersVehicleTactic:DoImmolatorTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.hailersLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, WitchHuntersVehicleAbility.HailersID, Ability.Filters.CloseSquadEnemy, 10, 1 )
+            or Ability.DoAbilityArea( self.squad_ai, WitchHuntersVehicleAbility.HailersID, Ability.Filters.CloseCommanderEnemy, 10, 1 )
+            or Ability.DoAbilityArea( self.squad_ai, WitchHuntersVehicleAbility.HailersID, Ability.Filters.CloseMonsterEnemy, 10, 1 )
+            then
+                self.hailersLastUse = g_iGMT 
+            end
+        end
+    end
+end
+
+function WitchHuntersVehicleTactic:DoThroneTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.mandateLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, WitchHuntersVehicleAbility.MandateID, Ability.Filters.CloseEnemy, 20, 3 )
+            then
+                self.mandateLastUse = g_iGMT 
+            end
+        end
+    end
+
+    if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.6) then
+
+        if ( g_iGMT > self.rosariusLastUse + 10 ) then
+            if Ability.DoAbilityArea( self.squad_ai, WitchHuntersVehicleAbility.RosariusID, Ability.Filters.CloseEnemy, 40, 1 ) then
+                self.rosariusLastUse = g_iGMT 
+            end
+        end
+    end
+end
+
+-- Check if the vehicle should dance away in melee
+function WitchHuntersVehicleTactic:CheckVehicleDance(sName)
+
+	if (sName == "witch_hunters_squad_repressor" or
+		sName == "witch_hunters_squad_rhino" or
+		sName == "witch_hunters_squad_sisters_sentinel" or
+		sName == "witch_hunters_squad_exorcist" or
+		sName == "witch_hunters_squad_exorcist_sanctorum" or
+		sName == "witch_hunters_squad_incarcerator" or
+		sName == "witch_hunters_squad_immolator" or
+		sName == "witch_hunters_squad_land_raider_redeemer") then
+		return true
+	end
+	return false
+end

@@ -1,0 +1,52 @@
+----------------------------------------
+-- File: 'exorcisttactic.ai'
+-- Edited by Thudmeizer @ 16.11.2011
+
+class 'ExorcistTactic' (WitchHuntersVehicleTactic)
+
+Exorcist = {}
+
+--[[ExorcistAbility =
+{
+    VolleyID = cpu_manager.stats:GetAbilityID("witch_hunters_exorcist_volley")
+}]]
+
+function ExorcistTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Exorcist Tactic")
+
+    --self.volleyLastUse = g_iGMT
+end
+
+function ExorcistTactic:InitAbilities()
+
+	 --[[if (Exorcist.volley_id == nil) then
+		Exorcist.volley_id = cpu_manager.stats:GetAbilityID( "witch_hunters_exorcist_volley" )
+	 end]]
+end
+
+function ExorcistTactic:DoAbilities()
+
+    self:DoExorcistTargetWeapon()
+
+	--[[ Long Range rocket barrage
+	Ability.DoAbilityPos( self.squad_ai, Exorcist.volley_id, Ability.Filters.CloseSquadEnemy, 3 )
+	Ability.DoAbilityPos( self.squad_ai, Exorcist.volley_id, Ability.Filters.CloseMonsterEnemy, 2 )
+	Ability.DoAbilityPos( self.squad_ai, Exorcist.volley_id, Ability.Filters.CloseVehicleEnemy, 1 )]]
+end
+
+--[[function ExorcistTactic:DoExorcistTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.volleyLastUse + 30 ) then
+            if Ability.DoAbilityTarget( self.squad_ai, ExorcistAbility.VolleyID, Ability.Filters.CloseInfantryEnemy, 6 )
+            or Ability.DoAbilityTarget( self.squad_ai, ExorcistAbility.VolleyID, Ability.Filters.CloseVehicleEnemy, 1 )
+            or Ability.DoAbilityTarget( self.squad_ai, ExorcistAbility.VolleyID, Ability.Filters.CloseCommanderEnemy, 1 ) 
+            or Ability.DoAbilityTarget( self.squad_ai, ExorcistAbility.VolleyID, Ability.Filters.CloseMonsterEnemy, 1 )
+            then
+                self.volleyLastUse = g_iGMT 
+            end
+        end
+    end
+end]]

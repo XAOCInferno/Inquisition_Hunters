@@ -1,0 +1,14 @@
+----------------------------------------
+-- File: 'reliquarytactic.ai'
+-- Edited by Thudmeizer		@ 21.02.2009
+
+class 'ReliquaryTactic' (BaseTactic)
+
+function ReliquaryTactic:__init( base_ai ) super( base_ai )
+
+	self:SetName("Reliquary Tactic")
+end
+
+function ReliquaryTactic:CanDeepStrikeTroops()
+	return true
+end

@@ -1,0 +1,73 @@
+----------------------------------------
+-- File: 'livingsaintkatherinetactic.ai'
+-- Edited by Gambit @ 09.03.2014
+
+class 'LivingSaintKatherineTactic' (WitchHuntersInfantryTactic)
+
+LivingSaintKatherine = {}
+
+function LivingSaintKatherineTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Living Saint Katherine Tactic")
+end
+
+-- Override immediate re-possession to normal state
+function LivingSaintKatherineTactic:DoAbilities()
+
+end
+
+function LivingSaintKatherineTactic:AlwaysAttack()
+	return true
+end
+
+function LivingSaintKatherineTactic:Update()
+
+	-- State machine
+	if not Tactic.Update( self ) then
+		return false
+	end
+	
+	if self.squad_ai:CanJump() then
+		self.tolerance_default = self.squad_ai:GetJumpDistance()
+	else
+		self.tolerance_default = 100
+	end
+	
+	self:SyncSubState()
+	
+	-- If not already in substate
+	if (self.stateID == Tactic.StateID.NoState) then
+	   
+		-- Check dance mode
+		if (CpuManager.AISettings.iDancing == 2) then
+		 	self:CheckForDeath()
+			if (self.stateID == Tactic.StateID.NoState) then
+				self:CheckForDance()
+				if (self.stateID == Tactic.StateID.NoState) then
+					self:CheckForStealthTroops()
+				end
+			end
+		elseif (CpuManager.AISettings.iDancing == 1 and g_iGMT > self.m_iDancing + 10) then
+			self:CheckForDeath()
+			if (self.stateID == Tactic.StateID.NoState) then
+				self:CheckForDance()
+				if (self.stateID == Tactic.StateID.NoState) then
+					self:CheckForStealthTroops()
+				end
+			end
+		end
+	end
+
+	-- Special moves
+	self:CloseOnEnemy()
+	
+	-- Do abilities
+	self:InitAbilities()
+	self:DoAbilities()
+	
+	-- Check stance
+	self:UpdateStance()
+	
+	-- Return success
+	return true
+end

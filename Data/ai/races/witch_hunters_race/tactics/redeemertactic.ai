@@ -1,0 +1,74 @@
+----------------------------------------
+-- File: 'redeemertactic.ai'
+-- Edited by Gambit @ 2.12.2018
+
+class 'RedeemerTactic' (WitchHuntersVehicleTactic)
+
+LRRedeemer = {}
+
+function RedeemerTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Land Raider Redeemer Tactic")
+
+	-- Vehicle is a heavy transport
+	self.m_iTransportVehicle = 3
+	self.m_iTransportSlots = 1
+	--self. = g_iGMT
+end
+
+
+function RedeemerTactic:InitAbilities()
+
+	if (LRRedeemer.spirit_id == nil) then
+		LRRedeemer.spirit_id = cpu_manager.stats:GetAbilityID( "witch_hunters_machine_spirit" )
+		LRRedeemer.missiles_id = cpu_manager.stats:GetAbilityID( "witch_hunters_hk_missiles_landraider" )
+		LRRedeemer.hailers_id = cpu_manager.stats:GetAbilityID( "witch_hunters_landraider_laud_hailers" )
+		LRRedeemer.smoke_id = cpu_manager.stats:GetAbilityID( "witch_hunters_landraider_smoke_launchers" )
+	end
+end
+
+
+function RedeemerTactic:DoAbilities()
+
+	if self.squad_ai:CanDoAbility(LRRedeemer.missiles_id) then
+		local iRange = self.squad_ai:GetAbilityRange(LRRedeemer.missiles_id)
+		local iPos = self.squad_ai:GetPosition()
+		-- Try to activate against vehicles
+		local oSquad = Ability.Filters.CloseVehicleEnemy(iPos, iRange, 1)
+		if oSquad ~= nil then
+			if oSquad:IsInCombat() then
+				if self.squad_ai:DoSpecialAbilitySquad(LRRedeemer.missiles_id, oSquad:GetSquad()) then
+					return
+				end
+			end
+		end
+		-- Try to activate against buildings
+		local oEntity = cpu_manager.cpu_player:FindFirstBaseEnemy(iPos, iRange, 1)
+		if oEntity ~= nil and cpu_manager.cpu_player:FindFirstHurtSquad(oEntity:GetPosition(), 30) ~= nil then
+			if self.squad_ai:DoSpecialAbilityEntity(LRRedeemer.missiles_id, oEntity:GetEntity()) then
+				return
+			end
+		end
+	end
+
+	if self.squad_ai:IsInCombat() and self.squad_ai:WasRecentlyHurt() then
+		if self.squad_ai:CanDoAbility(LRRedeemer.spirit_id) then
+			self.squad_ai:DoSpecialAbility(LRRedeemer.spirit_id)
+			return
+		end
+		if self.squad_ai:CanDoAbility(LRRedeemer.hailers_id) then
+			if Ability.DoAbilityArea( self.squad_ai, LRRedeemer.hailers_id, Ability.Filters.CloseSquadEnemy, 10, 1 )
+			or Ability.DoAbilityArea( self.squad_ai, LRRedeemer.hailers_id, Ability.Filters.CloseCommanderEnemy, 10, 1 )
+			or Ability.DoAbilityArea( self.squad_ai, LRRedeemer.hailers_id, Ability.Filters.CloseMonsterEnemy, 10, 1 ) then
+				return
+			end
+		end
+		if self.squad_ai:CanDoAbility(LRRedeemer.smoke_id) then
+			local iRange = self.squad_ai:GetAbilityRange(LRRedeemer.smoke_id)
+			local oUnit = Ability.Filters.CloseHurt(self.squad_ai:GetPosition(), iRange, 1)
+			if (oUnit ~= nil and oUnit:IsInCombat() and cpu_manager:GetUnitStrength(oUnit) > 150) then
+				self.squad_ai:DoSpecialAbilitySquad(LRRedeemer.smoke_id, oUnit:GetSquad())
+			end
+		end
+	end
+end

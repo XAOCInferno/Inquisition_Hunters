@@ -1,0 +1,34 @@
+----------------------------------------
+-- File: 'repentiatactic.ai'
+-- Edited by Gambit 3.1.2014
+
+class 'RepentiaTactic' (WitchHuntersInfantryTactic)
+
+Repentia = {}
+
+function RepentiaTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Repentia Tactic")
+end
+
+function RepentiaTactic:AlwaysAttack()
+	return true
+end
+
+function RepentiaTactic:InitAbilities()
+
+	if Repentia.fervour_id == nil then
+		Repentia.fervour_id = cpu_manager.stats:GetAbilityID( "witch_hunters_righteous_fervor" )
+	end
+end
+
+function RepentiaTactic:DoAbilities()
+
+	self:DoRepentiaUseWeapon()
+	
+	if self.squad_ai:IsInCombat() and self.squad_ai:CanDoAbility(Repentia.fervour_id) then
+		if self.squad_ai:GetNumTroopers() > 3 and self.squad_ai:GetHealthPercentage() > 0.7 then
+			self.squad_ai:DoSpecialAbility(Repentia.fervour_id)
+		end
+	end
+end

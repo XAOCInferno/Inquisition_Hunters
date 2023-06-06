@@ -1,0 +1,14 @@
+----------------------------------------
+-- File: 'repressortactic.ai'
+-- Edited by Thudmeizer		@ 21.02.2009
+
+class 'RepressorTactic' (WitchHuntersVehicleTactic)
+
+function RepressorTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Repressor Tactic")
+
+	-- Vehicle is a light transport
+	self.m_iTransportVehicle = 2
+	self.m_iTransportSlots = 3
+end

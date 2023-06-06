@@ -1,0 +1,87 @@
+----------------------------------------
+-- File: 'battlesistertactic.ai'
+-- Edited by Thudmeizer @ 16.11.2011
+
+class 'BattleSisterTactic' (WitchHuntersInfantryTactic)
+
+BattleSister = {}
+
+--[[BattleSisterAbility =
+{
+    GrenadesID = cpu_manager.stats:GetAbilityID("witch_hunters_adepta_sororitas_grenades")
+    ,HandEmperorID = cpu_manager.stats:GetAbilityID("witch_hunters_actoffaith_hand_emperor")
+    ,VeteranID = cpu_manager.stats:GetAbilityID("witch_hunters_sister_veteran")
+}]]
+
+function BattleSisterTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("BattleSister Tactic")
+
+    --self.grenadesLastUse = g_iGMT
+    --self.handEmperorLastUse = g_iGMT
+    --self.veteranLastUse = g_iGMT
+end
+
+function BattleSisterTactic:InitAbilities()
+
+	 --[[if (BattleSister.grenades_id == nil) then
+		BattleSister.grenades_id = cpu_manager.stats:GetAbilityID( "witch_hunters_adepta_sororitas_grenades" )
+	 end
+
+	 if (BattleSister.emperor_id == nil) then
+		BattleSister.emperor_id = cpu_manager.stats:GetAbilityID( "witch_hunters_actoffaith_hand_emperor" )
+	 end
+
+	 if (BattleSister.rapidfire_id == nil) then
+		BattleSister.rapidfire_id = cpu_manager.stats:GetAbilityID( "witch_hunters_sister_veteran" )
+	 end]]
+end
+
+function BattleSisterTactic:DoAbilities()
+
+     self:DoThrowGrenades()
+     self:DoBattleSistersUseWeapon()
+    --self:DoBattleSisterTargetWeapon()
+
+	--[[Ability.DoAbilityTarget(self.squad_ai, BattleSister.grenades_id, Ability.Filters.CloseSquadEnemy, 1)
+	Ability.DoAbilityTarget(self.squad_ai, BattleSister.grenades_id, Ability.Filters.CloseCommanderEnemy, 1)
+	Ability.DoAbilityTarget(self.squad_ai, BattleSister.grenades_id, Ability.Filters.CloseMonsterEnemy, 1)
+
+	if (self.squad_ai:IsInCombat() and self.squad_ai:GetNumTroopers() >= 6) then
+		Ability.DoAbility( self.squad_ai, BattleSister.emperor_id, Ability.PredicateFilters.CloseInCombat )
+	end
+
+	Ability.DoAbility( self.squad_ai, BattleSister.rapidfire_id, Ability.PredicateFilters.IsInCombat )]]
+end
+
+--[[function BattleSisterTactic:DoBattleSisterTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.grenadesLastUse + 30 ) then
+            if Ability.DoAbilityTarget( self.squad_ai, BattleSisterAbility.GrenadesID, Ability.Filters.CloseSquadEnemy, 1 )
+            or Ability.DoAbilityTarget( self.squad_ai, BattleSisterAbility.GrenadesID, Ability.Filters.CloseCommanderEnemy, 1 ) 
+            or Ability.DoAbilityTarget( self.squad_ai, BattleSisterAbility.GrenadesID, Ability.Filters.CloseMonsterEnemy, 1 )
+            then
+                self.grenadesLastUse = g_iGMT 
+            end
+        end
+
+        if ( g_iGMT > self.veteranLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, BattleSisterAbility.VeteranID, Ability.Filters.CloseEnemy, 20, 5 )
+            then
+                self.veteranLastUse = g_iGMT 
+            end
+        end
+    end
+
+    if (self.squad_ai:IsInCombat() and self.squad_ai:GetNumTroopers() >= 6) then
+
+        if ( g_iGMT > self.handEmperorLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, BattleSisterAbility.HandEmperorID, Ability.Filters.CloseEnemy, 10, 5 )
+           then
+                self.handEmperorLastUse = g_iGMT 
+            end
+        end
+    end
+end]]

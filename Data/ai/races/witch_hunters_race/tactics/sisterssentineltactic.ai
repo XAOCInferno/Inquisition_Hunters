@@ -1,0 +1,14 @@
+----------------------------------------
+-- File: 'sisterssentineltactic.ai'
+-- Edited by Gambit		@ 10.02.2019
+
+class 'SistersSentinelTactic' (WitchHuntersVehicleTactic)
+
+function SistersSentinelTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Sentinel Tactic")
+end
+
+function SistersSentinelTactic:CanOnlyDecap()
+	return true
+end

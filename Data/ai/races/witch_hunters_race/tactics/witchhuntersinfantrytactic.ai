@@ -1,0 +1,523 @@
+----------------------------------------
+-- File: 'witchhuntersinfantrytactic.ai'
+-- Edited by Thudmeizer  @ 25.10.2015
+-- Edited by Gambit  @ 07.06.2015
+
+class 'WitchHuntersInfantryTactic' (InfantryTactic)
+
+WitchHuntersInfantryAbility =
+{
+	ArbiteBombID = cpu_manager.stats:GetAbilityID("witch_hunters_adeptus_arbites_grenades")
+	,ArbiteSmokeBombID = cpu_manager.stats:GetAbilityID("witch_hunters_adeptus_arbites_smoke_grenades")
+	,SisterBombID = cpu_manager.stats:GetAbilityID("witch_hunters_adepta_sororitas_grenades")
+	,MeltaBombID = cpu_manager.stats:GetAbilityID("witch_hunters_adepta_sororitas_melta_bombs")
+
+-- Eversor
+	,MeltaID = cpu_manager.stats:GetAbilityID("witch_hunters_eversor_melta_bombs")
+	,BerserkID = cpu_manager.stats:GetAbilityID("witch_hunters_eversor_berserk")
+
+-- Callidus
+	,PolymorphineID = cpu_manager.stats:GetAbilityID("witch_hunters_callidus_polymorphine")
+	,TouchID = cpu_manager.stats:GetAbilityID("witch_hunters_callidus_assassin_touch")
+
+-- Archoflagellants
+	,InjectorsID = cpu_manager.stats:GetAbilityID("witch_hunters_archoflagellant_implant_injectors")
+
+-- Battle Sisters
+	,HandEmperorID = cpu_manager.stats:GetAbilityID("witch_hunters_actoffaith_hand_emperor")
+	,VeteranID = cpu_manager.stats:GetAbilityID("witch_hunters_sister_veteran")
+
+-- Seraphims
+	,SpiritID = cpu_manager.stats:GetAbilityID("witch_hunters_actoffaith_spirit_martyr")
+	,VeteranAID = cpu_manager.stats:GetAbilityID("witch_hunters_sister_veteran_seraphim")
+
+-- Retributors
+	,GuidanceID = cpu_manager.stats:GetAbilityID("witch_hunters_actoffaith_divine_guidance")
+
+-- Repentia
+	,PassionID = cpu_manager.stats:GetAbilityID("witch_hunters_actoffaith_the_passion")
+
+-- Canoness
+	,HeresiusID = cpu_manager.stats:GetAbilityID("witch_hunters_canoness_liber_heresius")
+	,OpheliaID = cpu_manager.stats:GetAbilityID("witch_hunters_canoness_mantle_ophelia")
+	,Ophelia2ID = cpu_manager.stats:GetAbilityID("witch_hunters_canoness_mantle_ophelia_praxedes")
+	,MartyrID = cpu_manager.stats:GetAbilityID("witch_hunters_canoness_true_martyr")
+
+-- Celestrians
+	,LightID = cpu_manager.stats:GetAbilityID("witch_hunters_actoffaith_emperor_light")
+
+-- Female Inquisitor Command Squad
+	,ShieldID = cpu_manager.stats:GetAbilityID("witch_hunters_adepta_sororitas_shield_faith")
+	,ScourgingID = cpu_manager.stats:GetAbilityID("witch_hunters_scourging")
+	,PsychicID = cpu_manager.stats:GetAbilityID("witch_hunters_cherubim_psychic_attack")
+
+}
+
+function WitchHuntersInfantryTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("WitchHunters Infantry Tactic")
+
+	-- Set infantry options
+	local sSquadName = squad_ai:GetSquadName()
+	if (sSquadName == "witch_hunters_squad_battle_sister" or
+		sSquadName == "witch_hunters_squad_retributor" or
+		sSquadName == "witch_hunters_squad_female_inquisitor_command_squad" or
+		sSquadName == "witch_hunters_squad_canoness" or
+		sSquadName == "witch_hunters_squad_saint_praxedes") then
+		
+		-- Squads are transportable
+		self.m_iTransportable = 1	--Rhino
+
+	elseif (sSquadName == "witch_hunters_squad_adeptus_arbites_combat_melee" or
+		sSquadName == "witch_hunters_squad_adeptus_arbites_fire_support" or
+		sSquadName == "witch_hunters_squad_zealot" or
+		sSquadName == "witch_hunters_squad_eversor") then
+
+		-- Squads are transportable
+		self.m_iTransportable = 2	--Repressor
+
+	elseif (sSquadName == "witch_hunters_squad_celestian") then
+		
+		-- Squads are able to deepstrike	
+		self.m_iDeepStrikeBlueprintID = cpu_manager.stats:GetBuildingID("witch_hunters_armorium")
+		-- Squads are transportable
+		self.m_iTransportable = 3	--Immolator
+
+	elseif (sSquadName == "witch_hunters_squad_callidus") then
+		
+		-- Squads are able to deepstrike	
+		self.m_iDeepStrikeBlueprintID = cpu_manager.stats:GetBuildingID("witch_hunters_inquisition_armorium")
+		-- Squads are transportable
+		self.m_iTransportable = 2	--Repressor
+
+	elseif (sSquadName == "witch_hunters_squad_celestine_saint") then
+		
+		-- Squads are able to deepstrike	
+		self.m_iDeepStrikeBlueprintID = cpu_manager.stats:GetBuildingID("witch_hunters_reliquary")
+	end
+
+	self.arbiteBombLastUse = g_iGMT
+	self.sisterBombLastUse = g_iGMT
+	self.meltaBombLastUse = g_iGMT
+	self.meltaLastUse = g_iGMT
+	self.berserkLastUse = g_iGMT
+	self.polymorphineLastUse = g_iGMT
+	self.touchLastUse = g_iGMT
+	self.injectorsLastUse = g_iGMT
+	self.handEmperorLastUse = g_iGMT
+	self.veteranLastUse = g_iGMT
+	self.spiritLastUse = g_iGMT
+	self.veteranALastUse = g_iGMT
+	self.guidanceLastUse = g_iGMT
+	self.passionLastUse = g_iGMT
+	self.heresiusLastUse = g_iGMT
+	self.opheliaLastUse = g_iGMT
+	self.lightLastUse = g_iGMT
+	self.shieldLastUse = g_iGMT
+	self.scourgingLastUse = g_iGMT
+	self.psychicLastUse = g_iGMT
+
+end
+
+
+function WitchHuntersInfantryTactic:AddTargetAbilities()
+
+end
+
+--[[function WitchHuntersInfantryTactic:AddCommanders()
+	table.insert(self.commander, { "witch_hunters_squad_canoness", true })
+	table.insert(self.commander, { "witch_hunters_squad_eversor", false })
+	table.insert(self.commander, { "witch_hunters_squad_callidus", false })
+	table.insert(self.commander, { "witch_hunters_squad_female_inquisitor_command_squad", false })
+	table.insert(self.commander, { "witch_hunters_squad_throne_judgement", false })
+end]]--
+
+
+function WitchHuntersInfantryTactic:DoAbilities()
+
+	--[[-- I might have these attached
+	if (self.squad_ai:IsAttached()) then
+		if (self.squad_ai:HasSquadAttached("witch_hunters_squad_canoness")) then
+			CanonessTactic.InitAbilities( self )
+			CanonessTactic.DoAbilities( self )
+		end
+	end]]
+
+	self:DoThrowGrenades()
+	self:DoAssassinEversorUseAbility()
+	self:DoAssassinCallidusUseAbility()
+	self:DoArchoflagellantUseWeapon()
+	self:DoBattleSistersUseWeapon()
+	self:DoSeraphimsUseWeapon()
+	self:DoRetributorsUseWeapon()
+	self:DoRepentiaUseWeapon()
+	self:DoCanonessUseWeapon()
+	self:DoCelestianUseWeapon()
+	self:DoFemaleInquisitorUseWeapon()
+
+	-- Call basic DoAbilities methods
+	InfantryTactic.DoAbilities(self)
+end
+
+
+function WitchHuntersInfantryTactic:DoThrowGrenades()
+
+	if self.squad_ai:IsInCombat() then
+		if ( g_iGMT > self.arbiteBombLastUse + 30 ) then
+			if Ability.DoAbilityTarget( self.squad_ai, WitchHuntersInfantryAbility.ArbiteBombID, Ability.Filters.CloseSquadEnemy, 1 )
+			or Ability.DoAbilityTarget( self.squad_ai, WitchHuntersInfantryAbility.ArbiteBombID, Ability.Filters.CloseCommanderEnemy, 1 ) then
+				self.arbiteBombLastUse = g_iGMT 
+			end
+		end
+
+		if self.squad_ai:CanDoAbility(WitchHuntersInfantryAbility.ArbiteSmokeBombID) then
+			-- Search a squad
+			local iRange = self.squad_ai:GetAbilityRange(WitchHuntersInfantryAbility.ArbiteSmokeBombID)
+			local oUnit = Ability.Filters.CloseHurt(self.squad_ai:GetPosition(), iRange, 1)
+			if oUnit ~= nil and oUnit:IsInCombat() then
+				self.squad_ai:DoSpecialAbilitySquad(WitchHuntersInfantryAbility.ArbiteSmokeBombID, oUnit:GetSquad())
+			end
+		end
+
+		if ( g_iGMT > self.sisterBombLastUse + 30 ) then
+			if Ability.DoAbilityTarget( self.squad_ai, WitchHuntersInfantryAbility.SisterBombID, Ability.Filters.CloseSquadEnemy, 1 )
+			or Ability.DoAbilityTarget( self.squad_ai, WitchHuntersInfantryAbility.SisterBombID, Ability.Filters.CloseCommanderEnemy, 1 ) 
+			or Ability.DoAbilityTarget( self.squad_ai, WitchHuntersInfantryAbility.SisterBombID, Ability.Filters.CloseMonsterEnemy, 1 ) then
+				self.sisterBombLastUse = g_iGMT 
+			end
+		end
+    
+		if ( g_iGMT > self.meltaBombLastUse + 65 ) then        
+			if Ability.DoAbilityTarget( self.squad_ai, WitchHuntersInfantryAbility.MeltaBombID, Ability.Filters.CloseVehicleEnemy, 1 )
+			or Ability.DoAbilityTargetEntity( self.squad_ai, WitchHuntersInfantryAbility.MeltaBombID, Ability.EntityFilters.CloseBaseEntityEnemy, 1 ) then
+				self.meltaBombLastUse = g_iGMT
+			end
+		end    
+	end
+
+end
+
+
+function WitchHuntersInfantryTactic:DoAssassinEversorUseAbility()
+
+	if self.squad_ai:IsInCombat() then
+		if ( g_iGMT > self.meltaLastUse + 30 ) then
+			if Ability.DoAbilityTarget( self.squad_ai, WitchHuntersInfantryAbility.MeltaID, Ability.Filters.CloseVehicleEnemy, 1 )
+			or Ability.DoAbilityTargetEntity( self.squad_ai, WitchHuntersInfantryAbility.MeltaID, Ability.EntityFilters.CloseBaseEntityEnemy, 1 ) then
+				self.meltaLastUse = g_iGMT 
+			end
+		end
+
+		if ( g_iGMT > self.berserkLastUse + 10 and self.squad_ai:IsAttacking() and Ability.Filters.CloseEnemy( self.squad_ai:GetPosition(), 16, 2 )~= nil) then
+			if Ability.DoAbility( self.squad_ai, WitchHuntersInfantryAbility.BerserkID, Ability.Filters.IsInCombat ) then
+				self.berserkLastUse = g_iGMT 
+			end
+		end
+	end
+end
+
+function WitchHuntersInfantryTactic:DoAssassinCallidusUseAbility()
+
+	if self.squad_ai:IsInCombat() then
+		if self.squad_ai:CanDoAbility(WitchHuntersInfantryAbility.PolymorphineID) then -- and ( g_iGMT > self.polymorphineLastUse + 30 ) then
+			if Ability.DoAbilityArea( self.squad_ai, WitchHuntersInfantryAbility.PolymorphineID, Ability.Filters.CloseSquadEnemy, 10, 1 )
+			or Ability.DoAbilityArea( self.squad_ai, WitchHuntersInfantryAbility.PolymorphineID, Ability.Filters.CloseCommanderEnemy, 10, 1 ) then
+				self.polymorphineLastUse = g_iGMT
+				return
+			end
+		end
+
+		if self.squad_ai:CanDoAbility(WitchHuntersInfantryAbility.TouchID) then -- and ( g_iGMT > self.touchLastUse + 30 ) then
+			if Ability.DoAbilityTarget( self.squad_ai, WitchHuntersInfantryAbility.TouchID, Ability.Filters.CloseCommanderEnemy, 1 ) then
+				self.touchLastUse = g_iGMT 
+				return
+			else
+				local iRange = self.squad_ai:GetAbilityRange(WitchHuntersInfantryAbility.TouchID) - 1
+				local oUnit = Ability2.Filters.CloseMonsterHighEnemy(self.squad_ai:GetPosition(), iRange, 1)
+				if oUnit ~= nil and cpu_manager:GetUnitStrength(oUnit) > 250 then
+					self.squad_ai:DoSpecialAbilitySquad(WitchHuntersInfantryAbility.TouchID, oUnit:GetSquad())
+					self.touchLastUse = g_iGMT
+					return
+				end
+			end
+		end
+	end
+end
+
+
+function WitchHuntersInfantryTactic:DoArchoflagellantUseWeapon()
+
+	if self.squad_ai:IsInCombat() then
+		if ( g_iGMT > self.injectorsLastUse + 20 and self.squad_ai:IsAttacking() and Ability.Filters.CloseEnemy( self.squad_ai:GetPosition(), 30, 2 )~= nil) then
+			if Ability.DoAbility( self.squad_ai, WitchHuntersInfantryAbility.InjectorsID, Ability.Filters.IsInCombat ) then
+				self.injectorsLastUse = g_iGMT 
+			end
+		end
+	end
+
+end
+
+
+function WitchHuntersInfantryTactic:DoBattleSistersUseWeapon()
+
+	if self.squad_ai:IsInCombat() then
+		if ( g_iGMT > self.veteranLastUse + 30 ) then
+			if Ability.DoAbilityArea( self.squad_ai, WitchHuntersInfantryAbility.VeteranID, Ability.Filters.CloseEnemy, 20, 2 ) then
+				self.veteranLastUse = g_iGMT 
+			end
+		end
+	end
+
+	if (self.squad_ai:IsInCombat() and self.squad_ai:GetNumTroopers() >= 6) then
+		local iRequisition = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Requisition )
+		if ( iRequisition > 1500 or (iRequisition > 250 and g_iGMT > self.handEmperorLastUse + 150 ) ) then
+			if Ability.DoAbilityArea( self.squad_ai, WitchHuntersInfantryAbility.HandEmperorID, Ability.Filters.CloseEnemy, 15, 2 ) then
+				self.handEmperorLastUse = g_iGMT 
+			end
+		end
+	end
+
+end
+
+
+function WitchHuntersInfantryTactic:DoSeraphimsUseWeapon()
+
+	if self.squad_ai:IsInCombat() then
+		if ( g_iGMT > self.veteranALastUse + 30 ) then
+			if Ability.DoAbilityArea( self.squad_ai, WitchHuntersInfantryAbility.VeteranAID, Ability.Filters.CloseEnemy, 20, 2 ) then
+				self.veteranALastUse = g_iGMT 
+			end
+		end
+	end
+
+	if (self.squad_ai:IsInCombat() and self.squad_ai:GetNumTroopers() >= 7) then
+		local iRequisition = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Requisition )
+		if ( iRequisition > 1500 or (iRequisition > 300 and g_iGMT > self.spiritLastUse + 200 ) ) then
+			if Ability.DoAbilityArea( self.squad_ai, WitchHuntersInfantryAbility.SpiritID, Ability.Filters.CloseEnemy, 15, 2 ) then
+				self.spiritLastUse = g_iGMT 
+			end
+		end
+	end
+
+end
+
+
+function WitchHuntersInfantryTactic:DoCelestianUseWeapon()
+
+	if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.7) then
+		local iRequisition = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Requisition )
+		if ( iRequisition > 1500 or (iRequisition > 350 and g_iGMT > self.lightLastUse + 300 ) ) then
+			if Ability.DoAbilityArea( self.squad_ai, WitchHuntersInfantryAbility.LightID, Ability.Filters.CloseEnemy, 40, 1 ) then
+				self.lightLastUse = g_iGMT 
+			end
+		end
+	end
+
+end
+
+
+function WitchHuntersInfantryTactic:DoRepentiaUseWeapon()
+
+	if (self.squad_ai:IsInCombat() and self.squad_ai:GetNumTroopers() >= 6) then
+		local iRequisition = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Requisition )
+		if ( iRequisition > 1500 or (iRequisition > 320 and g_iGMT > self.passionLastUse+ 150 ) ) then
+			if Ability.DoAbilityArea( self.squad_ai, WitchHuntersInfantryAbility.PassionID, Ability.Filters.CloseEnemy, 20, 2 ) then
+				self.passionLastUse = g_iGMT 
+			end
+		end
+	end
+	
+end
+
+
+function WitchHuntersInfantryTactic:DoRetributorsUseWeapon()
+
+	if (self.squad_ai:IsInCombat() and self.squad_ai:GetNumTroopers() >= 8) then
+		local iRequisition = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Requisition )
+		if ( iRequisition > 1500 or (iRequisition > 400 and g_iGMT > self.guidanceLastUse + 330 ) ) then
+			if Ability.DoAbilityArea( self.squad_ai, WitchHuntersInfantryAbility.GuidanceID, Ability.Filters.CloseEnemy, 35, 2 ) then
+				self.guidanceLastUse = g_iGMT 
+			end
+		end
+	end
+
+end
+
+
+function WitchHuntersInfantryTactic:DoCanonessUseWeapon()
+
+	if not self.squad_ai:IsInCombat() then
+
+		if ( g_iGMT > self.heresiusLastUse + 50 ) then
+			if Ability.DoAbilityArea( self.squad_ai, WitchHuntersInfantryAbility.HeresiusID, Ability.Filters.CloseEnemy, 30, 1 ) then
+				self.heresiusLastUse = g_iGMT 
+			end
+		end
+	end
+
+	if (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.3) then
+
+		if ( g_iGMT > self.opheliaLastUse + 10 ) then
+			if self.squad_ai:CanDoAbility(WitchHuntersInfantryAbility.OpheliaID) then
+				if Ability.DoAbilityArea( self.squad_ai, WitchHuntersInfantryAbility.OpheliaID, Ability.Filters.CloseEnemy, 40, 1 ) then
+					self.opheliaLastUse = g_iGMT
+				end
+			elseif self.squad_ai:CanDoAbility(WitchHuntersInfantryAbility.Ophelia2ID) then
+				if Ability.DoAbilityArea( self.squad_ai, WitchHuntersInfantryAbility.Ophelia2ID, Ability.Filters.CloseEnemy, 40, 1 ) then
+					self.opheliaLastUse = g_iGMT
+				end
+			end
+		end
+	end
+
+	if self.squad_ai:CanDoAbility(WitchHuntersInfantryAbility.MartyrID) then
+		if (self.squad_ai:GetHealthPercentage() < 0.4) then
+			if resource_manager:GetResourceAmount():Get(ResourceAmount.RT_Requisition) > 140 then
+				if (Ability.Filters.CloseEnemy(self.squad_ai:GetPosition(), 40, 1) == nil and not self.squad_ai:IsInCombat()) then
+					self.squad_ai:DoSpecialAbility(WitchHuntersInfantryAbility.MartyrID)
+				end
+			end
+		end
+	end
+
+end
+
+
+function WitchHuntersInfantryTactic:DoFemaleInquisitorUseWeapon()
+
+	if (self.squad_ai:IsBroken() or (self.squad_ai:WasRecentlyHurt() and self.squad_ai:GetHealthPercentage() < 0.6)) then
+		local iRequisition = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Requisition )
+		if ( iRequisition > 1500 or (iRequisition > 350 and g_iGMT > self.shieldLastUse + 120 ) ) then
+			if Ability.DoAbilityArea( self.squad_ai, WitchHuntersInfantryAbility.ShieldID, Ability.Filters.CloseEnemy, 30, 1 ) then
+				self.shieldLastUse = g_iGMT 
+			end
+		end
+	end
+
+	if self.squad_ai:IsInCombat() then
+		if ( g_iGMT > self.scourgingLastUse + 30 ) then
+			if Ability.DoAbilityPos( self.squad_ai, WitchHuntersInfantryAbility.ScourgingID, Ability.Filters.CloseEnemy, 10 ) then
+				self.scourgingLastUse = g_iGMT 
+			end
+		end
+
+		if ( g_iGMT > self.psychicLastUse + 30 ) then
+			if Ability.DoAbilityTarget( self.squad_ai, WitchHuntersInfantryAbility.PsychicID, Ability.Filters.CloseSquadEnemy, 1 )
+			or Ability.DoAbilityTarget( self.squad_ai, WitchHuntersInfantryAbility.PsychicID, Ability.Filters.CloseCommanderEnemy, 1 ) 
+			or Ability.DoAbilityTarget( self.squad_ai, WitchHuntersInfantryAbility.PsychicID, Ability.Filters.CloseMonsterEnemy, 1 )
+			or Ability.DoAbilityTarget( self.squad_ai, WitchHuntersInfantryAbility.PsychicID, Ability.Filters.CloseVehicleEnemy, 1 ) then
+				self.psychicLastUse = g_iGMT 
+			end
+		end
+	end
+
+end
+
+
+function WitchHuntersInfantryTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+
+	-- State machine
+	if (not InfantryTactic.Update( self )) then
+		return
+	end
+
+	-- Set stand and ground stance for ranged troops
+	if (self.squad_ai:IsRanged() and self.squad_ai:GetStance() ~= SquadAI.STANCE_StandGround) then
+		self.squad_ai:DoSetStance(SquadAI.STANCE_StandGround)
+	end
+end
+
+
+-- Fixed filters for Monster Med and Monster High!!
+Ability2 = 
+{
+Filters = 
+{
+	CloseMonsterEnemy = function(vPosition, iTolerance, iCount)
+
+		-- Make sure that count is valid
+		if (iCount == nil) then
+			iCount = 1
+		end
+
+		-- Quick check
+		if (not cpu_manager:CloseEnemyUnits(vPosition, iTolerance)) then
+			return nil
+		end
+
+		local oFunctor = function(oSquad, iCount)
+			local oStats = oSquad:GetStats()
+			if (oStats == nil) then
+				return false
+			end
+			return ((oStats:GetClass() == UnitStatsAI.UC_MonsterHigh or oStats:GetClass() == UnitStatsAI.UC_MonsterMed) and oSquad:GetNumTroopers() >= iCount)
+		end
+		return WitchHuntersInfantryTactic:GetClosestEnemySquad(vPosition, iTolerance, oFunctor, iCount)
+	end,
+
+
+	CloseMonsterHighEnemy = function(vPosition, iTolerance, iCount)
+
+		-- Make sure that count is valid
+		if (iCount == nil) then
+			iCount = 1
+		end
+
+		-- Quick check
+		if (not cpu_manager:CloseEnemyUnits(vPosition, iTolerance)) then
+			return nil
+		end
+
+		local oFunctor = function(oSquad, iCount)
+			local oStats = oSquad:GetStats()
+			if (oStats == nil) then
+				return false
+			end
+			return (oStats:GetClass() == UnitStatsAI.UC_MonsterHigh and oSquad:GetNumTroopers() >= iCount)
+		end
+		return WitchHuntersInfantryTactic:GetClosestEnemySquad(vPosition, iTolerance, oFunctor, iCount)
+	end,
+}
+}
+
+function WitchHuntersInfantryTactic:GetClosestEnemySquad(vPosition, iRange, oFunctor, iCount)
+
+	-- Init variables
+	local oEnemySquad = nil
+	local vCurrentPos = Vector3f()
+	local iCurrentDistanceSqr = 0
+	local iRangeSqr = sqr(iRange)
+
+	if (iCount == nil) then
+		iCount = 1
+	end
+
+	-- Compute all enemy squads from all players
+	for iEnemyPlayer in cpu_manager.stats:GetPlayerStats() do
+		if not iEnemyPlayer:IsPlayerDead() then
+			if cpu_manager.player_stats:IsEnemy(iEnemyPlayer) then
+				for oSquad in iEnemyPlayer:GetSquads() do
+					-- Check requirements
+					if (oSquad:IsValid() and oFunctor(oSquad, iCount)) then	      
+						-- Check if squad is in range
+						local vSquadPos = oSquad:GetPosition()
+						local iDistanceSqr = distance_sqr(vSquadPos, vPosition)
+						if (iDistanceSqr <= iRangeSqr) then
+							-- Check if it's closer than the last one
+							if (oEnemySquad == nil or iDistanceSqr < iCurrentDistanceSqr) then
+								oEnemySquad = oSquad
+								vCurrentPos = vSquadPos
+								iCurrentDistanceSqr = iDistanceSqr
+							end
+						end
+					end
+				end                
+			end          
+		end
+	end
+	return oEnemySquad
+end

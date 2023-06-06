@@ -1,0 +1,49 @@
+----------------------------------------
+-- File: 'retributortactic.ai'
+-- Edited by Thudmeizer @ 16.11.2011
+
+class 'RetributorTactic' (WitchHuntersInfantryTactic)
+
+Retributor = {}
+
+--[[RetributorAbility =
+{
+    GuidanceID = cpu_manager.stats:GetAbilityID("witch_hunters_actoffaith_divine_guidance")
+}]]
+
+function RetributorTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Retributor Tactic")
+
+    --self.guidanceLastUse = g_iGMT
+end
+
+function RetributorTactic:InitAbilities()
+
+	 --[[if (Retributor.guidance_id == nil) then
+		Retributor.guidance_id = cpu_manager.stats:GetAbilityID( "witch_hunters_actoffaith_divine_guidance" )
+	 end]]
+end
+
+function RetributorTactic:DoAbilities()
+
+     self:DoRetributorsUseWeapon()
+    --self:DoRetributorTargetWeapon()
+
+	--[[if (self.squad_ai:IsInCombat() and self.squad_ai:GetNumTroopers() >= 6) then
+		Ability.DoAbility( self.squad_ai, Retributor.guidance_id, Ability.PredicateFilters.IsInCombat )
+	end]]
+end
+
+--[[function RetributorTactic:DoRetributorTargetWeapon()
+
+    if (self.squad_ai:IsInCombat() and self.squad_ai:GetNumTroopers() >= 6) then
+
+        if ( g_iGMT > self.guidanceLastUse + 30 ) then
+            if Ability.DoAbilityArea( self.squad_ai, RetributorAbility.GuidanceID, Ability.Filters.CloseEnemy, 10, 5 )
+            then
+                self.guidanceLastUse = g_iGMT 
+            end
+        end
+    end
+end]]

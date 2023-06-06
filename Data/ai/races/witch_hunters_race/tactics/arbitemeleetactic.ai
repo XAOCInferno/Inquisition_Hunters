@@ -1,0 +1,92 @@
+----------------------------------------
+-- File: 'arbitemeleetactic.ai'
+-- Edited by Thudmeizer @ 16.11.2011
+
+class 'ArbiteMeleeTactic' (WitchHuntersInfantryTactic)
+
+ArbiteMelee = {}
+
+--[[ArbiteMeleeAbility =
+{
+    GrenadesID = cpu_manager.stats:GetAbilityID("witch_hunters_adeptus_arbites_grenades")
+}]]
+
+function ArbiteMeleeTactic:__init( squad_ai ) super( squad_ai )
+
+	self:SetName("Arbite Melee Tactic")
+
+	-- Assume squad just entrenched/retrenched
+	self.m_iLastEntrenchTime = g_iGMT
+
+    --self.grenadesLastUse = g_iGMT
+end
+
+function ArbiteMeleeTactic:InitAbilities()
+
+	 --[[if (ArbiteMelee.grenades_id == nil) then
+		ArbiteMelee.grenades_id = cpu_manager.stats:GetAbilityID( "witch_hunters_adeptus_arbites_grenades" )
+	 end]]
+end
+
+function ArbiteMeleeTactic:DoAbilities()
+
+    self:DoThrowGrenades()
+    --self:DoArbiteMeleeTargetWeapon()
+
+	-- Try to entrench
+	self:DoEntrenchAbility()
+
+	--[[ Try to use grenades on enemy infantry and commanders
+	Ability.DoAbilityTarget( self.squad_ai, ArbiteMelee.grenades_id, Ability.Filters.CloseSquadEnemy, 1 )
+	Ability.DoAbilityTarget( self.squad_ai, ArbiteMelee.grenades_id, Ability.Filters.CloseCommanderEnemy, 1 )]]
+end
+
+--[[function ArbiteMeleeTactic:DoArbiteMeleeTargetWeapon()
+
+    if self.squad_ai:IsInCombat() then
+
+        if ( g_iGMT > self.grenadesLastUse + 30 ) then
+            if Ability.DoAbilityTarget( self.squad_ai, ArbiteMeleeAbility.GrenadesID, Ability.Filters.CloseSquadEnemy, 1 )
+            or Ability.DoAbilityTarget( self.squad_ai, ArbiteMeleeAbility.GrenadesID, Ability.Filters.CloseCommanderEnemy, 1 ) 
+            then
+                self.grenadesLastUse = g_iGMT 
+            end
+        end
+    end
+end]]
+
+function ArbiteMeleeTactic:DoEntrenchAbility()
+
+	-- Check if we can entrench
+	if (self.squad_ai:CanEntrench(true)) then
+		-- Don't entrench too fast after a retrench
+		if (g_iGMT < self.m_iLastEntrenchTime + 12) then
+			return
+		end
+		-- Check situation, entrench if needed
+		if (self.squad_ai:IsUnderAttack() and self.squad_ai:IsAttacking() and (Ability.Filters.CloseInfantryEnemy( self.squad_ai:GetPosition(), 5, 1 ) ~= nil or Ability.Filters.CloseCommanderEnemy( self.squad_ai:GetPosition(), 5, 1 ) ~= nil)) then
+			self.squad_ai:DoEntrench(true)
+		end
+	end
+	
+	-- Check if we can retrench
+	if (self.squad_ai:CanEntrench(false)) then
+		-- Check situation, retrench if needed
+		if ((not self.squad_ai:IsUnderAttack()) or (self.squad_ai:GetHealthPercentage() < 0.6 and self.squad_ai:IsBroken()) or self.squad_ai:GetHealthPercentage() < 0.3 or Ability.Filters.CloseEnemy(self.squad_ai:GetPosition(), 16, 1) == nil) then
+			self.squad_ai:DoEntrench(false)
+			self.m_iLastEntrenchTime = g_iGMT
+		end
+	end
+end
+
+function ArbiteMeleeTactic:Update()
+
+	if (self:IsComplete()) then
+		return
+	end
+
+	-- State machine
+	if (not InfantryTactic.Update( self )) then
+		return
+	end
+end
