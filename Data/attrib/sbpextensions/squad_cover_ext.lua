@@ -1,0 +1,11 @@
+GameData = Inherit([[]])
+GameData["cover_blocking"] = Reference([[tables\cover_table.lua]])
+GameData["cover_blocking"]["priority"] = 2
+GameData["cover_heavy"] = Reference([[tables\cover_table.lua]])
+GameData["cover_heavy"]["priority"] = 5
+GameData["cover_light"] = Reference([[tables\cover_table.lua]])
+GameData["cover_light"]["priority"] = 4
+GameData["cover_negative"] = Reference([[tables\cover_table.lua]])
+GameData["cover_negative"]["priority"] = 1
+GameData["cover_stealth"] = Reference([[tables\cover_table.lua]])
+GameData["cover_stealth"]["priority"] = 3
