@@ -1,0 +1,17 @@
+GameData = Inherit([[]])
+GameData["ability_ext"] = Reference([[ebpextensions\ability_ext.lua]])
+GameData["ability_ext"]["abilities"]["ability_01"] = [[abilities\chaos_warp_storm_1.lua]]
+GameData["ability_ext"]["abilities"]["ability_02"] = [[abilities\chaos_warp_storm_2.lua]]
+GameData["ability_ext"]["abilities"]["ability_03"] = [[abilities\chaos_warp_storm_3.lua]]
+GameData["ability_ext"]["abilities"]["ability_04"] = [[abilities\chaos_warp_storm_4.lua]]
+GameData["ability_ext"]["abilities"]["ability_05"] = [[abilities\chaos_warp_storm_5.lua]]
+GameData["ability_ext"]["abilities"]["ability_06"] = [[abilities\chaos_warp_storm_damage_1.lua]]
+GameData["ability_ext"]["abilities"]["ability_07"] = [[abilities\chaos_warp_storm_damage_2.lua]]
+GameData["ability_ext"]["abilities"]["ability_08"] = [[abilities\chaos_warp_storm_damage_3.lua]]
+GameData["ability_ext"]["abilities"]["ability_09"] = [[abilities\chaos_warp_storm_damage_4.lua]]
+GameData["ability_ext"]["abilities"]["ability_10"] = [[abilities\chaos_warp_storm_damage_5.lua]]
+GameData["entity_blueprint_ext"] = Reference([[ebpextensions\entity_blueprint_ext.lua]])
+GameData["entity_blueprint_ext"]["animator"] = [[environment/all/bush_05]]
+GameData["sim_entity_ext"] = Reference([[ebpextensions\sim_entity_ext.lua]])
+GameData["structure_ext"] = Reference([[ebpextensions\structure_ext.lua]])
+GameData["type_ext"] = Reference([[ebpextensions\type_ext.lua]])
