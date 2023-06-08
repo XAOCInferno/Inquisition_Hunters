@@ -1,0 +1,854 @@
+Model = "Meta_Map_Menu"
+
+IntroMovie = "ss_kaurava_intro"
+IntroMovieText =
+
+{
+
+--#5200152
+--00;28 – 12;16
+
+	{
+		Text = "$5200152",
+		Start = 0.28,
+		End = 12.16,
+	},
+
+--#5200153
+--18;19 – 30;29
+
+	{
+		Text = "$5200153",
+		Start = 18.19,
+		End = 22.17,
+	},
+	
+	{
+		Text = "$5200154",
+		Start = 22.18,
+		End = 30.29,
+	},
+
+ --#5200155
+--32;22 – 37;29
+
+	{
+		Text = "$5200155",
+		Start = 32.22,
+		End = 37.29,
+	},
+
+ --#5200156
+--38;15 – 43;28
+
+	{
+		Text = "$5200156",
+		Start = 38.15,
+		End = 43.28,
+	},
+
+
+--#5200157
+--44;07 – 51;10
+
+	{
+		Text = "$5200157",
+		Start = 44.07,
+		End = 51.10,
+	},
+
+--#5200158
+--51;18 – 61;28
+
+	{
+		Text = "$5200158",
+		Start = 51.18,
+		End = 61.28,
+	},
+
+--#5200159
+--64;98 – 76;42
+
+	{
+		Text = "$5200159",
+		Start = 64.98,
+		End = 69.84,
+	},
+	
+	{
+		Text = "$5200160",
+		Start = 69.85,
+		End = 76.42,
+	},
+
+--#5200162
+--77;34 – 95;69
+
+	{
+		Text = "$5200162",
+		Start = 77.34,
+		End = 95.69,
+	},
+
+--#5200163
+--96;46 – 101;29
+
+	{
+		Text = "$5200163",
+		Start = 96.46,
+		End = 101.29,
+	},
+
+--#5200164
+--101;30 – 114;43
+
+	{
+		Text = "$5200164",
+		Start = 101.30,
+		End = 114.43,
+	},
+
+--#5200165
+--114;74 – 124;12
+
+	{
+		Text = "$5200165",
+		Start = 114.74,
+		End = 124.12,
+	},
+
+--#5200166
+--124.89 – 136.64
+
+	{
+		Text = "$5200166",
+		Start = 124.89,
+		End = 136.64,
+	},
+
+--#5200167
+--136;63 – 148;45
+
+	{
+		Text = "$5200167",
+		Start = 136.66,
+		End = 148.45,
+	},
+
+--#5200168
+--149;18 – 159;05
+
+	{
+		Text = "$5200168",
+		Start = 149.18,
+		End = 159.05,
+	},
+
+--#5200170
+--159;65 – 170;04
+
+	{
+		Text = "$5200170",
+		Start = 159.65,
+		End = 170.04,
+	},
+
+--#5200171
+--170;33 – 181;199
+
+	{
+		Text = "$5200171",
+		Start = 170.33,
+		End = 181.199,
+	},
+
+--#5200172
+--182;41 – 199;96
+
+	{
+		Text = "$5200172",
+		Start = 182.41,
+		End = 199.96,
+	},
+
+--#5200175
+--200;76 – 214;30
+
+	{
+		Text = "$5200175",
+		Start = 200.76,
+		End = 214.30,
+	},
+}
+
+OutroMovie = "" --"rivalry"
+OutroMovieText =
+{
+}
+
+-- Maximum military strength allowed for on the map for non-strongholds
+MilitaryStrengthMax = 10
+RequisitionPerMilitaryStrengthPoint = 85  --150  --used to be 270
+RequisitionMax = 999999
+
+-- Maximum military strength allowed for strongholds on the map (for AI players)
+StrongholdMilitaryStrengthBase = 10
+StrongholdMilitaryStrengthMax = 17
+StrongholdMilitaryStrengthNumTerritoriesForExtraPoint = 2
+
+-- AI Rank controls (used mostly for honor guard)
+AIRankMax = 10
+RequisitionPerAIRank = 140 -- was 400
+
+-- Scene ambient light information
+LightColourAmbient = { 140, 140, 140 }
+
+-- Scene directional light information
+LightColourDiffuse = { 140, 140, 140 }
+LightDirection = { 1, 1, 1 }
+
+-- Territory highlighting
+TerritorySelectionColourStart = { 0, 0, 0 }
+TerritorySelectionColourEnd = { 55, 55, 55 }
+TerritorySelectionFrequency = 1.5
+TerritoryFocusedColour = { 55, 55, 55 }
+
+-- AI move display information
+AIAttackDelay = 3
+AINonAttackDelay = 1
+AISuccessfulAttackDelay = 2
+AIUnsuccessfulAttackDelay = 2
+
+-- Requisition bonuses given when starting the game for each difficulty level
+EasyStartingRequisition = 900
+NormalStartingRequisition = 800
+HardStartingRequisition = 700
+
+-- List of planets on the map
+Planets =
+{
+  "Kaurava_I",
+  "Kaurava_II",
+  "Kaurava_III",
+  "Kaurava_IV"
+}
+
+-- List of territories on the map
+Territories =
+{
+	"Dussala_Precinct", -- Kuarava I
+	"Sama_Desert",
+	"Shakun_Coast",
+	"Jalaganda_Lowlands",
+	"Vyasastan",
+	"Kaurav_City",
+	"Solitude", -- Kaurava II
+	"Cerulea",
+	"Trivian_Groves",
+	"Skerries",
+	"Rokclaw_Mountains",
+	"Clooth-na-Bare",
+	"Rokclaw_Foothills",
+	"Forgotten_Isles",
+	"Nan_Yanoi",
+	"Irridene",
+	"Nirraein",  -- Kaurava III
+	"Principian_Badlands",
+	"Upper_Wastes",
+	"Broken_Lands",
+	"Kier_Harrad",
+	"Cape_of_Despair",
+	"Coastal_Imossa",
+	"Morholt_Range",   -- Kaurava IV
+	"Peninsula_of_Iseult",
+	"Gurmuns_Pass",
+	"Tristram_Plains",
+	"Marconia",
+	"Parmenie",
+	"Parmenian_Steppe",
+	"Lacunae", 
+	--[["NIS1", 
+	"NIS2",  	
+	"NIS3",  	
+	"NIS4",  	
+	"NIS5",  	
+	"NIS6",  	
+	"NIS7",  	
+	"NIS8",  	
+	"NIS9",  	
+	"NIS10",]]--
+}
+
+-- The default set of win conditions that will be used for skirmish maps
+-- Possible entries include:
+-- "Annihilate"
+-- "Assassinate"
+-- "ControlArea"
+-- "DestroyHQ"
+-- "EconomicVictory"
+-- "GameTimer"
+-- "StrategicObjective"
+-- "SuddenDeath"
+DefaultSkirmishWinConditions =
+{
+	"Annihilate",
+	"GameTimer",
+	"Heroes",
+}
+
+-- Number of attacks that the race which owns the "Fury" Key Location can do per turn
+FuryNumberOfAttacks = 2
+
+-- Reinforcement cost multiplier for the race that owns the "Bulwark" Key Location
+BulwarkReinforceCostMultiplier = 0.5
+
+-- List of markers whose areas may be cleared of persistent buildings. The markers correspond
+-- to each AI player in the game, so if there's only one AI, only the first marker's are will be cleared.
+ClearPersistanceMarkers =
+{
+	"mkr_clear_hq1",
+	"mkr_clear_hq2",
+	"mkr_clear_hq3",
+}
+
+-- Races that contest for the map (and their attributes)
+-- NOTE: The order in which the races are listed defines the order
+--       in which races will take turns.
+Races =
+{
+	"eldar_race",
+	"space_marine_race",
+	"chaos_marine_race",
+	"tau_race",
+	"ork_race",
+	"guard_race",
+	"necron_race",
+	"sisters_race",
+	"dark_eldar_race",
+}
+
+-- Sounds to use for the map
+DefaultSound = ""
+Sounds =
+{
+	MapZoomIn = "MetaMap/FE_MMSFX_zoom_in",
+	MapZoomOut = "MetaMap/FE_MMSFX_zoom_out",
+	PlayerBeingAttacked = "MetaMap/FE_MMSFX_att_warning",
+	
+	AutoResolve00 = "MetaMap/autoresolve/FE_MMSFX_Autoresolve_01",
+	AutoResolve01 = "MetaMap/autoresolve/FE_MMSFX_Autoresolve_02",
+	AutoResolve02 = "MetaMap/autoresolve/FE_MMSFX_Autoresolve_03",
+	AutoResolve03 = "MetaMap/autoresolve/FE_MMSFX_Autoresolve_04",
+	AutoResolve04 = "MetaMap/autoresolve/FE_MMSFX_Autoresolve_05",
+	AutoResolve05 = "MetaMap/autoresolve/FE_MMSFX_Autoresolve_06",
+	AutoResolve06 = "MetaMap/autoresolve/FE_MMSFX_Autoresolve_07",
+	AutoResolve07 = "MetaMap/autoresolve/FE_MMSFX_Autoresolve_08",
+	AutoResolve08 = "MetaMap/autoresolve/FE_MMSFX_Autoresolve_09",
+	AutoResolve09 = "MetaMap/autoresolve/FE_MMSFX_Autoresolve_10",
+	AutoResolve10 = "MetaMap/autoresolve/FE_MMSFX_Autoresolve_11",
+	AutoResolve11 = "MetaMap/autoresolve/FE_MMSFX_Autoresolve_12",
+  
+  tau_gun = "Races/Tau/Abilities/death_pulse/death_pulse",
+	
+	chaos_marine_race_Attack = "MetaMap/attack_results/FE_MMSFX_Cha_att",
+	chaos_marine_race_Win = "MetaMap/attack_results/FE_MMSFX_Cha_win",
+	chaos_marine_race_Lose = "MetaMap/attack_results/FE_MMSFX_Cha_los",
+	
+	eldar_race_Attack = "MetaMap/attack_results/FE_MMSFX_Eld_att",
+	eldar_race_Win = "MetaMap/attack_results/FE_MMSFX_Eld_win",
+	eldar_race_Lose = "MetaMap/attack_results/FE_MMSFX_Eld_los",
+	
+	guard_race_Attack = "MetaMap/attack_results/FE_MMSFX_ImG_att",
+	guard_race_Win = "MetaMap/attack_results/FE_MMSFX_ImG_win",
+	guard_race_Lose = "MetaMap/attack_results/FE_MMSFX_ImG_los",
+
+	dark_eldar_race_Attack = "MetaMap/attack_results/FE_MMSFX_DE_att",
+	dark_eldar_race_Win = "MetaMap/attack_results/FE_MMSFX_DE_win",
+	dark_eldar_race_Lose = "MetaMap/attack_results/FE_MMSFX_DE_los",
+
+	sisters_race_Attack = "MetaMap/attack_results/FE_MMSFX_Sis_att",
+	sisters_race_Win = "MetaMap/attack_results/FE_MMSFX_Sis_win",
+	sisters_race_Lose = "MetaMap/attack_results/FE_MMSFX_Sis_los",
+	
+	necron_race_Attack = "MetaMap/attack_results/FE_MMSFX_Nec_att",
+	necron_race_Win = "MetaMap/attack_results/FE_MMSFX_Nec_win",
+	necron_race_Lose = "MetaMap/attack_results/FE_MMSFX_Nec_los",
+	
+	ork_race_Attack = "MetaMap/attack_results/FE_MMSFX_Ork_att",
+	ork_race_Win = "MetaMap/attack_results/FE_MMSFX_Ork_win",
+	ork_race_Lose = "MetaMap/attack_results/FE_MMSFX_Ork_los",
+	
+	space_marine_race_Attack = "MetaMap/attack_results/FE_MMSFX_SpM_att",
+	space_marine_race_Win = "MetaMap/attack_results/FE_MMSFX_SpM_win",
+	space_marine_race_Lose = "MetaMap/attack_results/FE_MMSFX_SpM_los",
+	
+	tau_race_Attack = "MetaMap/attack_results/FE_MMSFX_Tau_att",
+	tau_race_Win = "MetaMap/attack_results/FE_MMSFX_Tau_win",
+	tau_race_Lose = "MetaMap/attack_results/FE_MMSFX_Tau_los",
+	
+	chaos_marine_race_Military_Strength_Light = "MetaMap/stronghold_strength/FE_MMSFX_Cha_lt",
+	chaos_marine_race_Military_Strength_Medium = "MetaMap/stronghold_strength/FE_MMSFX_Cha_med",
+	chaos_marine_race_Military_Strength_Strong = "MetaMap/stronghold_strength/FE_MMSFX_Cha_str",
+	
+	eldar_race_Military_Strength_Light = "MetaMap/stronghold_strength/FE_MMSFX_Eld_lt",
+	eldar_race_Military_Strength_Medium = "MetaMap/stronghold_strength/FE_MMSFX_Eld_med",
+	eldar_race_Military_Strength_Strong = "MetaMap/stronghold_strength/FE_MMSFX_Eld_str",
+	
+	guard_race_Military_Strength_Light = "MetaMap/stronghold_strength/FE_MMSFX_ImG_lt",
+	guard_race_Military_Strength_Medium = "MetaMap/stronghold_strength/FE_MMSFX_ImG_med",
+	guard_race_Military_Strength_Strong = "MetaMap/stronghold_strength/FE_MMSFX_ImG_str",
+	
+	dark_eldar_race_Military_Strength_Light = "MetaMap/stronghold_strength/FE_MMSFX_ImG_lt",
+	dark_eldar_race_Military_Strength_Medium = "MetaMap/stronghold_strength/FE_MMSFX_ImG_med",
+	dark_eldar_race_Military_Strength_Strong = "MetaMap/stronghold_strength/FE_MMSFX_ImG_str",
+
+	sisters_race_Military_Strength_Light = "MetaMap/stronghold_strength/FE_MMSFX_Sis_lt",
+	sisters_race_Military_Strength_Medium = "MetaMap/stronghold_strength/FE_MMSFX_Sis_med",
+	sisters_race_Military_Strength_Strong = "MetaMap/stronghold_strength/FE_MMSFX_Sis_str",
+
+	necron_race_Military_Strength_Light = "MetaMap/stronghold_strength/FE_MMSFX_Nec_lt",
+	necron_race_Military_Strength_Medium = "MetaMap/stronghold_strength/FE_MMSFX_Nec_med",
+	necron_race_Military_Strength_Strong = "MetaMap/stronghold_strength/FE_MMSFX_Nec_str",
+	
+	ork_race_Military_Strength_Light = "MetaMap/stronghold_strength/FE_MMSFX_Ork_lt",
+	ork_race_Military_Strength_Medium = "MetaMap/stronghold_strength/FE_MMSFX_Ork_med",
+	ork_race_Military_Strength_Strong = "MetaMap/stronghold_strength/FE_MMSFX_Ork_str",
+	
+	space_marine_race_Military_Strength_Light = "MetaMap/stronghold_strength/FE_MMSFX_SpM_lt",
+	space_marine_race_Military_Strength_Medium = "MetaMap/stronghold_strength/FE_MMSFX_SpM_med",
+	space_marine_race_Military_Strength_Strong = "MetaMap/stronghold_strength/FE_MMSFX_SpM_str",
+	
+	tau_race_Military_Strength_Light = "MetaMap/stronghold_strength/FE_MMSFX_Tau_lt",
+	tau_race_Military_Strength_Medium = "MetaMap/stronghold_strength/FE_MMSFX_Tau_med",
+	tau_race_Military_Strength_Strong = "MetaMap/stronghold_strength/FE_MMSFX_Tau_str",
+}
+
+TutorialMessageStrings =
+{
+	TME_MetaMapFirstTurn1 =
+	{
+		"$3900051", 
+		"$5400195",
+		"$5400196",
+		"$5400197",
+		
+		Speech = "5400264"
+	},
+	TME_MetaMapFirstTurn2 =
+	{
+		"$3900052",
+		"$5400198",
+		"$5400199",
+		"$5400200",
+			
+		Speech = "5400265"
+	},
+	TME_MetaMapFirstTurn3 =
+	{
+		"$3900053",
+		"$5400201",
+		"$5400202",
+			
+		Speech = "5400266"
+	},
+	TME_ClickArmyFirstTime =
+	{
+		"$3900054",
+		"$5400203",
+		"$5400204",
+		"$5400205",
+			
+		Speech = "5400267"
+	},
+	TME_AttackScreenFirstTime =
+	{
+		"$3900055",
+		"$5400206",
+		"$5400207",
+		"$5400208",
+			
+		Speech = "5400268"
+	},
+	TME_WargearScreenFirstTime =
+	{
+		"$3900056",
+		"$5400209",
+		"$5400210",
+			
+		Speech = "5400269"
+
+	},
+	TME_MetaMapFirstWin1 =
+	{
+		"$3900057",
+		"$5400211",
+		"$5400212",
+		"$5400213",
+		"$5400214",
+			
+		Speech = "5400270"
+	},
+	TME_MetaMapFirstWin2 =
+	{
+		"$3900058",
+		"$5400215",
+		"$5400216",
+		"$5400217",
+			
+		Speech = "5400271"
+	},
+	TME_MetaMapFirstLoss =
+	{
+		"$3900059",
+		"$5400218",
+		"$5400407",
+		"$5400217",
+			
+		Speech = "5400272"
+	},
+	TME_MetaMapFirstEndTurn =
+	{
+		"$3900060",
+		"$5400219",
+		"$5400220",
+			
+		Speech = "5400273"
+
+	},
+	TME_AutoResolveFirstTime = 
+	{
+		"$3900061",
+		"$5400221",
+		"$5400222",
+		"$5400223",
+			
+		Speech = "5400274"
+	},
+	TME_MetaMapSecondTurn =
+	{
+		"$3900062",
+		"$3227001",
+		"$5400224",
+		"$5400225",
+		"$5400226",
+			
+		Speech = "5400275"
+
+	},
+	TME_ReinforceScreenFirstTime =
+	{
+		"$3900063",
+		"$5400227",
+		"$5400228",
+		"$5400229",
+			
+		Speech = "5400276"
+
+	},
+	TME_CommanderScreenFirstTime =
+	{
+		"$3900064",
+		"$5400230",
+		"$5400231",
+		"$5400232",
+			
+		Speech = "5400277"
+	},
+	TME_MetaMapFirstStrongholdWin =
+	{
+		"$3900065",
+		"$5400233",
+		"$5400234",
+			
+		Speech = "5400278"
+	},
+	TME_MetaMapFirstStrongholdWin2 =
+	{
+		"$3900065",
+		"$5400235",
+		"$5400236",
+		"$5400237",
+			
+		Speech = "5400279"
+	},	
+	TME_MetaMapFirstMove =
+	{
+	},
+	TME_GateTerritory =
+	{
+		"$3900066",
+		"$5400238",
+		"$5400239",
+		"$5400240",
+			
+		Speech = "5400280"
+	},
+  TME_BrokenSupplyLine =
+	{
+		"$3900067",
+		"$5400241",
+		"$5400242",
+			
+		Speech = "5400281"
+	},
+  TME_SistersPower =
+	{
+		"$3900068",
+		"$5400243",
+		"$5400244",
+		"$5400246",
+			
+		Speech = "5400282"
+	},
+  TME_GuardPower =
+	{
+		"$3900069",
+		"$5400245",
+		"$5400246",
+			
+		Speech = "5400283"
+	},
+  TME_SpaceMarinesPower =
+	{
+		"$3900070",
+		"$5400247",
+		"$5400248",
+		"$5400249",
+		"$5400246",
+			
+		Speech = "5400284"
+
+	},
+  TME_OrkPower =
+	{
+		"$3900071",
+		"$5400250",
+		"$5400246",
+			
+		Speech = "5400285"
+
+	},
+  TME_TauPower =
+	{
+		"$3900072",
+		"$5400251",
+		"$5400252",
+		"$5400246",
+			
+		Speech = "5400286"
+
+	},
+  TME_EldarPower =
+	{
+		"$3900073",
+		"$5400253",
+		"$5400254",
+		"$5400246",
+			
+		Speech = "5400287"
+
+	},
+  TME_NecronPower =
+	{
+		"$3900074",
+		"$5400255",
+		"$5400256",
+		"$5400246",
+			
+		Speech = "5400288"
+
+	},
+  TME_ChaosPower =
+	{
+		"$3900075",
+		"$5400257",
+		"$5400258",
+		"$5400246",
+			
+		Speech = "5400289"
+	},
+  TME_DarkEldarPower =
+	{
+		"$3900076",
+		"$5400261",
+		"$5400262",
+		"$5400263",
+		"$5400246",
+			
+		Speech = "5400290"
+	}
+}
+
+DefenderStrengthText =
+{
+	DST_MilitaryStrength_1 =
+	{
+		"$3208020",
+		"$3208020",
+		"$3208023",
+		"$3208013",
+	},
+	DST_MilitaryStrength_2 =
+	{
+		"$3208020",
+		"$3208020",
+		"$3208023",
+		"$3208013",
+	},
+	DST_MilitaryStrength_3 =
+	{
+		"$3208020",
+		"$3208020",
+		"$3208023",
+		"$3208013",
+	},
+	DST_MilitaryStrength_4 =
+	{
+		"$3208020",
+		"$3208020",
+		"$3208023",
+		"$3208014",
+	},
+	DST_MilitaryStrength_5 =
+	{
+		"$3208020",
+		"$3208021",
+		"$3208024",
+		"$3208015",
+	},
+	DST_MilitaryStrength_6 =
+	{
+		"$3208020",
+		"$3208021",
+		"$3208024",
+		"$3208015",
+	},
+	DST_MilitaryStrength_7 =
+	{
+		"$3208020",
+		"$3208021",
+		"$3208024",
+		"$3208016",
+	},
+	DST_MilitaryStrength_8 =
+	{
+		"$3208020",
+		"$3208021",
+		"$3208024",
+		"$3208016",
+	},
+	DST_MilitaryStrength_9 =
+	{
+		"$3208021",
+		"$3208021",
+		"$3208025",
+		"$3208016",
+	},
+	DST_MilitaryStrength_10 =
+	{
+		"$3208021",
+		"$3208021",
+		"$3208025",
+		"$3208016",
+	},
+	DST_MilitaryStrength_10_Stronghold =
+	{
+		"$3208022",
+		"$3208027",
+		"$3208028",
+		"$3208026",
+	},
+	DST_MilitaryStrength_11_Stronghold =
+	{
+		"$3208022",
+		"$3208027",
+		"$3208028",
+		"$3208026",
+	},
+	DST_MilitaryStrength_12_Stronghold =
+	{
+		"$3208022",
+		"$3208027",
+		"$3208028",
+		"$3208026",
+	},
+	DST_MilitaryStrength_13_Stronghold =
+	{
+		"$3208022",
+		"$3208027",
+		"$3208029",
+		"$3208026",
+	},
+	DST_MilitaryStrength_14_Stronghold =
+	{
+		"$3208022",
+		"$3208027",
+		"$3208029",
+		"$3208026",
+	},
+	DST_MilitaryStrength_15_Stronghold =
+	{
+		"$3208022",
+		"$3208027",
+		"$3208030",
+		"$3208026",
+	},
+	DST_MilitaryStrength_16_Stronghold =
+	{
+		"$3208022",
+		"$3208027",
+		"$3208030",
+		"$3208026",
+	},
+	DST_MilitaryStrength_17_Stronghold =
+	{
+		"$3208022",
+		"$3208027",
+		"$3208030",
+		"$3208026",
+	}
+}
+
+StartingResourceBonusText =
+{
+  ID = "resource_bonus",
+	Name = "$3900510",
+	HelpText =
+	{
+		"$3900511",
+		"$3900512"
+	},
+}
+
+WarpGateText =
+{
+	Name = "$3900066",
+	HelpText =
+	{
+		"$3900524",
+		"$3900525",
+		"$3900526",
+		"$3900527"
+	},
+}
+
+
+DisconnectedSupplyLineText =
+{
+	Name = "$3900067",
+	HelpText =
+	{
+		"$3900520",
+		"$3900521",
+		"$3900522",
+		"$3900523"
+	},
+}
+
+
+-- Tweakables for the player controlled territory military strength calculation
+MilitaryStrengthTechLevelMultiplier = 1.5
+MilitaryStrengthTechLevelBias = -1.5
+MilitaryStrengthReinforcementMultiplier = 1 / 170
+MilitaryStrengthReinforcementBias = 1
+

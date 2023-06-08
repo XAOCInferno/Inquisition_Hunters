@@ -1,0 +1,1379 @@
+-----------
+--[[CRIMSON SPIRES 2.0script by Jaguar-Lord and Incarnate
+this version is for Inquisition Daemonhunt DarkCrusade ONLY]]
+-----------
+
+-------------------------------------------------
+--[[ IMPORTS ]]
+-------------------------------------------------
+import("ScarUtil.scar")
+import("WXPScarUtil.scar")
+
+-------------------------------------------------
+--[[GAMESTART]]
+-------------------------------------------------
+function OnGameSetup()
+
+	--VARIABLES
+	 inq = 1 
+	 chaos = 2
+	 none = 3
+	 nextone = 1500
+	 nextone2 = 1500
+	 
+	g_PulseStop = false
+	g_Counter = 40
+		
+	g_number_of_victims = 0 --number of sacrificial victims needed-- 
+	g_Ritual_timer = 0 --the counter for the warp portal to open--
+	g_Chaos_relic_controled = 0 
+	g_inq_relic_controled = 0
+	g_Inquisition_Relic = 0
+	g_psykerno = 0
+	g_temple_cleaned = false 
+
+	t_Player = {}
+	t_CurrentOwner = {}
+	t_Sacrifice_prepare = {}
+	t_SoulFlowIDs = {	"guard_squad_civilian_male_a",
+					"guard_squad_civilian_female_b", 
+					"guard_squad_civilian_child_a"}
+	t_Deamonic_Ones = {"chaos_squad_bloodthirster", "chaos_squad_daemon_prince_advance_sp", "chaos_squad_daemon_prince", "chaos_squad_horror", "chaos_squad_possessed_marine"}
+	t_tainted = {}
+
+--Remove WCS : note "timer" as not been removed for evident purpose, any other victory condition available in IDH ss should be added to the list.
+	local WCS =	 {
+					Annihilate,
+					Assassinate,
+					ControlArea,
+					DestroyHQ,
+					EconomicVictory,
+					StrategicObjective,
+					SuddenDeath
+				}
+	for k, v in pairs(WCS) do
+		if Scar_InitExists(v)  then
+			Scar_RemoveInit(v)
+		end
+	end
+	
+--playerSetup
+	g_Player1 = Setup_Player(0,"The Inquisition", "inquisition_daemonhunt_race", 0) --joueur de la position1
+	g_Player2 = Setup_Player(1,"Forces Of Chaos", "chaos_marine_race", 1) --joueur de la position2
+	g_Player3 = Setup_Player(2,"Lost Souls", "npc_race", 2)
+	Misc_PlayerTeamColor(g_Player3,"default_7") -- neutral team used for victims flow control
+end
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+function OnInit()
+
+--disable comp asap
+	Cpu_Enable(g_Player2, false)
+	
+	
+--[[ NIS PRESETS - turn off event cues, set the viewable space to black (faded out) and preset letterboxing 
+	turn off event cues, set the viewable space to black (faded out) and preset letterboxing ]]
+	
+	WXP_OpeningNISPreset()
+	EventCue_Enable(false)
+	Fade_Start( 0, false )
+	W40k_Letterbox( true, 0 )	
+	
+	--[[ START NIS - calls the NIS function located in the crimson Spire beta.nis file]]	
+	
+	Rule_AddInterval(Rule_IntroSequence, 1)
+	print("nis launched")
+	
+	
+--[[ CREATE MODIFIERS ]]--
+	modifiers = {
+				immobilize = Modifier_Create(MAT_Squad,"enable_movement", MUT_Enable, true, -1, "") ,
+				maxsquadcap = Modifier_Create(MAT_Player, "max_squad_cap_player_modifier", MUT_Addition, true, 10, "") ,
+				fillsquadcap = Modifier_Create(MAT_Player, "squad_cap_player_modifier", MUT_Addition, true, 30, "") ,
+				maxsupportcap = Modifier_Create(MAT_Player, "max_support_cap_player_modifier", MUT_Addition, true, 10, "") ,
+				fillsupportcap = Modifier_Create(MAT_Player, "support_cap_player_modifier", MUT_Addition, true, 30, "") ,
+				morale = Modifier_Create(MAT_Squad, "enable_squad_morale_damage", MUT_Enable, true, -1, ""),
+				taint1 = Modifier_Create(MAT_Squad, "health_regeneration_modifier", MUT_Multiplication, false, 0.0001, ""),
+				taint2 = Modifier_Create(MAT_Squad, "health_regeneration_modifier", MUT_Addition, false, -60000, "")
+				}
+	--aply modifier to traitor inq
+	Modifier_ApplyToSquad(modifiers.immobilize, SGroup_GetSpawnedSquadAt("sg_Inquisitor" ,  1 ))
+	
+	--Create Sgroups
+	SGroup_Create("sg_psykers")
+	SGroup_Create("sg_Inquisition_troops")
+	SGroup_Create("sg_Chaos_troops")
+	SGroup_Create("sg_Chaos_Deamonic_Ones")
+	SGroup_Create("sg_moraleInq")
+	SGroup_Create("sg_trespassers")
+	--useful Sgroups
+	SGroup_Create("sgtemp")
+	SGroup_Create("sgtemp2")
+	
+	--music
+	Rule_SetupMusicPlaylist()
+end
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+--[[---------------------------------------------------------------------------------------------------------------------------------------------------------]]--
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+Scar_AddInit(OnInit)
+
+--image fades/ cinematic presentation. this is clumsy but i didn't find another way to do it.
+function Rule_IntroSequence()
+	
+	Util_StartNIS(EVENTS.NIS_IntroSequence1)
+	Rule_AddOneShot(Rule_IntroSequence2, 5)
+	
+	Rule_Remove(Rule_IntroSequence)
+end
+
+function Rule_IntroSequence2()
+	Util_StartNIS(EVENTS.NIS_IntroSequence2)
+	Rule_AddOneShot(Rule_IntroSequence3, 5)
+	
+	Rule_Remove(Rule_IntroSequence2)
+end
+
+function Rule_IntroSequence3()
+	Util_StartNIS(EVENTS.NIS_IntroSequence3)
+	Rule_AddOneShot(Rule_StartNis, 7)
+	
+	Rule_Remove(Rule_IntroSequence3)
+end
+--standard opening Nis
+function Rule_StartNis()
+	Util_StartNIS( EVENTS.NIS_Opening )
+	Rule_Remove(Rule_StartNis)
+end
+
+
+--[[NOW FOR THE REAL STUFF !!]]--
+
+function Rule_GameStart()
+
+	Rule_AddOneShot(Rule_Check_IfPlayerTwoIsComputer, 240)--this rule will check if player2 is a CPU or human and trigger the psyker capture after 5 minutes
+	
+	
+	--debug function
+	Cpu_Enable(g_Player1, true) --debug purpose
+	Cpu_Enable(g_Player2, true)--enable chaos player if cpu, debug purpose
+	
+	
+	--CORE GAME
+	
+	Cpu_Enable(g_Player3, false)-- disable lost souls ai
+	
+	--init vars
+	g_victimstart = SGroup_Count("sg_AllVictims")
+	
+	--despawn scenery dynamic
+	Rule_AddOneShot(Rule_DespawnStuff, 1)
+	
+	--check inquisitor and drop pod inquisitor
+	--Rule_AddInterval(watchinq, 5)
+	--Rule_AddInterval(stop_watchinq, 1)
+	
+	--teleport gates
+	Rule_AddInterval(Rule_Teleportgates, 1)
+	
+	--bloodpulse(stops rushing)
+	Rule_AddInterval(Rule_Pulse_Warning, 1)
+	
+	--soul flow
+	Rule_AddInterval(soulflow1, 8)
+	Rule_AddIntervalDelay(soulflow2, 8, 9)
+	
+	--intel events
+	Rule_AddOneShot(Rule_StartIEs, 1)
+	--objectives
+	Rule_AddIntervalDelay(Rule_ObjectivesStart, 1,2)
+	
+	FOW_TagSGroup(g_Player1, "sg_Inquisitor") --this is not a good thing imo, to easy for the Inq player to drop on the location.....but wait...i got an idea. see the Rule_Ritual_Area
+	
+	Rule_AddInterval(Rule_Ritual_AreaProtection, 1)--this rule will quickly refrain the Inq player to deepstrike any troops before he captured the chaos relic.
+	
+	
+	
+	Rule_Remove(Rule_GameStart)
+	W40k_Letterbox( false , 2 )
+end
+
+-------------------------------------------------
+--[[ MUSIC ]]
+-------------------------------------------------
+--
+function Rule_SetupMusicPlaylist()
+
+	t_ambient = {"Rain_thunder_amb", "Snowy_wind_2", "Snowy_wind_1" }
+		
+	Playlist_Manager( PC_Ambient, t_ambient, true , true , {5, 10})
+	
+end
+
+--
+-------------------------------------------------
+--[[ DESPAWN ]]
+-------------------------------------------------
+--
+--for gamestart
+function Rule_DespawnStuff() 
+	for i = 1, 5 do
+		EGroup_DeSpawn("circle_component"..i)  --despawn the protective circle at the sacrifice spot, it will be respawn later
+	end
+	for j = 1, 8 do
+		EGroup_DeSpawn("Chaos_Portal_parts"..j)  --despawn the CHAOS GATE, it will be respawn later
+	end
+	for k = 1, 6 do
+		EGroup_DeSpawn("resident_evil"..k) --despawn the chaos taint and daemon nis at north temple
+		EGroup_DeSpawn("clean_temple"..k) --despawn the avater birth effect in the chaos statue and despawn the marine statue
+	end
+	for l = 1, 11 do
+		EGroup_DeSpawn("eg_Sanctuary_beam"..l) --despawn the 12 beam materializing the sanctuary zone
+		
+	end
+	for m = 1, 4 do
+		EGroup_DeSpawn("Chaos_Blast"..m) --despawn the meteor and chaos artillery FX object
+		
+	end
+end
+
+
+-------------------------------------------------
+--[[INQUISITOR SPAWNING
+-------------------------------------------------
+--
+function watchinq()
+
+	Util_TrackCharacterAndDropPodIn(g_Player1,"sg_inq", "inquisition_squad_inquisitor_lord", "mkr_inqspwn")
+	
+	if EGroup_Count(Player_GetEntities(g_Player1)) == 0 then
+		Rule_Remove(watchinq)
+	end
+end
+
+function stop_watchinq()--this will stop the loyal inq from being dropoded in game.
+	if EGroup_Count(Player_GetEntities(g_Player1)) == 0 then
+		Rule_Remove(watchinq)
+		Rule_Remove(stop_watchinq)
+	end
+end]]
+
+------------------------------------------------
+--[[TELEPORT GATES]]
+------------------------------------------------
+--
+--general purpose
+function Rule_Teleportgates()
+	for i = 1 , 2 do
+		player = World_GetPlayerAt( i-1)
+		if Player_IsAlive(player) then
+			--loop through gates
+			for NCno = 1, EGroup_Count("eg_WebEnt") do
+				--loop through player squads
+				if Player_AreSquadsNearMarker( player, "mkr_gatein"..NCno )  then
+					--add them to a group
+					Player_GetAllSquadsNearMarker(player, "sg_wbsl"..NCno, "mkr_gatein"..NCno )
+					World_FXEventSquad( "data:Art/Events/eldar_unit_fx/warp_fx", "sg_wbsl"..NCno)
+					SGroup_DeSpawn("sg_wbsl"..NCno)
+					SGroup_ReSpawnMarker("sg_wbsl"..NCno, "mkr_gateout"..NCno)
+					World_FXEventSquad( "data:Art/Events/eldar_unit_fx/warp_fx", "sg_wbsl"..NCno)
+					SGroup_Clear("sg_wbsl"..NCno)
+				end
+			end
+		end
+	end
+end
+
+
+--
+-------------------------------------------------
+--[[THE BLOOD PULSE ]]
+-------------------------------------------------
+--
+--THE COUNTER+ HALTER
+function Rule_Pulse_Warning()
+	--halt code put in here
+	for i = 1, 2 do
+		player = World_GetPlayerAt( i-1)
+		if Player_IsAlive(player) then
+			if EGroup_IsCapturedByPlayer("eg_Blood_Point", player, true) then
+				Rule_Remove(Rule_Pulse_Warning)
+				--despawns the effect that's around the strat point.
+				EGroup_DeSpawn("eg_Chaos_Star")
+			end
+		end
+	end
+	--counting down from 40 to 0
+	g_Counter = g_Counter -1
+		--once you hit 0 the pulse fires
+	if g_Counter == 10 then
+		--this will play the warning laugh
+		Anim_PlayEGroupAnim(EGroup_FromName("eg_Blood_Warning"), "audio_warning")
+	elseif  g_Counter == 0 then
+		Rule_AddOneShot(Rule_Blood_Pulse_Effect, 0.5)
+		Rule_AddOneShot(Rule_Blood_Pulse, 1)
+		Rule_Remove(Rule_Pulse_Warning)
+	end
+end
+--THE FX
+function Rule_Blood_Pulse_Effect()
+	for i = 1, 4 do
+		Util_MarkerFX("mkr_Pulse"..i, "data:Art/Events/Chaos/Blood_Pulse")
+	end
+end
+
+
+-------------------------------------------------
+--DESTROYS THE SQUADS
+-------------------------------------------------
+function Rule_Blood_Pulse()
+
+--units that should be ignored by the blood pulse
+
+t_Vehicle = Util_MakeBlueprintTable(
+
+--[[eldar]]"eldar_squad_avatar", "eldar_squad_falcon_grav_tank", 
+"eldar_squad_falcon_grav_tank_advance_sp", "eldar_squad_fire_prism", "eldar_squad_grav_platform", 
+"eldar_squad_grav_platform_brightlance", "eldar_squad_grav_platform_brightlance_advance_sp", "eldar_squad_vypers", "eldar_squad_vypers_advance_sp", "eldar_squad_wraithlord", "eldar_squad_wraithlord_advance_sp",
+
+--[[IG]]"guard_squad_baneblade", "guard_squad_basilisk", "guard_squad_basilisk_sp_mso2",
+"guard_squad_chimera", "guard_squad_chimera_sp_test", "guard_squad_hellhound", "guard_squad_hellhound_advance_sp",
+"guard_squad_lemanruss", "guard_squad_sentinel", "guard_squad_sentinel_advance_sp",
+
+--[[ork]]"ork_squad_killa_kan", "ork_squad_killa_kan_advance_sp",
+"ork_squad_looted_tank", "ork_squad_looted_tank_sp",
+"ork_squad_squiggoth", "ork_squad_squiggoth_sp_long_rampage", "ork_squad_trukk", "ork_squad_trukk_advance_sp", "ork_squad_wartrak", "ork_squad_wartrak_advance_sp",
+
+--[[space marine]]"space_marine_squad_dreadnought", "space_marine_squad_dreadnought_advance_sp", 
+"space_marine_squad_dreadnought_hellfire", "space_marine_squad_dreadnought_hellfire_advance_sp", 
+"space_marine_squad_land_raider", "space_marine_squad_land_speeder", "space_marine_squad_land_speeder_advance_sp", "space_marine_squad_predator", "space_marine_squad_rhino", 
+"space_marine_squad_skull_probe", "space_marine_squad_whirlwind", 
+
+--[[Tau]] "tau_devilfish_troop_carrier", "tau_drone_harbinger_squad", "tau_drone_harbinger_squad_advance_sp", "tau_drone_squad",
+"tau_hammerhead_gunship_squad", "tau_skyray_squad", "tau_skyray_squad_advance_sp", "tau_greater_knarloc_squad", "tau_broadside_battlesuit_squad",
+"tau_broadside_battlesuit_squad_clone_sp", 
+
+--[[Necron]]"necron_night_bringer", "necron_restored_monolith_squad", "necron_destroyer_squad", "necron_destroyer_squad_advance_sp", 
+"necron_heavy_destroyer_squad", "necron_lord_destroyer_squad", "necron_tomb_spyder_squad", "necron_tomb_spyder_squad_advance_sp", 
+
+--[[Chaos]]
+"chaos_squad_bloodthirster", "chaos_squad_daemon_prince", "chaos_squad_daemon_prince_advance_sp", "chaos_squad_defiler", "chaos_squad_defiler_advance_sp", 
+"chaos_squad_predator", "chaos_squad_predator_advance_sp", "chaos_squad_rhino", "chaos_squad_hell_talon", 
+
+--[[Inquisition]]"inquisition_squad_chimera_transport", "inquisition_squad_dreadnought_assault", "inquisition_squad_dreadnought_support", "inquisition_squad_land_raider", "inquisition_squad_land_raider_crusader", "inquisition_squad_rhino")
+
+--then the pulse
+
+
+local count = World_GetPlayerCount();
+ 	for k = 0, count -1 do
+ 		local l = (k+1);
+ 		t_Player[l] = World_GetPlayerAt(k);
+ 	end
+	
+	
+ 	for k = 1, count do
+		if Player_IsAlive(t_Player[k]) == true then
+        
+
+			for i = 1, 4 do
+
+				if Player_AreSquadsNearMarker(t_Player[k], "mkr_Pulse"..i) then
+			
+					--clean up the group to make sure nothing odd happens
+					SGroup_Clear(SGroup_CreateIfNotFound("sg_Sacrifice"..i))
+			
+					--get all the player's units near that specific pulse tower and place them in a specific group
+					Player_GetAllSquadsNearMarker(t_Player[k], "sg_Sacrifice"..i, "mkr_Pulse"..i)
+					count = SGroup_Count(SGroup_FromName("sg_Sacrifice" ..i))
+
+					for j =1, count do
+
+						SGroup_Clear(SGroup_CreateIfNotFound("sg_Potentials"..j))
+						SGroup_Add(SGroup_FromName("sg_Potentials"..j), SGroup_GetSpawnedSquadAt("sg_Sacrifice"..i, j))
+
+						--check to see if the group does not contain any of the forbidden units.
+						if SGroup_ContainsBlueprints("sg_Potentials"..j, t_Vehicle, false) == false then
+						
+							--give them to the sacrifice player
+							SGroup_SetPlayerOwner("sg_Potentials"..j, t_Player[k])
+						
+							--stop them from going anywhere
+							Cmd_StopSquads("sg_Potentials"..j)
+						
+							--play a suitably gruesome animation
+							World_FXEventSquad("data:Art/Events/Chaos/Blood_Pulse_Hit", SGroup_FromName("sg_Potentials"..j))
+						
+							
+						
+							--kill the units
+							SGroup_SelfDestroy("sg_Potentials"..j, true)
+						
+						end
+					end	
+				end
+			end
+		end	
+	end
+	g_Counter = 41
+	Rule_AddInterval(Rule_Pulse_Warning, 1)
+
+end
+
+--------------------------------------------------------------------------------------------------------------------------
+--[[THE NO DROP ZONE AT THE SACRIFICE RITUAL PLACE/ any Inquisition unit deepstriked at the ritual place or present before the chaos relic as been captured  will be blown to dust
+this will refrain the Inquitiond player to abuse his stormtrooper deepstrike ability at early stage of the game.]]--
+--------------------------------------------------------------------------------------------------------------------------
+function Rule_Ritual_AreaProtection()
+	if Player_AreSquadsNearMarker(g_Player1, "mkr_sacrifice_place_protection") then
+		
+		if EGroup_IsCapturedByPlayer("eg_Chaos_Relic", g_Player1, true) == true then 
+		
+			Rule_Remove(Rule_Ritual_AreaProtection)
+		
+		elseif objectives.checks.oath2[1]  ~= inq then --if the inquisition player have not yet captured the relic
+			SGroup_Clear(SGroup_CreateIfNotFound("sg_trespassers"))
+			Player_GetAllSquadsNearMarker(g_Player1, "sg_trespassers", "mkr_sacrifice_place_protection")
+			count = SGroup_Count(SGroup_FromName("sg_trespassers"))
+			
+			Util_MarkerFX("mkr_sacrifice_place_protection", "data:Art/Events/Chaos/Blood_Pulse")
+			World_FXEventSquad("data:Art/Events/Chaos/Blood_Pulse_Hit", SGroup_FromName("sg_trespassers"))
+			
+			SGroup_SelfDestroy("sg_trespassers", true)
+			
+		end
+	end
+end
+
+
+
+--
+-------------------------------------------------------------
+--[[SOULPATHS]]--
+-------------------------------------------------------------
+--
+--soulpath1 (cycle of 8 seconds)
+function soulflow1()
+	SGroup_Clear("soulflow1")
+	--create an entity and place it on the path
+	for i = 1, table.getn(t_SoulFlowIDs) do
+		--spawn 2 squads
+		for j = 1, 2 do 
+			local eid = Squad_Create(t_SoulFlowIDs[i],g_Player3, Marker_GetPosition(Marker_FromName("mkr_generalspawn", "basic_marker")),4)
+			Squad_Spawn(eid, Marker_GetPosition(Marker_FromName("mkr_generalspawn", "basic_marker")))
+			SGroup_Add("soulflow1",eid)
+		end
+	end
+	--start the path
+	SPath_StartEx("soulflow1","start","finish","soulflow1",0.5,true)
+	
+	Rule_AddOneShot(soulflow1despawn,6)
+end
+function soulflow1despawn()
+	--despawn and destroy the group
+	SGroup_DeSpawn("soulflow1")
+	SPath_Finish("soulflow1")
+	SGroup_DestroyAllSquads("soulflow1")
+end
+--soulpath 2
+function soulflow2()
+	SGroup_Clear("soulflow2")
+	--create an entity and place it on the path
+	for i = 1, table.getn(t_SoulFlowIDs) do
+		--spawn 2 squads
+		for j = 1, 2 do 
+			local eid = Squad_Create(t_SoulFlowIDs[i],g_Player3, Marker_GetPosition(Marker_FromName("mkr_generalspawn", "basic_marker")),4)
+			Squad_Spawn(eid, Marker_GetPosition(Marker_FromName("mkr_generalspawn", "basic_marker")))
+			SGroup_Add("soulflow2",eid)
+		end
+	end
+	--start the path
+	SPath_StartEx("soulflow2","start","finish","soulflow2",0.5,true)
+	Rule_AddOneShot(soulflow2despawn,6)
+end
+function soulflow2despawn()
+	--despawn and destroy the group
+	SGroup_DeSpawn("soulflow2")
+	SPath_Finish("soulflow2")
+	SGroup_DestroyAllSquads("soulflow2")
+end
+
+--
+-------------------------------------------------------------
+--[[SET THE OBJECTIVES]]--
+-------------------------------------------------------------
+objectives = {
+					inq = {
+							main = {title_id = 16023204, 	short_desc_id = 16023206,	help_tip_id = 16023208 } ,
+							sanctuary = {title_id = 16023210, 	short_desc_id = 16023212,	help_tip_id = 16023214 } ,
+							oath1 = {title_id = 16023216, 	short_desc_id = 16023218,	help_tip_id = 16023220 } ,
+							oath2 = {title_id = 16023222, 	short_desc_id = 16023224,	help_tip_id = 16023226 } ,
+					},
+					chaos = {
+							main = {title_id = 16023230, 	short_desc_id = 16023232,	help_tip_id = 16023234 } ,
+							sanctuary = {title_id = 16023236, 	short_desc_id = 16023238,	help_tip_id = 16023240 } ,
+							oath1 = {title_id = 16023242,	 short_desc_id = 16023244,	help_tip_id = 16023246 } ,
+							oath2 = {title_id = 16023248, short_desc_id = 16023250,	help_tip_id = 16023252 } ,
+					},
+					checks = {
+								sanctuary = none,
+								oath1 = none,
+								oath2 = {none, false},
+					},
+	}
+	
+--Common Intro Intel Event
+function Rule_StartIEs()
+	Util_StartIntel(EVENTS.Intro)
+end
+
+--Assigns the Main Objectives after intel event
+function Rule_ObjectivesStart()
+
+	if Event_IsAnyRunning() == false then
+	
+		--[[INQ MAIN RULE - KILL THE TRAITOR]]
+		Util_WXP_ObjectiveCreate(objectives.inq.main, true, g_Player1)
+		Objective_PingPosition(objectives.inq.main.title_id, SGroup_GetPosition("sg_Inquisitor"),true,"attack")
+		Ping_Position(SGroup_GetPosition("sg_Inquisitor"), true, "attack")
+		Rule_AddInterval(Rule_CheckTraitorInquisitor, 1)
+		
+		--[[CHAOS MAIN RULE - DESTROY THE INQUISITION FORCES]]
+		Util_WXP_ObjectiveCreate(objectives.chaos.main, true, g_Player2)
+		Objective_PingPosition(objectives.chaos.main.title_id, Player_GetStartPosition(g_Player1),true,"attack")
+		Rule_AddInterval(Rule_Chaosmainobjective, 1)
+		
+		--call secondary objectives
+		Rule_AddOneShot(Rule_SplitOffsIE, 10)
+		
+		--remove
+		Rule_Remove(Rule_ObjectivesStart)
+	end
+end
+
+--The Second Objectives are added after 10 seconds.
+function Rule_SplitOffsIE()
+
+	--these are the explanations for the sanctuary and blashemous oath.
+	if Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player1)  then
+		Util_StartIntel(EVENTS.SancIntro)
+	elseif Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player2)  then
+		Util_StartIntel(EVENTS.OathIntro)
+	end
+	
+	--sacntuary
+	Util_WXP_ObjectiveCreate(objectives.inq.sanctuary, true, g_Player1)
+	Util_WXP_ObjectiveCreate(objectives.chaos.sanctuary, false, g_Player2)
+	
+	Rule_AddInterval(Rule_Purify_North_Temple, 1)--daemon prince
+	Rule_AddInterval(templetaint, 1)--taint nis starter.
+	
+	--blasphemous oath
+	Util_WXP_ObjectiveCreate(objectives.chaos.oath1, true, g_Player2)
+	Objective_PingPosition(objectives.chaos.oath1.title_id, EGroup_GetPosition("eg_SoulCage_Location"),true,"attack")
+	Util_WXP_ObjectiveCreate(objectives.inq.oath1, false, g_Player1)
+	--warped divinity
+	Util_WXP_ObjectiveCreate(objectives.chaos.oath2, true, g_Player2)
+	Util_WXP_ObjectiveCreate(objectives.inq.oath2, false, g_Player1)
+	--Add Rules
+	Rule_AddInterval(Rule_CheckRelics, 2) --relic based objectives.
+	
+	Rule_AddInterval(Rule_Capture_Victims, 1) --blasphemous oath
+	Rule_AddInterval(Rule_Gathering_Victims, 1) --blasphemous oath
+	
+	Objective_ShowScreen()--dispaly objectives screen
+end
+--
+-------------------------------------------------------------
+--MAIN INQ OBJ -- KILL THE TRAITOR
+-------------------------------------------------------------
+--
+--completes objective if traitor inquisitor dies
+function Rule_CheckTraitorInquisitor()
+	if SGroup_Count("sg_Inquisitor") == 0 then
+	
+		Util_ObjectiveComplete(objectives.inq.main.title_id)
+		Rule_AddOneShot(chaosend, 3)
+		Rule_Remove(Rule_CheckTraitorInquisitor)
+	end
+end
+--ends game after 5 seconds
+function chaosend()
+	Player_Kill(g_Player2)
+	World_SetTeamWin( g_Player1, "assassinate")
+	World_SetPlayerLose( g_Player2, "assassinate")
+	World_SetPlayerLose( g_Player3, "assassinate")
+	World_SetGameOver()
+end
+--
+-------------------------------------------------------------
+--MAIN  CHAOS OBJ -- DESTROY ALL INQUISITION FORCES
+-------------------------------------------------------------
+--
+--completes objective if inquisiton forces are completely wiped out  (debug note: for an unknown reason this seems not to work)
+function Rule_Chaosmainobjective()
+	g_building_exceptions = 
+	{
+		
+	}
+	
+	g_unit_exceptions = 
+	{
+
+	}
+	
+	--[[ Lose because of Annihilation ]]	
+	if( Player_HasBuildingsExcept(g_Player1, g_building_exceptions) == false ) then
+		if( Player_HasSquadsExcept(g_Player1, g_unit_exceptions ) == false ) then
+		
+			Util_ObjectiveComplete(objectives.chaos.main.title_id)
+			Rule_AddOneShot(inqend, 3)		
+			Rule_Remove(Rule_Chaosmainobjective)
+		end
+	end		
+	
+end
+
+--ends game after 3 seconds
+function inqend()
+	Player_Kill(g_Player1)
+	World_SetTeamWin( g_Player2, "annihilate")
+	World_SetPlayerLose( g_Player1, "annihilate")
+	World_SetPlayerLose( g_Player3, "annihilate")
+	World_SetGameOver()
+end
+--
+--
+-------------------------------------------------------------
+--[[COMMON CODE  ]]--
+-------------------------------------------------------------
+--
+--Victims must be captured to start the chaos oath
+function Rule_Capture_Victims()
+	local count = World_GetPlayerCount()
+	for j = 0, count -2 do --ignore player 3
+		local Player = World_GetPlayerAt(j)
+		if Player_IsAlive(Player) == true then
+			local victimsnow = SGroup_Count("sg_AllVictims") 
+			if victimsnow ~= g_victimstart then
+				for i = 1, g_victimstart do
+					if SGroup_Count("victims"..i) == 0 then
+						local deadvictim = "victims"..i
+						Util_CreateSquadsAtMarker(g_Player3 ,deadvictim, "guard_squad_psyker" ,  "mkr_psyker_respawn", 1)
+						SGroup_AddGroup("sg_AllVictims", deadvictim)
+						t_CurrentOwner[i] = 2
+					end
+				end
+			end
+			for i = 1, SGroup_Count("sg_AllVictims") do
+				if Prox_PlayerSquadsInProximityOfSquads(Player, "victims"..i, 10, false) == true 
+				and t_CurrentOwner[i] ~= j then
+					SGroup_SetPlayerOwner("victims"..i, Player)
+					t_CurrentOwner[i] = j
+					Ping_Position(SGroup_GetPosition("victims"..i), false)
+					local cuetext = (Player_GetDisplayName(Player)[1]).." captured a victim"
+					local cuetext2 = (Player_GetDisplayName(Player)[1]).." has led a sinner to redemption"
+					EventCue_DoEvent ("recruit_commander", "event_cue_notifications/general_alert", cuetext, cuetext2)
+				end
+			end
+		end
+	end
+end
+--
+
+
+-- checks relic ownership so that stuff can happen, sets objectives.
+function Rule_CheckRelics() 
+
+	--chaos relic based objectives
+	if EGroup_IsCapturedByPlayer("eg_Chaos_Relic", g_Player2, true) == true then 
+		
+		--BLASHPEMOUS OATH
+		if objectives.checks.oath1 == none then
+			objectives.checks.oath1 = chaos
+		elseif objectives.checks.oath1 == inq then
+			objectives.checks.oath1 = chaos
+			
+			Rule_AddInterval(Rule_Ritual_Timer, 1)
+			Rule_AddInterval(Rule_Chaos_Reinforcement, 1)
+			
+				if g_Ritual_timer >= 890 then
+					Rule_AddInterval(Rule_Inquisition_Wrath, 1)
+				end
+			Util_ObjectiveComplete(objectives.chaos.oath1.title_id)
+			Util_ObjectiveFail(objectives.inq.oath1.title_id)
+		end
+		
+		--WARPED DIVINITY--makes the traitor inquisitor invulnerable
+		--if objectives.checks.oath2[1] == (none or inq) then  --original line by Incarnate
+		if objectives.checks.oath2[1]~=chaos then
+		
+			objectives.checks.oath2[1] = chaos
+			SGroup_SetHealthInvulnerable("sg_Inquisitor", true)
+			
+			if Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player1)  then
+				Util_StartIntel(EVENTS.AssassinsFFON) -- inquisition lament at FF being ON
+			elseif Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player2) then
+				Util_StartIntel(EVENTS.AssassinsChaosFFON) --chaos switch FF ON
+			end
+			
+			Util_ObjectiveComplete(objectives.chaos.oath2.title_id)
+			Util_ObjectiveFail(objectives.inq.oath2.title_id)
+		end
+		
+	elseif EGroup_IsCapturedByPlayer("eg_Chaos_Relic", g_Player1, true) == true then
+		
+		--WARPED DIVINITY(oath 2)
+		if objectives.checks.oath2[1] == chaos then
+			objectives.checks.oath2[1]  = inq
+			
+			SGroup_SetHealthInvulnerable("sg_Inquisitor", false)
+			
+			Rule_Remove(Rule_Ritual_Timer)
+			Rule_Remove(Rule_Chaos_Reinforcement)
+			
+			if g_Ritual_timer >= 890 then
+				Rule_Remove(Rule_Inquisition_Wrath)
+			end
+			
+			if objectives.checks.oath2[2]  == false then
+				objectives.checks.oath2[2]  = true
+				--assassins first time
+				Rule_AddOneShot(Rule_Assassins, 1)
+				if Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player1)  then
+					Util_StartIntel(EVENTS.AssassinsFFOFF) -- inquisition deactivate force field
+					Util_StartIntel(EVENTS.Assassins) -- assassins are being dropped in
+				elseif Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player2) then
+					Util_StartIntel(EVENTS.AssassinsChaosEnd) --chaos end is nigh, FFoff
+				end
+			else -- assassins have been done before
+				if Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player1)  then
+					Util_StartIntel(EVENTS.AssassinsFFOFF) -- inquisition deactivate force field
+				elseif Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player2) then
+					Util_StartIntel(EVENTS.AssassinsChaosEnd) --chaos end is nigh, FFoff
+				end
+			end
+			
+		elseif objectives.checks.oath2[1] == none then
+			objectives.checks.oath2[1]  = inq
+			if objectives.checks.oath2[2]  == false then
+				objectives.checks.oath2[2]  = true
+				--assassins first time
+				Rule_AddOneShot(Rule_Assassins, 1)
+				if Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player1)  then
+					Util_StartIntel(EVENTS.AssassinsFFOFF) -- inquisition deactivate force field
+					Util_StartIntel(EVENTS.Assassins)
+				elseif Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player2) then
+					Util_StartIntel(EVENTS.AssassinsChaosEnd) --chaos end is nigh, FFoff
+				end
+			else -- assassins have been done before
+				if Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player1)  then
+					Util_StartIntel(EVENTS.AssassinsFFOFF) -- inquisition deactivate force field
+				elseif Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player2) then
+					Util_StartIntel(EVENTS.AssassinsChaosEnd) --chaos end is nigh, FFoff
+				end
+			end
+		end
+	end
+	--Inquisition relic based objectives
+	if EGroup_IsCapturedByPlayer("eg_Inquisition_Relic", g_Player2, true) == true then 
+		--SANCTUARY
+		if objectives.checks.sanctuary == none  then
+			objectives.checks.sanctuary = chaos
+			Util_ObjectiveComplete(objectives.chaos.sanctuary.title_id)
+			Util_ObjectiveFail(objectives.inq.sanctuary.title_id)
+			
+			if Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player1)  then
+				Util_StartIntel(EVENTS.SanctuaryINQLOSS) -- inquisition lose sanctuary
+			elseif Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player2) then
+				Util_StartIntel(EVENTS.SanctuaryCHAOSGAIN) --chaos gain sanctuary
+			end
+			
+		elseif objectives.checks.sanctuary == inq then
+			objectives.checks.sanctuary = chaos
+			for i = 1, 6 do
+				EGroup_ReSpawn("resident_evil"..i)
+				EGroup_DeSpawn("clean_temple"..i)
+			end 
+			for j = 1, 10 do
+				EGroup_ReSpawn("tainted_temple"..j)
+			end
+			Rule_Remove(Rule_Inquisition_Sanctuary)
+			Rule_Remove(Rule_SanctuaryFX)
+			
+			Rule_AddInterval(taintrule,1)
+			
+			Util_ObjectiveComplete(objectives.chaos.sanctuary.title_id)
+			Util_ObjectiveFail(objectives.inq.sanctuary.title_id)
+			
+			if Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player1)  then
+				Util_StartIntel(EVENTS.SanctuaryINQLOSS) -- inquisition lose sanctuary
+			elseif Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player2) then
+				Util_StartIntel(EVENTS.SanctuaryCHAOSGAIN) --chaos gain sanctuary
+			end
+		end
+	elseif EGroup_IsCapturedByPlayer("eg_Inquisition_Relic", g_Player1, true) == true then
+		--SANCTUARY
+		if (objectives.checks.sanctuary ~= inq) then
+			if SGroup_Exists("sg_Temple_Deamon") then
+				if SGroup_Count("sg_Temple_Deamon") == 0 then
+
+					for i = 1, 6 do
+						EGroup_DeSpawn("resident_evil"..i)
+						EGroup_ReSpawn("clean_temple"..i)
+					end 
+					
+					for j = 1, 10 do
+						EGroup_DeSpawn("tainted_temple"..j)
+					end
+					
+					objectives.checks.sanctuary = inq -- set owner to inquisiton
+					
+					Rule_AddInterval(Rule_Inquisition_Sanctuary, 1)
+					
+					Util_ObjectiveComplete(objectives.inq.sanctuary.title_id)
+					Util_ObjectiveFail(objectives.chaos.sanctuary.title_id)
+					
+					Rule_AddInterval(Rule_SanctuaryFX, 7)
+					--remove taint
+					Rule_Remove(taintrule)
+					
+					if Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player1)  then
+						Util_StartIntel(EVENTS.Sanctuary) -- inquisition gain sanctuary
+					elseif Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player2) then
+						Util_StartIntel(EVENTS.SanctuaryCHAOS) --chaos worry about emperors light
+					end
+				end
+			end
+		end
+	end
+end
+--
+-------------------------------------------------------------
+--INQUISITION SECONDARY OBJECTIVES
+-------------------------------------------------------------
+--
+-------------------------------------------------------------
+--[[THE SANCTUARY]]
+-------------------------------------------------------------
+--
+--adds the nislet for the tainted ground at the north tample the first time inquisiiton forces will enter the temple zone.
+function templetaint()
+
+	Player_GetAllSquadsNearMarker(g_Player1,"templetaint","mkr_templetaint")
+	
+	if SGroup_Count("templetaint") > 0 then
+	 --taint rule
+		Rule_AddInterval(taintrule,1)
+		Rule_Remove(templetaint)
+		--nislet
+		 Util_StartIntel(EVENTS.SanctuaryTAINT) 
+	end
+end
+--
+
+--[[Depleting health modifier in the North Temple]]--
+--adds the depleting health
+function taintrule()
+	--add modifiers
+	SGroup_Clear("templetaint")
+	Player_GetAllSquadsNearMarker(g_Player1,"templetaint","mkr_templetaint")
+	if SGroup_Count("templetaint") > 0 then
+		local function modapp(a,b,c)
+			--check for new squads
+			if not  t_tainted[Squad_GetGameID(c)] then
+				t_tainted[Squad_GetGameID(c)] = {}
+				--group
+				SGroup_Add(SGroup_CreateIfNotFound("templetaint"..Squad_GetGameID(c)),c)
+				--add modifiers
+				t_tainted[Squad_GetGameID(c)][1] = Modifier_ApplyToSquad(modifiers.taint1,c)
+				t_tainted[Squad_GetGameID(c)][2] = Modifier_ApplyToSquad(modifiers.taint2,c)
+			end
+		end
+		--iterate squads
+		SGroup_ForEach(SGroup_FromName("templetaint"),modapp)
+	end
+	--remove modifiers if not close
+	for k, v in pairs(t_tainted) do
+		if SGroup_CountSpawned("templetaint"..k) > 0 then
+			--check if squad is outside of marker and remove mods.
+			if not Prox_AnySquadNearMarker("templetaint"..k, "mkr_templetaint") then
+				 if Modifier_Exists(v[1]) then 
+					Modifier_Remove(v[1]) 
+					Modifier_Remove(v[2])
+				end
+				t_tainted[k] = nil
+				SGroup_Destroy("templetaint"..k)
+			end
+		else
+			--dead squad
+			t_tainted[k] = nil
+			SGroup_Destroy("templetaint"..k)
+		end
+	end
+end
+-----------------------------------------------------------
+--[[CULTISTS SPAWN IN TEMPLE--
+-- if player 1 gets near, the cultists get spawned and attack]]
+-----------------------------------------------------------
+
+function Rule_Purify_North_Temple()
+
+	if Player_AreSquadsNearMarker(g_Player1, "mkr_North_Temple") then
+	
+		Anim_PlayEGroupAnim(EGroup_FromName("eg_temple_laugh"), "audio_warning")
+		
+		for i = 1, 6 do
+			EGroup_ReSpawn("resident_evil"..i) --trigger the setup( Maledictum +Nis deamon + 4redbeacon on SP)
+		end
+		for j = 1, 3 do
+		Util_CreateSquadsAtMarker(g_Player3, "sg_Temple_Cultists"..j, "chaos_squad_cultist", "mkr_cultists_spawn"..j, 3)
+			Cmd_AttackMoveMarker("sg_Temple_Cultists"..j, "mkr_North_Temple")
+		end
+		Rule_Remove(Rule_Purify_North_Temple)
+		Rule_AddInterval(Rule_Blood_Spirit, 1)
+	end
+end
+--
+--if the inquisitor gets near, a daemon prince is spawned
+function Rule_Blood_Spirit()
+
+	if Player_AreSquadsNearMarker(g_Player1, "mkr_Deamon_Ground") then --if any unit of player1 is in range of marker(inside the temple)
+		Player_GetAllSquadsNearMarker(g_Player1, "sg_Inquisitor_Lucius", "mkr_Deamon_Ground") --make a SquadGroups with the unit
+		
+		if SGroup_ContainsBlueprints("sg_Inquisitor_Lucius", {{name="inquisition_squad_inquisitor_lord" , count=1}} ,  false) == true then --verify the presence of the Inquisitor Lucius in the temple
+		
+			Util_CreateSquadsAtMarker(g_Player3, "sg_Temple_Deamon", "chaos_squad_daemon_prince", "mkr_Deamon_spawn", 1)
+			Cmd_AttackMoveMarker("sg_Temple_Deamon", "mkr_North_Temple")
+			
+			Rule_Remove(Rule_Blood_Spirit)
+			
+			if Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(g_Player1)  then
+				Util_StartIntel(EVENTS.DaemonPrince)
+			end
+		end
+	end
+end
+
+
+------------------------------------------------------------------------------
+--[[INQUISITION SANCTUARY RULES]]
+-----------------------------------------------------------------------------
+
+-- adds the aura to the sanctuary
+function Rule_SanctuaryFX()
+	Util_MarkerFX("mkr_Sanctuary_zone","data:Art/Events/abilities/purge")
+end
+
+--
+--establish a sanctuary zone around the inquisition base, any deamons entering the zone are destroyed, troops bcome morale immune
+function Rule_Inquisition_Sanctuary()
+
+	for l = 1, 11 do
+		EGroup_ReSpawn("eg_Sanctuary_beam"..l) --respawn the 11 beams materializing the sanctuary zone
+		
+	end
+
+	if g_inq_relic_controled == 1 then
+		if Player_AreSquadsNearMarker(g_Player1, "mkr_Sanctuary_zone") then 
+			Player_GetAllSquadsNearMarker(g_Player1, "sg_Inquisition_troops", "mkr_Sanctuary_zone")
+			local Invulnerability = function(a,b,c)
+				if SGroup_ContainsSquad("sg_moraleInq", c)  == false then
+					Squad_SetMoraleInvulnerable(c, true)
+					print("morale invulnerable")
+					SGroup_Add("sg_moraleInq" , c)
+					SGroup_Remove("sg_Inquisition_troops", c)
+				else 
+					SGroup_Remove("sg_Inquisition_troops", c)
+				end
+			end
+			SGroup_ForEach("sg_Inquisition_troops", Invulnerability)
+		end
+		if SGroup_Count("sg_moraleInq") > 0
+		and Prox_AllSquadsNearMarker("sg_moraleInq", "mkr_Sanctuary_zone") == false then
+			local MarkerID = Marker_FromName("mkr_Sanctuary_zone", "basic_marker")
+			local markerpos = Marker_GetPosition(MarkerID)
+			local markerprox = Marker_GetProximity(MarkerID)
+			local Invulnerabilityrem = function(a,b,c)
+				local pos = Squad_GetPosition(c)
+				if World_DistancePointToPoint(pos,markerpos ) > markerprox then
+					Squad_SetMoraleInvulnerable(c, false)
+					SGroup_Remove("sg_moraleInq", c)
+					print("morale not invulnerable")
+				end
+			end
+			SGroup_ForEach("sg_moraleInq", Invulnerabilityrem)
+		end
+		if Player_AreSquadsNearMarker(g_Player2, "mkr_Sanctuary_zone") then
+			SGroup_Clear("sg_Chaos_troops")
+			Player_GetAllSquadsNearMarker(g_Player2, "sg_Chaos_troops", "mkr_Sanctuary_zone")
+			local sanc = function(a , b , c)
+				for i = 1, table.getn(t_Deamonic_Ones) do
+					if Squad_GetBlueprintName(c) == t_Deamonic_Ones[i] then
+						SGroup_Add("sg_Chaos_Deamonic_Ones", c)
+						World_FXEventSquad("data:Art/Events/Chaos/Blood_Pulse_Hit","sg_Chaos_Deamonic_Ones")
+						SGroup_SelfDestroy("sg_Chaos_Deamonic_Ones", true)
+					end
+				end
+			end
+			SGroup_ForEach("sg_Chaos_troops", sanc)
+		end
+	end
+end
+
+-----------------------------------------------------------------------
+--[[GREY KNIGHTS DROP IN]]--
+------------------------------------------------------------------------
+-- grey knights drop in in the late stages of the oath
+function Rule_Inquisition_Wrath()
+	if g_Ritual_timer == 900 then
+		W40k_ShowSystemMessage("Ordo Malleus star-cruiser Vox Imperator entering orbit !!")
+		Rule_AddOneShot(Rule_Remove_Message_Inquisition_Wrath, 5)
+		Modifier_ApplyToPlayer(modifiers.maxsquadcap , g_Player1)
+		Modifier_ApplyToPlayer(modifiers.fillsquadcap , g_Player1)
+		Modifier_ApplyToPlayer(modifiers.maxsupportcap , g_Player1)
+		Modifier_ApplyToPlayer(modifiers.fillsupportcap , g_Player1)
+		
+	elseif g_Ritual_timer == 960 then
+		Player_AddResource(g_Player1, RT_Requisition, 2000)
+		Player_AddResource(g_Player1, RT_Power, 2000)
+		W40k_ShowSystemMessage("Stand your ground Brothers !! The Ordo Malleus has arrived !!")
+		Rule_AddOneShot(Rule_Remove_Message_Maleus, 5)
+		
+		for i = 1, 3 do
+			Util_CreateSquadsAtMarkerEx(g_Player1, "sg_GreyKnight_terminators"..i, "inquisition_squad_grey_knights_terminator", "mkr_Ordo_Maleus_teleport_area"..i, 1, 20)
+			SGroup_AddLeaders("sg_GreyKnight_terminators"..i)
+			
+				local weaponUp = function(a,b,c)
+					Squad_ForceUpgradeWeapons( c, "inquisition_psycannon_gk_terminator", 0)
+				end
+				
+			SGroup_ForEach("sg_GreyKnight_terminators"..i, weaponUp)
+			Cmd_AttackMoveMarker("sg_GreyKnight_terminators"..i, "mkr_Greyknight_Attack")
+		end
+		
+		Util_CreateSquadsAtMarkerEx(g_Player1, "sg_GreyKnight_LandRaider", "inquisition_squad_land_raider", "mkr_Ordo_Maleus_LandRaider", 1, 1)
+		Cmd_AttackMoveMarker("sg_GreyKnight_LandRaider", "mkr_Greyknight_Attack")
+		
+		Rule_Remove(Rule_Inquisition_Wrath)
+	end		
+	
+end
+	
+function Rule_Remove_Message_Inquisition_Wrath()
+	W40k_HideSystemMessage( "Ordo Malleus star-cruiser Vox Imperator entering orbit !!")
+end	
+
+function Rule_Remove_Message_Maleus()
+	W40k_HideSystemMessage("Stand your ground Brothers !! The Ordo Malleus has arrived !!") 	
+end
+
+--------------------------------------------------------------------------
+--[[ASSASSINS]]
+--------------------------------------------------------------------------
+-- the drop ship comes in to drop the assassins.
+function Rule_Assassins()
+	local sgroupID  = Util_CreateSquadsAtMarker(g_Player1, "sg_ig_dropship", "npc_valkyrie", "mkr_Hunters", 1)
+	Anim_PlaySGroupAnim(sgroupID, "sp_land")
+	SGroup_SetHealthInvulnerable("sg_ig_dropship", true)
+	FOW_RevealMarker("mkr_Hunters", 10)
+	Util_Ping_LoopingMkr("png_emergency", "mkr_Hunters")
+	Rule_AddOneShot(Rule_IG_EmergencyDrop_TakeOff, 9)
+end
+
+--
+-- drop ship takes off
+function Rule_IG_EmergencyDrop_TakeOff()
+	Anim_PlaySGroupAnim(SGroup_FromName("sg_ig_dropship"), "sp_take_off")
+	Util_CreateSquadsAtMarker(g_Player1, "sg_Hunters", "inquisition_squad_death_cultist", "mkr_Hunters", 3)	
+	Rule_AddOneShot(Rule_IG_EmergencyDrop_Remove, 7)
+	Cmd_AttackSGroup( "sg_Hunters" , "sg_Inquisitor" )
+end
+
+--
+ --clean up
+function Rule_IG_EmergencyDrop_Remove()
+	Util_Ping_Stop("png_emergency")
+	SGroup_DeSpawn("sg_ig_dropship")
+	SGroup_DestroyAllSquads("sg_ig_dropship")
+end
+--
+-------------------------------------------------------------
+--[[CHAOS SECONDARY OBJECTIVES]]
+-------------------------------------------------------------
+--
+--========[[BLASHPEMOUS OATH]]
+--
+--Collect the psykers
+function Rule_Gathering_Victims()
+	--gather the psykers first
+	if Player_AreSquadsNearMarker(g_Player2, "mkr_Victim_FilterIn") then	
+		Player_GetAllSquadsNearMarker(g_Player2, "sg_Victims", "mkr_Victim_FilterIn")
+		local SqChecker = function(sgroupid, itemindex, SquadID)
+			if Squad_GetBlueprintName(SquadID) == "guard_squad_psyker" then
+				Squad_SetPlayerOwner(SquadID , g_Player3)
+				Squad_DeSpawn(SquadID)
+				Squad_SetHealthInvulnerable(SquadID, true)
+				SGroup_Add("sg_psykers", SquadID)
+				SGroup_ReSpawnMarker("sg_psykers", "mkr_Victim_FilterOut")--respawn the psyker at sacrifice spot
+				Cmd_SetStance( "sg_psykers", STANCE_CeaseFire )
+				Cpu_LockSGroupAcrossPlayers( "sg_psykers")
+				g_psykerno = g_psykerno +1
+			end
+		end
+		SGroup_ForEach("sg_Victims", SqChecker)
+		SGroup_Clear("sg_Victims")
+	end
+	FOW_TagSGroup(g_Player2, "sg_psykers")
+	-- now check if there are enough
+	if g_psykerno == 8 then
+		for i = 1, 5 do
+			EGroup_ReSpawn("circle_component"..i)--respawn visual componenet of the ritual
+		end
+		Rule_AddInterval(Rule_Ritual_Timer, 1)
+		Rule_AddInterval(Rule_Chaos_Reinforcement, 1)
+		Ping_Position(Marker_GetPosition(Marker_FromName("mkr_Sacrifice_Spot", "basic_marker")),true)
+		FOW_RevealMarker("mkr_Sacrifice_Spot", 20)
+		World_FXEventSquad ("data:art/events/chaos_fx/possession_fx", "sg_AllVictims")
+		
+		Util_ObjectiveComplete(objectives.chaos.oath1.title_id)
+		Util_ObjectiveFail(objectives.inq.oath1.title_id)
+		
+		Rule_Remove(Rule_Gathering_Victims)
+		 Rule_Remove(Rule_Capture_Victims)
+	end
+end
+
+--
+--start the timer for the ritual
+function Rule_Ritual_Timer()
+	g_Ritual_timer = g_Ritual_timer +1
+end
+--
+-- the main blashphemous oath rule
+function Rule_Chaos_Reinforcement()
+--[[reinforcement troops; at the opening of the portal
+ a full squad of Berseker will emerge per minute during eight minutes, then possessed will emerge each two minutes during eight minutes, then a Deamon Prince will jump in the dance with an
+ obliterators honnor guard, eight minutes later a Bloodthirster will leap out the portal every four minutes, enough punch to crush the Inquisition like an insect.]]--
+	
+	--[[t_Chaosblueprint = {--[[1]]"chaos_marine_squad", --[[2]]"chaos_marine_squad", --[[3]]"chaos_marine_squad", --[[4]]"chaos_marine_squad", --[[5]]"chaos_squad_defiler", 
+				--[[6]]"chaos_squad_defiler", --[[7]]"chaos_squad_possessed_marine",	--[[8]]"chaos_squad_possessed_marine", --[[9]]"chaos_squad_possessed_marine", --[[10]]"chaos_squad_defiler", --[[11]]"chaos_squad_defiler", 
+				--[[12]]"chaos_squad_defiler", --[[13]]"chaos_squad_defiler", --[[14]]"chaos_squad_predator", --[[15]]"chaos_squad_defiler", --[[16]]"chaos_squad_predator", --[[17]]"chaos_squad_defiler", 
+				--[[18]]"chaos_squad_sorcerer",--[[19]]"chaos_squad_sorcerer", --[[20]]"chaos_squad_defiler", --[[21]]"chaos_squad_defiler", --[[22]]"chaos_squad_defiler", --[[23]]"chaos_squad_defiler", 
+				--[[24]]"chaos_squad_defiler", --[[25]]"chaos_squad_defiler", --[[26]]"chaos_squad_lord_advance_sp","chaos_squad_obliterator" "chaos_squad_horror"--]]  
+	if g_Ritual_timer == 1 then
+		for i = 1, 8 do
+			EGroup_ReSpawn("Chaos_Portal_parts"..i)
+			pg1 = Ping_Marker("mkr_Chaos_Portal", true, nil)
+		end
+		
+	elseif g_Ritual_timer == 5 then
+	
+		Rule_AddOneShot(Rule_Daemonic_Child_Spawn, 1)
+		
+	elseif g_Ritual_timer == 10 then
+		Ping_Stop(pg1)
+		Util_MarkerFX("mkr_Chaos_Portal", "data:Art/Events/eldar_unit_fx/warp_fx")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "chaos_marine_squad", "chaos_squad_khorne_berserker", "mkr_Chaos_Portal", 1, 20)
+		Cmd_MoveToMarker("chaos_marine_squad", "mkr_Chaos_Portal_move")
+		SGroup_Clear("chaos_marine_squad")
+		Modifier_ApplyToPlayer(modifiers.maxsquadcap , g_Player2)
+		Modifier_ApplyToPlayer(modifiers.fillsquadcap , g_Player2)
+		Modifier_ApplyToPlayer(modifiers.maxsupportcap , g_Player2)
+		Modifier_ApplyToPlayer(modifiers.fillsupportcap , g_Player2)
+		
+		
+	elseif g_Ritual_timer == 120  then
+		Util_MarkerFX("mkr_Chaos_Portal", "data:Art/Events/eldar_unit_fx/warp_fx")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_Berserk1", "chaos_squad_khorne_berserker", "mkr_Chaos_Portal", 2, 20)
+		Cmd_MoveToMarker("eg_Berserk1", "mkr_Chaos_Portal_move")
+		SGroup_Clear("eg_Berserk1")
+		
+		
+	elseif g_Ritual_timer == 480 then
+		--Player_AddResource(g_Player2, RT_Requisition, 1000)
+		--Player_AddResource(g_Player2, RT_Power, 1000)
+		Util_MarkerFX("mkr_Chaos_Portal", "data:Art/Events/eldar_unit_fx/warp_fx")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_Chaos_possessed", "chaos_squad_possessed_marine", "mkr_Chaos_Portal", 1,20)
+		Cmd_MoveToMarker("eg_Chaos_possessed", "mkr_Chaos_Portal_move")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_Chaos_marine", "chaos_marine_squad", "mkr_Chaos_Portal", 1, 20)
+		Cmd_MoveToMarker("eg_Chaos_marine", "mkr_Chaos_Portal_move")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_Chaos_Predator", "chaos_squad_predator", "mkr_Chaos_Portal", 1,1)
+		Cmd_MoveToMarker("eg_Chaos_Predator", "mkr_Chaos_Portal_move")
+		
+		
+	elseif g_Ritual_timer == 660 then
+		--Player_AddResource(g_Player2, RT_Requisition, 1000)
+		--Player_AddResource(g_Player2, RT_Power, 1000)
+		Util_MarkerFX("mkr_Chaos_Portal", "data:Art/Events/eldar_unit_fx/warp_fx")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_Chaos_Defilers", "chaos_squad_defiler", "mkr_Chaos_Portal", 2, 1)
+		Cmd_MoveToMarker("eg_Chaos_Defilers", "mkr_Chaos_Portal_move")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_Chaos_Zerker", "chaos_squad_khorne_berserker", "mkr_Chaos_Portal", 1, 20)
+		Cmd_MoveToMarker("eg_Chaos_Zerker", "mkr_Chaos_Portal_move")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_Chaos_Predator2", "chaos_squad_predator", "mkr_Chaos_Portal", 1, 1)
+		Cmd_MoveToMarker("eg_Chaos_Predator2", "mkr_Chaos_Portal_move")
+		
+		
+	elseif g_Ritual_timer == 840 then
+		--Player_AddResource(g_Player2, RT_Requisition, 1000)
+		--Player_AddResource(g_Player2, RT_Power, 1000)
+		Util_MarkerFX("mkr_Chaos_Portal", "data:Art/Events/eldar_unit_fx/warp_fx")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_Chaos_obliterator", "chaos_squad_obliterator", "mkr_Chaos_Portal", 2, 20)
+		Cmd_MoveToMarker("eg_Chaos_obliterator", "mkr_Chaos_Portal_move")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_Prince", "chaos_squad_daemon_prince_advance_sp", "mkr_Chaos_Portal", 1, 1)
+		Cmd_MoveToMarker("eg_Prince", "mkr_Chaos_Portal_move")
+		
+		
+	elseif g_Ritual_timer == 890 then
+		Rule_AddInterval(Rule_Inquisition_Wrath, 1)
+		
+		
+	elseif g_Ritual_timer == 1020 then
+		--Player_AddResource(g_Player2, RT_Requisition, 1000)
+		--Player_AddResource(g_Player2, RT_Power, 1000)
+		Util_MarkerFX("mkr_Chaos_Portal", "data:Art/Events/eldar_unit_fx/warp_fx")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_Chaos_Zerker2", "chaos_squad_khorne_berserker", "mkr_Chaos_Portal", 3, 20)
+		Cmd_MoveToMarker("eg_Chaos_Zerker2", "mkr_Chaos_Portal_move")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_BloodPrince", "chaos_squad_bloodthirster", "mkr_Chaos_Portal", 1, 1)
+		Cmd_MoveToMarker("eg_BloodPrince", "mkr_Chaos_Portal_move")
+		
+		
+	elseif g_Ritual_timer == 1200 then
+		Util_MarkerFX("mkr_Chaos_Portal", "data:Art/Events/eldar_unit_fx/warp_fx")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_Chaos_Zerker3", "chaos_squad_possessed_marine", "mkr_Chaos_Portal", 2, 20)
+		Cmd_MoveToMarker("eg_Chaos_Zerker3", "mkr_Chaos_Portal_move")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_BloodPrince2", "chaos_squad_bloodthirster", "mkr_Chaos_Portal", 2, 1)
+		Cmd_MoveToMarker("eg_BloodPrince2", "mkr_Chaos_Portal_move")
+		
+	elseif g_Ritual_timer  == nextone then
+		nextone = nextone + 300
+		Util_MarkerFX("mkr_Chaos_Portal", "data:Art/Events/eldar_unit_fx/warp_fx")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_Chaos_Zerker3", "chaos_squad_possessed_marine", "mkr_Chaos_Portal", 3, 20)
+		Cmd_MoveToMarker("eg_Chaos_Zerker3", "mkr_Chaos_Portal_move")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_Chaos_obliterator", "chaos_squad_obliterator", "mkr_Chaos_Portal", 2, 20)
+		Cmd_MoveToMarker("eg_Chaos_obliterator", "mkr_Chaos_Portal_move")
+		Util_CreateSquadsAtMarkerEx(g_Player2, "eg_BloodPrince2", "chaos_squad_bloodthirster", "mkr_Chaos_Portal", 2, 1)
+		Cmd_MoveToMarker("eg_BloodPrince2", "mkr_Chaos_Portal_move")
+	end
+end
+
+
+--[[CHAOS BLAST : THE CHAOS PLAYER GETS A SPECIAL WEAPON / A DAEMONIC CHILD
+DESCRIPTION : once the chaos player has open the portal the first unit to get out will be a child ("guard_squad_civilian_child_a") subgroup name "sg_Daemonic_Child". owned by chaos player (g_Player2).
+The child will move to the marker "mkr_Daemonic_Child_Wait". 
+Once he get there a red beam fx will be triggered at the marker "mkr_Daemonic_Child_Wait" and the daemonic child will be granted invulnerability.
+When the chaos decides he may order the child to move towards the Inquisition defense line. The child will pass at the marker "mkr_Daemonic_Child_swip_owner" and be given to the inquisition player.
+the child will be taken out of control using the function Cpu_LockSGroupAcrossPlayers, preventing the Inquisition player to use him, and to shoot at him.
+the child will head towards the marker "mkr_Daemonic_Child_Destination" once in range of the marker the Chaos_Blast Rule will be triggered.
+
+all the Inquisiton units present in the range of the "mkr_Chaos_Blast_Area" will be added to the squadgroup "Sg_Chaos_Blast_Victims", 
+the fx possession will be triggered on the child then the blood pulse fw
+the Chaos blast nis will be respawned during 5 second
+the squadGroup "Sg_Chaos_Blast_Victims" will be destroyed along with the daemonic squad
+]]
+
+function Rule_Daemonic_Child_Spawn()
+
+	Util_MarkerFX("mkr_Chaos_Portal", "data:Art/Events/eldar_unit_fx/warp_fx")
+	Util_CreateSquadsAtMarker(g_Player2, "sg_Daemonic_Child", "guard_squad_civilian_child_a", "mkr_Chaos_Portal", 1)
+	SGroup_SetHealthInvulnerable("sg_Daemonic_Child", true)
+	Cmd_MoveToMarker("sg_Daemonic_Child", "mkr_Daemonic_Child_Wait")
+	
+	Rule_AddInterval(Rule_Child_Prox_Check, 1)
+	Rule_AddInterval(Rule_Child_SwipOwnership, 1)
+	Rule_AddOneShot(Rule_Chaos_Blast, 1)
+	
+	Rule_Remove(Rule_Daemonic_Child_Spawn)
+end
+	
+function Rule_Child_Prox_Check()
+
+	if Prox_AnySquadNearMarker("sg_Daemonic_Child", "mkr_Daemonic_Child_Wait") == true then
+		Util_CreateBeaconMarker_Red("mkr_Daemonic_Child_Wait") 
+		Rule_Remove(Rule_Child_Prox_Check)
+	end
+end
+
+function Rule_Child_SwipOwnership()
+	if Prox_AnySquadNearMarker("sg_Daemonic_Child", "mkr_Daemonic_Child_swip_owner") == true then
+		SGroup_SetPlayerOwner("sg_Daemonic_Child", g_Player1)
+		Cpu_LockSGroupAcrossPlayers("sg_Daemonic_Child")
+		Cmd_MoveToMarker("sg_Daemonic_Child", "mkr_Daemonic_Child_Destination")
+		Rule_Remove(Rule_Child_SwipOwnership)
+	end
+end
+
+function Rule_Chaos_Blast()
+		if Prox_AnySquadNearMarker("sg_Daemonic_Child", "mkr_Daemonic_Child_Destination") == true then
+		
+			if Player_AreSquadsNearMarker(g_Player1, "mkr_Chaos_Blast_Area") then
+			
+				for m = 1, 4 do
+					EGroup_ReSpawn("Chaos_Blast"..m) --respawn the meteor and chaos artillery FX object
+				end
+				
+				Player_GetAllSquadsNearMarker(g_Player1, "Sg_Chaos_Blast_Victims", "mkr_Chaos_Blast_Area")
+				FOW_RevealMarker("mkr_Chaos_Blast_Area", 10)				
+				Cpu_LockSGroupAcrossPlayers("Sg_Chaos_Blast_Victims")
+
+				World_FXEventSquad ("data:art/events/chaos_fx/possession_fx", "Sg_Chaos_Blast_Victims")
+				World_FXEventSquad("data:art/events/chaos/blood_pulse_hit","Sg_Chaos_Blast_Victims")
+				Rule_AddOneShot( Rule_Destroy_Inquisition_troops, 5 )
+				Rule_AddOneShot(Rule_Despawn_Chaos_Blast_Fx, 6)
+				Rule_Remove(Rule_Chaos_Blast)
+			end
+		end
+
+
+end
+
+function Rule_Despawn_Chaos_Blast_Fx()
+	for m = 1, 4 do
+		EGroup_DeSpawn("Chaos_Blast"..m) --despawn the meteor and chaos artillery FX object
+	end
+end
+
+function Rule_Destroy_Inquisition_troops()
+
+	SGroup_SelfDestroy("Sg_Chaos_Blast_Victims", true)	
+	Rule_Remove(Rule_Destroy_Inquisition_troops)
+end
+
+----------------------------------------------------------------------------------------------
+--[[ENABLE GAME IF PLAYER 2 IS COMPUTER]]--
+----------------------------------------------------------------------------------------------
+
+
+function Rule_Check_IfPlayerTwoIsComputer()
+
+	if Cpu_IsCpuPlayer(g_Player2) == true then	
+	
+		Rule_AddInterval(Rule_AutomaticPsykerCapture, 1)
+	end
+end
+
+function Rule_AutomaticPsykerCapture()
+	 
+	 
+	 
+	for i = 1, SGroup_Count("sg_AllVictims") do
+	
+		 --if (Squad_GetPlayerOwner(SGroup_GetSpawnedSquadAt(SGroup_FromName("victims"..i))) == g_Player3) then
+		 
+			SGroup_SetPlayerOwner("victims"..i, g_Player2)
+			Cpu_LockSGroupAcrossPlayers("victims"..i)
+			Cmd_MoveToMarker("victims"..i, "mkr_Victim_FilterIn")
+		--end
+	end
+	
+	if g_psykerno == 8 then
+		Rule_Remove(Rule_AutomaticPsykerCapture)
+	end
+ 
+end
+
+
+
