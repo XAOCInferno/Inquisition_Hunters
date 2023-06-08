@@ -1,0 +1,34 @@
+hero_race["witch_hunters_race"] = {
+
+Fallback = {
+	"witch_hunters_actoffaith_emperor_light",
+	"witch_hunters_actoffaith_spirit_martyr",
+},
+
+Support = {
+	["witch_hunters_exorcist"] = 90,
+},
+
+-- Abilities must be placed in descending order by range (the second parameter)
+
+-- AbilsThem are abilities used against enemy targets
+AbilsThem = {
+	{ "witch_hunters_exorcist_volley", 90 },
+	{ "witch_hunters_adepta_sororitas_grenades", 25 },
+	{ "witch_hunters_adeptus_arbites_grenades", 25 },	
+	{ "witch_hunters_melta_bombs", 18 },
+},
+
+-- AbilsUs are abilities used on self
+AbilsUs = {
+	{ "witch_hunters_immolator_laud_hailers", 35 },
+	{ "witch_hunters_rhino_laud_hailers", 35 },
+	{ "witch_hunters_smoke_launchers", 15 },
+	{ "witch_hunters_canoness_mantle_ophelia", 0 },
+	{ "witch_hunters_actoffaith_hand_emperor", 0 },
+	{ "witch_hunters_actoffaith_divine_guidance", 0 },
+	{ "witch_hunters_actoffaith_emperor_light", 0 },
+	{ "witch_hunters_actoffaith_spirit_martyr", 0 },	
+},
+
+}

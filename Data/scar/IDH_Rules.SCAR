@@ -1,0 +1,42 @@
+---------------------------------------------------
+-- Daemonhunters Rules, made by Gambit @ 29/9/2018
+-- 1] In Love!: Enables Easter-egg thoughts of the
+--    Temi Commander and Librarian.
+---------------------------------------------------
+
+import("WXPScarUtil.scar")
+import("WCUtil.scar")
+
+
+function IDH_Rules_OnInit()
+	Rule_AddOneShot(IDH_Commanders_In_Love, 16.25)
+end
+
+
+function IDH_Commanders_In_Love()
+	local enable_canones_love = false
+	local enable_miriael_love = false
+	for i = 0, World_GetPlayerCount()-1 do
+		local player_race = Player_GetRaceName(World_GetPlayerAt(i))
+		if player_race == "witch_hunters_race" then enable_canones_love = true
+		elseif player_race == "emperors_children_race" then enable_miriael_love = true end
+	end
+	if enable_canones_love or enable_miriael_love then
+		for i = 0, World_GetPlayerCount()-1 do
+			local playerID = World_GetPlayerAt(i)
+			local player_race = Player_GetRaceName(playerID)
+			if player_race == "inquisition_daemonhunt_race" then
+				if enable_canones_love then
+					Modifier_ApplyToPlayer( Modifier_Create( MAT_EntityType, "default_weapon_modifier_hardpoint3", MUT_Addition, true, 1, "inquisition_grey_knight_hero"), playerID)
+					Modifier_ApplyToPlayer( Modifier_Create( MAT_EntityType, "default_weapon_modifier_hardpoint5", MUT_Addition, true, 1, "inquisition_grey_knight_hero_gk"), playerID)					
+				end
+				if enable_miriael_love then
+					Modifier_ApplyToPlayer( Modifier_Create( MAT_EntityType, "default_weapon_modifier_hardpoint4", MUT_Addition, true, 1, "inquisition_grey_knights_librarian"), playerID)
+				end
+			end
+		end
+	end
+end
+
+
+Scar_AddInit(IDH_Rules_OnInit)
