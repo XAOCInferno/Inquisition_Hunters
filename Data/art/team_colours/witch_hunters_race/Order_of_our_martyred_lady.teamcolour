@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "sisters_race/OURMARTYREDLADY",
+	associated_race = "witch_hunters_race",
+	banner_name = "witch_hunters_race/Order_of_our_martyred_lady_banner",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Order of Our Martyred Lady",
+	Eyes =  
+	{
+		b = 229,
+		g = 229,
+		r = 230,
+	},
+	Weapons =  
+	{
+		b = 106,
+		g = 100,
+		r = 104,
+	},
+	Primary =  
+	{
+		b = 20,
+		g = 7,
+		r = 10,
+	},
+	Trim =  
+	{
+		b = 45,
+		g = 159,
+		r = 221,
+	},
+	Secondary =  
+	{
+		b = 23,
+		g = 32,
+		r = 180,
+	},
+}
+

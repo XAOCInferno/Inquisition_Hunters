@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "sisters_race/SACREDROSE",
+	associated_race = "witch_hunters_race",
+	banner_name = "witch_hunters_race/Order_of_the_sacred_rose_banner",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Order of the Sacred Rose",
+	Eyes =  
+	{
+		b = 1,
+		g = 8,
+		r = 11,
+	},
+	Weapons =  
+	{
+		b = 47,
+		g = 45,
+		r = 44,
+	},
+	Primary =  
+	{
+		b = 248,
+		g = 255,
+		r = 252,
+	},
+	Trim =  
+	{
+		b = 151,
+		g = 155,
+		r = 154,
+	},
+	Secondary =  
+	{
+		b = 32,
+		g = 33,
+		r = 33,
+	},
+}
+
