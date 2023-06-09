@@ -1,0 +1,266 @@
+-----------------------------------------------------
+-- Witch Hunters Rules, made by Gambit @ 29/12/2018
+-- Enables/Disables the LR Redeemer, Shield Maidens
+-- and Exalted Dreadnought Easter Egg squads.
+-- You get them, if you have Daemonhunters allies,
+-- ... or you have Chaos Daemons enemies!
+-- UPDATE: Saint Katherine is also present!
+-- She now appears is Angron (Chaos Daemons) or
+-- Slaanesh Avatar (Emperor's Children) are present!
+-- UPDATE: Saint Praxedes appearance!
+-- She replaces the standard Canoness if you have
+-- Ultramarine Allies or Tyranid Enemies
+-----------------------------------------------------
+
+import("WXPScarUtil.scar")
+import("WCUtil.scar")
+
+
+function WHunters_OnInit()
+
+	-- Rules NOT needed in Last Stand and Kill-Team game modes
+	if G_Is_LastStand_Map ~= nil or KTGM_ENABLED ~= nil then
+		print("Last Stand or Kill-Team game mode.  WH rules NOT started!")
+		return
+	end
+
+	-- First, restrict Saint Praxedes for all players
+	for i = 0, World_GetPlayerCount()-1 do
+		local playerID = World_GetPlayerAt(i)
+		if Player_GetRaceName(playerID) == "witch_hunters_race" then
+			Player_RestrictSquad(playerID, "witch_hunters_squad_saint_praxedes")
+		end
+	end
+
+	-- Now check if the other rules are needed
+	if WH_SaintKatherineComes == nil and WH_AllSquadsReady == true and WH_SaintPraxedesIsAround == nil then return end
+
+	g_WHuntersPlayerIDs = {}		-- global table that stores ONLY Witch Hunter players
+	g_WHunters_CD_PlayerIDs = {}	-- global table that stores ONLY Chaos Daemons players
+	g_WHunters_EC_PlayerIDs = {}	-- global table that stores ONLY Emperor's Children players
+
+	WH_has_CD_enemies = false
+	WH_has_EC_enemies = false
+	
+	local has_DH_players = false
+	local has_CD_players = false
+	local has_UM_players = false
+	local has_Tyr_players = false
+
+	for i = 0, World_GetPlayerCount()-1 do
+		local playerID = World_GetPlayerAt(i)
+		local race_name = Player_GetRaceName(playerID)
+		if race_name == "witch_hunters_race" then
+			table.insert(g_WHuntersPlayerIDs, playerID)
+			if WH_AllSquadsReady ~= true then
+				Player_RestrictSquad(playerID, "witch_hunters_squad_shield_maiden")
+				Player_RestrictSquad(playerID, "witch_hunters_squad_dreadnought_exalted")
+				Player_RestrictSquad(playerID, "witch_hunters_squad_land_raider_redeemer")
+			end
+		elseif race_name == "deamons_race" then
+			table.insert(g_WHunters_CD_PlayerIDs, playerID)
+			has_CD_players = true
+		elseif race_name == "emperors_children_race" then
+			table.insert(g_WHunters_EC_PlayerIDs, playerID)
+		elseif race_name == "ultra_marine_race" then
+			has_UM_players = true
+		elseif race_name == "tyranid_race" or race_name == "tyranids_race" then
+			has_Tyr_players = true
+		elseif race_name == "inquisition_daemonhunt_race" then
+			has_DH_players = true
+		end
+	end
+	if table.getn(g_WHuntersPlayerIDs) > 0 then
+		if WH_SaintPraxedesIsAround == true then
+			if has_UM_players or has_Tyr_players then
+				Rule_AddOneShot(WHunters_Set_Praxedes_Availability, 0.25)
+			end
+		end
+		if WH_AllSquadsReady ~= true then
+			if has_DH_players or has_CD_players then
+				Rule_AddOneShot(WHunters_Set_LRR_Availability, 12.125)
+			end
+		end
+		WH_has_CD_enemies = table.getn(g_WHunters_CD_PlayerIDs) > 0
+		WH_has_EC_enemies = table.getn(g_WHunters_EC_PlayerIDs) > 0
+		if WH_SaintKatherineComes == true and WH_has_CD_enemies or WH_has_EC_enemies then
+			Rule_AddIntervalDelay(WHunters_Check_for_Katherine, 10, 15)
+		end
+	end
+end
+
+
+Scar_AddInit(WHunters_OnInit)
+
+
+function WHunters_Check_for_Katherine()
+	for i = table.getn(g_WHuntersPlayerIDs), 1, -1 do
+		if not Player_IsAlive(g_WHuntersPlayerIDs[i]) then
+			table.remove(g_WHuntersPlayerIDs, i)
+		end
+	end
+	if table.getn(g_WHuntersPlayerIDs) == 0 then
+		print("Witch Hunters Saint Katherine Rule, Removed!")
+		Rule_Remove(WHunters_Check_for_Katherine)
+		return
+	end
+	if WH_has_CD_enemies then
+		for i = table.getn(g_WHunters_CD_PlayerIDs), 1, -1 do
+			local playerID = g_WHunters_CD_PlayerIDs[i]
+			if Player_IsAlive(playerID) then
+				if SGroup_ForEachAllOrAny(Player_GetSquads(playerID), false, WH_CheckForAngron) then
+					WHunters_Saint_Katherine_Appears(playerID, 1, i)
+					if table.getn(g_WHuntersPlayerIDs) == 0 then
+						print("Witch Hunters Saint Katherine Rule, Removed!")
+						Rule_Remove(WHunters_Check_for_Katherine)
+						return
+					end
+					break
+				end
+			else
+				table.remove(g_WHunters_CD_PlayerIDs, i)
+			end
+		end
+		WH_has_CD_enemies = table.getn(g_WHunters_CD_PlayerIDs) > 0
+	end
+	if WH_has_EC_enemies then
+		for i = table.getn(g_WHunters_EC_PlayerIDs), 1, -1 do
+			local playerID = g_WHunters_EC_PlayerIDs[i]
+			if Player_IsAlive(playerID) then
+				if SGroup_ForEachAllOrAny(Player_GetSquads(playerID), false, WH_CheckForSlaanesh) then
+					WHunters_Saint_Katherine_Appears(playerID, 2, i)
+					if table.getn(g_WHuntersPlayerIDs) == 0 then
+						print("Witch Hunters Saint Katherine Rule, Removed!")
+						Rule_Remove(WHunters_Check_for_Katherine)
+						return
+					end
+					break
+				end
+			else
+				table.remove(g_WHunters_EC_PlayerIDs, i)
+			end
+		end
+		WH_has_EC_enemies = table.getn(g_WHunters_EC_PlayerIDs) > 0
+	end
+	if not (WH_has_CD_enemies or WH_has_EC_enemies) then
+		print("Witch Hunters Saint Katherine Rule, Removed!")
+		Rule_Remove(WHunters_Check_for_Katherine)
+	end
+end
+
+
+function WHunters_Saint_Katherine_Appears(enemyID, raceType, enemyArrayIndex)
+	local cd_player_team = Player_GetTeam(enemyID)
+	local eligible_WH_Players = {}
+	for i = 1, table.getn(g_WHuntersPlayerIDs) do
+		if Player_GetTeam(g_WHuntersPlayerIDs[i]) ~= cd_player_team then
+			table.insert(eligible_WH_Players, {pID = g_WHuntersPlayerIDs[i], idx = i})
+		end
+	end
+	local all_wh_players = table.getn(eligible_WH_Players)
+	if all_wh_players > 0 then
+		local wh_player_chosen = World_GetRand(1, all_wh_players)
+		local wh_playerID = eligible_WH_Players[wh_player_chosen].pID
+		local pos = Player_GetStartPosition(wh_playerID)
+		table.remove(g_WHuntersPlayerIDs, eligible_WH_Players[wh_player_chosen].idx)
+		Squad_Spawn(Squad_Create("witch_hunters_squad_saint_katherine", wh_playerID, pos, 0), pos)
+		local mssg = ""
+		if raceType == 1 then
+			table.remove(g_WHunters_CD_PlayerIDs, enemyArrayIndex)
+			mssg = "The presence of Angron on the battlefield, invoked the miraculous intervention of Saint Katherine!"
+		else
+			table.remove(g_WHunters_EC_PlayerIDs, enemyArrayIndex)
+			mssg = "The presence of the Avatar of Slaanesh on the battlefield, invoked the miraculous intervention of Saint Katherine!"
+		end
+		if Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(wh_playerID) then
+			EventCue_DoEvent("wh_katherine_saint_icon", "event_cue_notifications/join_team_request", "Saint Katherine Intervened!", mssg)
+		end
+	end
+end
+
+
+function WHunters_Set_LRR_Availability()
+	local total = World_GetPlayerCount()-1
+	for i = 1, table.getn(g_WHuntersPlayerIDs) do
+		local has_idh_allies = false
+		local has_cd_enemies = false
+		local wh_playerID = g_WHuntersPlayerIDs[i]
+		local wh_playerTeam = Player_GetTeam(wh_playerID)
+		for j = 0, total do
+			local playerID = World_GetPlayerAt(j)
+			local race_name = Player_GetRaceName(playerID)
+			if race_name == "inquisition_daemonhunt_race"
+			and Player_GetTeam(playerID) == wh_playerTeam then
+				has_idh_allies = true
+			elseif race_name == "deamons_race"
+			and Player_GetTeam(playerID) ~= wh_playerTeam then
+				has_cd_enemies = true
+			end
+		end
+		if has_idh_allies or has_cd_enemies and Player_IsAlive(wh_playerID) then
+			Player_UnRestrictSquad(wh_playerID, "witch_hunters_squad_shield_maiden")
+			Player_UnRestrictSquad(wh_playerID, "witch_hunters_squad_dreadnought_exalted")
+			Player_UnRestrictSquad(wh_playerID, "witch_hunters_squad_land_raider_redeemer")
+			if Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(wh_playerID) then
+				if has_idh_allies and has_cd_enemies then
+					EventCue_DoEvent("wh_redeemer_available", "event_cue_notifications/donation_received", "Land Raider Redeemer Available!", "The allied Inquisition Daemonhunters army, grants you access to this rare relic of the Imperium, to better counter the Daemonic enemy threat!  Additionally, you gain access to Shield Maiden squads (Inquisition) and the Exalted Dreadnought (Ecclesiarchy).")
+				elseif has_idh_allies then
+					EventCue_DoEvent("wh_redeemer_available", "event_cue_notifications/donation_received", "Land Raider Redeemer Available!", "The allied Inquisition Daemonhunters army, grants you access to this rare relic of the Imperium!  Additionally, you gain access to Shield Maiden squads (Inquisition) and the Exalted Dreadnought (Ecclesiarchy).")
+				elseif has_cd_enemies then
+					EventCue_DoEvent("wh_redeemer_available", "event_cue_notifications/donation_received", "Land Raider Redeemer Available!", "The Inquisition has granted you access to this rare relic of the Imperium, to better counter the Daemonic enemy threat!  Additionally, you gain access to Shield Maiden squads (Inquisition) and the Exalted Dreadnought (Ecclesiarchy).")
+				end
+			end
+		end
+	end
+end
+
+
+function WHunters_Set_Praxedes_Availability()
+	local total = World_GetPlayerCount()-1
+	for i = 1, table.getn(g_WHuntersPlayerIDs) do
+		local has_UM_allies = false
+		local has_Tyr_enemies = false
+		local wh_playerID = g_WHuntersPlayerIDs[i]
+		local wh_playerTeam = Player_GetTeam(wh_playerID)
+		for j = 0, total do
+			local playerID = World_GetPlayerAt(j)
+			local race_name = Player_GetRaceName(playerID)
+			if race_name == "ultra_marine_race"
+			and Player_GetTeam(playerID) == wh_playerTeam then
+				has_UM_allies = true
+			elseif race_name == "tyranid_race" or race_name == "tyranids_race"
+			and Player_GetTeam(playerID) ~= wh_playerTeam then
+				has_Tyr_enemies = true
+			end
+		end
+		if has_UM_allies or has_Tyr_enemies and Player_IsAlive(wh_playerID) then
+			Player_RestrictSquad(wh_playerID, "witch_hunters_squad_canoness")
+			Player_UnRestrictSquad(wh_playerID, "witch_hunters_squad_saint_praxedes")
+			Player_GrantResearch(wh_playerID, "witch_hunters_saint_praxedes_dummy_research")
+			Player_GrantResearch(wh_playerID, "witch_hunters_research_canoness_mantle_orphelia")
+			if Tut_GetLocalPlayerIndex() == World_GetPlayerIndex(wh_playerID) then
+				if has_UM_allies and has_Tyr_enemies then
+					EventCue_DoEvent("wh_saint_praxedes_icon", "event_cue_notifications/donation_received", "Saint Praxedes Available!", "The allied Ultramarines army reveres Saint Praxedes - and their prayers are answered! You are now blessed with her presence in your army.  Additionally, you have Tyranid Enemies, and this alone would compel the Saint to join your army in the imminent fight anyway!  SAINT PRAXEDES WILL REPLACE YOUR REGULAR CANONESS, ASSUMING THE PRIMARY COMMANDER'S ROLE.")
+				elseif has_UM_allies then
+					EventCue_DoEvent("wh_saint_praxedes_icon", "event_cue_notifications/donation_received", "Saint Praxedes Available!", "The allied Ultramarines army reveres Saint Praxedes - and their prayers are answered! You are now blessed with her presence in your army.  SAINT PRAXEDES WILL REPLACE YOUR REGULAR CANONESS, ASSUMING THE PRIMARY COMMANDER'S ROLE.")
+				elseif has_Tyr_enemies then
+					EventCue_DoEvent("wh_saint_praxedes_icon", "event_cue_notifications/donation_received", "Saint Praxedes Available!", "The Tyranid Enemy threat compels the Saint Praxedes to join your army in the imminent fight!  SAINT PRAXEDES WILL REPLACE YOUR REGULAR CANONESS, ASSUMING THE PRIMARY COMMANDER'S ROLE.")
+				end
+			end
+		end
+	end
+end
+
+
+WH_CheckForAngron = function( sgroupid, itemindex, squadID )
+	if Squad_GetBlueprintName(squadID) == "daemon_squad_primarch_angron" then
+		return true
+	end
+end
+
+
+WH_CheckForSlaanesh = function( sgroupid, itemindex, squadID )
+	if Squad_GetBlueprintName(squadID) == "emperors_children_squad_princess_slaanesh" then
+		return true
+	end
+end

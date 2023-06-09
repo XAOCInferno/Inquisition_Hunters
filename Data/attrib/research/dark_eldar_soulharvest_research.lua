@@ -1,0 +1,17 @@
+GameData = Inherit([[]])
+GameData["modifiers"] = Reference([[tables\modifier_table.lua]])
+GameData["modifiers"]["modifier_01"] = Reference([[modifiers\cannibalize_souls_modifier.lua]])
+GameData["modifiers"]["modifier_01"]["value"] = 2
+GameData["requirements"] = Reference([[tables\requirements.lua]])
+GameData["time_cost"] = Reference([[tables\time_cost_table.lua]])
+GameData["time_cost"]["cost"]["faith"] = 0
+GameData["time_cost"]["cost"]["power"] = 200
+GameData["time_cost"]["cost"]["requisition"] = 100
+GameData["time_cost"]["cost"]["souls"] = 0
+GameData["time_cost"]["time_seconds"] = 50
+GameData["ui_hotkey_name"] = [[dark_eldar_research_soulharvest]]
+GameData["ui_index_hint"] = 1
+GameData["ui_info"] = Reference([[tables\ui_info_table.lua]])
+GameData["ui_info"]["help_text_list"]["text_01"] = [[$4150001]] -- - Increases the rate at which souls are harvested.
+GameData["ui_info"]["icon_name"] = [[dark_eldar_icons/research_soulharvest_icon]]
+GameData["ui_info"]["screen_name_id"] = [[$4150000]] -- Grand Reaping Research

@@ -1,0 +1,54 @@
+-------------------------------------------------
+--[[CREDITS]]
+-------------------------------------------------
+-- Music set-up by s1_ONE
+
+-------------------------------------------------
+--[[ IMPORTS ]]
+-------------------------------------------------
+import("scarUtil.scar")
+import("WXPScarUtil.scar")
+
+-------------------------------------------------
+--[[ON GAME SETUP]]
+-------------------------------------------------
+g_Player1 = World_GetPlayerAt(0)
+g_Player2 = World_GetPlayerAt(1)
+g_Player3 = World_GetPlayerAt(2)
+g_Player4 = World_GetPlayerAt(3)
+g_Player5 = World_GetPlayerAt(4)
+g_Player6 = World_GetPlayerAt(5)
+g_TunnelDelay = 8
+g_EntryCount = 0
+g_ExitCount = 0
+g_SimulCount = 0
+t_Tunnel1Queue = { }
+t_Tunnel2Queue = { }
+t_Tunnel3Queue = { }
+t_Tunnel4Queue = { }
+
+-------------------------------------------------
+--[[ ON INITIALIZATION ]]
+-------------------------------------------------
+function OnInit()
+	
+	Rule_SetupMusicPlaylist()
+
+end
+
+--[[ the Scar_AddInit(OnInit) function is mandatory! This registers your init function with scar. ]]
+Scar_AddInit(OnInit)
+
+-------------------------------------------------
+--[[ MUSIC ]]
+-------------------------------------------------
+
+function Rule_SetupMusicPlaylist()
+    t_music = {"mu_ig_rac_necron_perc", "MU_IG_STR_ImpGd_perc_voice", "music_chant", "MU_IG_STR_SpaceMarine", "mu_ig_str_spacemarine_perc_str", "MU_IG_STR_SpaceMarine_perc_brass", "music_necron_theme_perc", "MU_IG_STR_ImpGd", "MU_IG_STR_Chaos_perc_str", "music_warhammer40ktheme"}
+    
+    Playlist_Manager( PC_Music, t_music, false, true , {10, 10})
+    
+    t_ambient = {"snowy_wind_1", "snowy_wind_2"}
+    Playlist_Manager( PC_Ambient, t_ambient, true, true , {5, 10})
+    
+end

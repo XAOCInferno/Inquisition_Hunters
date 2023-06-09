@@ -1,0 +1,959 @@
+----------------------------------------------------------------------------------------------------------------
+-- Single player scar helper functions
+-- (c) 2003 Relic Entertainment Inc.
+
+import("Setup.scar")
+import("Proximity.scar")
+import("Timer.scar")
+import("Player.scar")
+import("Entity.scar")
+import("Squad.scar")
+import("Command.scar")
+import("Groups.scar")
+import("Camera.scar")
+import("Restrict.scar")
+import("Actor.scar")
+import("Modifiers.scar")
+import("CpuPlayerUtil.scar")
+import("DifficultyLevel.scar")
+import("UI.scar")
+import("Production.scar")
+
+-- We add this import so FreeUI mod is utilised,
+-- providing custom Taskbars for every race!
+import("FreeUI.scar")
+
+
+---- CUSTOM SCaR IMPORTS ------------------------------------------
+---- In order to insert a new import, just delete the Scar_AddInit
+---- from your code, and insert it in CustomModScarImports.scar
+
+-- We add this import for Witch Hunters
+import("Witch_Hunters_Rules.scar")
+
+
+
+------------------------------------------------------------------
+
+-- NOTES
+-- use lowercase to start variables
+-- use uppercase to start functions
+-- restrict the use of "_" to grouping categories
+
+-- TODO
+-- Util_CreateEntitiesAtPosition
+-- Util_CreateEntitiesAtMarker
+-- Cleanup/Document the rest of Squad.Scar
+-- Cleanup/Document the rest of this file
+
+
+
+local ORK_LIGHT = 1
+local ORK_HEAVY = 2
+
+
+----------------------------------------------------------------------------------------------------------------
+-- Private implementation
+_ScarUtil_Private = {
+
+	CreateSquads = function( playerId, squadgroupName, squadBlueprint, pos, numsquads, loadout, bSpawn )	
+		-- only create sgroup if it doesnt exist yet
+		local sgroupId = SGroup_CreateIfNotFound( squadgroupName )
+		
+		local temp = SGroup_CreateIfNotFound( "tempSGroup")
+		SGroup_Clear( temp )
+		
+		for i = 1, numsquads do
+			-- add a random offset to the position so the spawnout doesnt look so 'scripted'
+--~ 			local xrand = World_GetRand( -4, 4 ) -- random # between -4 and +4
+--~ 			local zrand = World_GetRand( -4, 4 ) -- random # between -4 and +4
+			
+			-- create the squad
+			local squadId = Squad_Create( squadBlueprint, playerId, pos, loadout )
+			
+			-- add to group
+			SGroup_Add(sgroupId, squadId)
+					
+--~ 			local spawnPos = World_Pos( xrand + pos.x, pos.y, zrand + pos.z )
+			local spawnPos = World_Pos( pos.x, pos.y, pos.z )
+			
+			-- only spawn if bSpawn is set (drop pods create squads w/out spawing them)
+			if( bSpawn ~= nil and bSpawn == true ) then
+				-- spawn it
+				Squad_Spawn( squadId,  spawnPos )
+				SGroup_Add( temp, squadId )
+				-- send a move order to the spawned position.  this will help space out the troops properly
+--~ 				Command_SquadPos( playerId, temp, SCMD_Move, spawnPos )
+			end
+			
+		end
+		
+		-- clean up
+		SGroup_Clear( temp )
+		
+		return sgroupId	
+	end,
+	
+	CreateSquadsRandom = function( playerId, squadgroupName, squadBlueprint, pos, numsquads, loadout, bSpawn )	
+		-- only create sgroup if it doesnt exist yet
+		local sgroupId = SGroup_CreateIfNotFound( squadgroupName )
+		
+		local temp = SGroup_CreateIfNotFound( "tempSGroup")
+		SGroup_Clear( temp )
+		
+		for i = 1, numsquads do
+			-- add a random offset to the position so the spawnout doesnt look so 'scripted'
+			local xrand = World_GetRand( -4, 4 ) -- random # between -4 and +4
+			local zrand = World_GetRand( -4, 4 ) -- random # between -4 and +4
+			
+			-- create the squad
+			local squadId = Squad_Create( squadBlueprint, playerId, pos, loadout )
+			
+			-- add to group
+			SGroup_Add(sgroupId, squadId)
+					
+			local spawnPos = World_Pos( xrand + pos.x, pos.y, zrand + pos.z )
+--~ 			local spawnPos = World_Pos( pos.x, pos.y, pos.z )
+			
+			-- only spawn if bSpawn is set (drop pods create squads w/out spawing them)
+			if( bSpawn ~= nil and bSpawn == true ) then
+				-- spawn it
+				Squad_Spawn( squadId,  spawnPos )
+				SGroup_Add( temp, squadId )
+				-- send a move order to the spawned position.  this will help space out the troops properly
+--~ 				Command_SquadPos( playerId, temp, SCMD_Move, spawnPos )
+			end
+			
+		end
+		
+		-- clean up
+		SGroup_Clear( temp )
+		
+		return sgroupId	
+	end,
+}
+
+--? @group Util
+
+--? @shortdesc Converts a 2D top down position to a 3D ScarPosition.
+--? @extdesc
+--? 3D ScarPositions have the x axis left to right, the z axis in to out, and the y axis down to up (y axis represents the height of the terrain).  Use this function to convert a top-down 2D position to a 3D world position.\n\n
+--? Note: (0,0) is in the center of the map.
+--? @result Position
+--? @args Real xpos, Real ypos
+function Util_ScarPos(xpos, ypos)
+	return World_Pos(xpos, 0, ypos)
+end
+
+--? @shortdesc Creates a given number of squads with a loadout at a position and adds them to a squadgroup.  The squad will spawn at a slightly random position in relation to the specified position.  The squadgroup will be created if it doesnt exist.
+--? @extdesc Use loadout of zero to create a squad at its min loadout.  Squads can never exceed their max loadout.
+--? @args PlayerID playerId, String squadgroupName, String squadBlueprint, Position pos, Integer numsquads, Integer loadout
+--? @result SGroupID
+function Util_CreateSquadsAtPositionRandomEx( playerId, squadgroupName, squadBlueprint, pos, numsquads, loadout )	
+	local groupID = _ScarUtil_Private.CreateSquadsRandom(
+		playerId,
+		squadgroupName,
+		squadBlueprint,
+		pos,
+		numsquads,
+		loadout,
+		true -- spawn
+	)
+	
+	return groupID
+end
+
+--? @shortdesc Creates a given number of squads at a marker position with a loadout and adds them to a squadgroup.  The squad will spawn at a slightly random position in relation to the specified position.  The squadgroup will be created if it doesnt exist.
+--? @extdesc Use loadout of zero to create a squad at its min loadout.  Squads can never exceed their max loadout.
+--? @args PlayerID playerId, String squadgroupName, String squadBlueprint, String markername, Integer numsquads, Integer loadout
+--? @result SGroupID
+function Util_CreateSquadsAtMarkerRandomEx(playerId, squadgroupName, squadBlueprint, markerName, numsquads, loadout)
+	return Util_CreateSquadsAtPositionRandomEx( 
+		playerId,
+		squadgroupName,
+		squadBlueprint,
+		Marker_GetPosition( Marker_FromName( markerName, "basic_marker" ) ),
+		numsquads,
+		loadout -- use min loadout
+	)
+end
+
+--? @shortdesc Creates a given number of squads at a position and adds them to a squadgroup.  The squad will spawn at a slightly random position in relation to the specified position.  The squadgroup will be created if it doesnt exist.
+--? @extdesc Squads will be created with min loadout.
+--? @args PlayerID playerId, String squadgroupName, String squadBlueprint, Position pos, Integer numsquads
+--? @result SGroupID
+function Util_CreateSquadsAtPositionRandom(playerId, squadgroupName, squadBlueprint, pos, numsquads)	
+	return Util_CreateSquadsAtPositionRandomEx(
+		playerId, 
+		squadgroupName, 
+		squadBlueprint, 
+		pos, 
+		numsquads, 
+		0	-- use min loadout
+	)	
+end
+
+--? @shortdesc Creates a given number of squads at a marker position and adds them to a squadgroup.  The squad will spawn at a slightly random position in relation to the specified position.  The squadgroup will be created if it doesnt exist.
+--? @extdesc Squads will be created with min loadout.
+--? @args PlayerID playerId, String squadgroupName, String squadBlueprint, String markername, Integer numsquads
+--? @result SGroupID
+function Util_CreateSquadsAtMarkerRandom(playerId, squadgroupName, squadBlueprint, markerName, numsquads)
+	return Util_CreateSquadsAtPositionRandomEx( 
+		playerId,
+		squadgroupName,
+		squadBlueprint,
+		Marker_GetPosition( Marker_FromName( markerName, "basic_marker" ) ),
+		numsquads,
+		0 -- use min loadout
+	)
+end
+
+--? @shortdesc Creates a given number of squads with a loadout at a position and adds them to a squadgroup.  The squadgroup will be created if it doesnt exist.
+--? @extdesc Use loadout of zero to create a squad at its min loadout.  Squads can never exceed their max loadout.
+--? @args PlayerID playerId, String squadgroupName, String squadBlueprint, Position pos, Integer numsquads, Integer loadout
+--? @result SGroupID
+function Util_CreateSquadsAtPositionEx( playerId, squadgroupName, squadBlueprint, pos, numsquads, loadout )	
+	local groupID = _ScarUtil_Private.CreateSquads(
+		playerId,
+		squadgroupName,
+		squadBlueprint,
+		pos,
+		numsquads,
+		loadout,
+		true -- spawn
+	)
+	
+	return groupID
+end
+
+--? @shortdesc Creates a given number of squads at a marker position with a loadout and adds them to a squadgroup.  The squadgroup will be created if it doesnt exist.
+--? @extdesc Use loadout of zero to create a squad at its min loadout.  Squads can never exceed their max loadout.
+--? @args PlayerID playerId, String squadgroupName, String squadBlueprint, String markername, Integer numsquads, Integer loadout
+--? @result SGroupID
+function Util_CreateSquadsAtMarkerEx(playerId, squadgroupName, squadBlueprint, markerName, numsquads, loadout)
+	return Util_CreateSquadsAtPositionEx( 
+		playerId,
+		squadgroupName,
+		squadBlueprint,
+		Marker_GetPosition( Marker_FromName( markerName, "basic_marker" ) ),
+		numsquads,
+		loadout -- use min loadout
+	)
+end
+
+--? @shortdesc Creates a given number of squads at a position and adds them to a squadgroup.  The squadgroup will be created if it doesnt exist.
+--? @extdesc Squads will be created with min loadout.
+--? @args PlayerID playerId, String squadgroupName, String squadBlueprint, Position pos, Integer numsquads
+--? @result SGroupID
+function Util_CreateSquadsAtPosition(playerId, squadgroupName, squadBlueprint, pos, numsquads)	
+	return Util_CreateSquadsAtPositionEx(
+		playerId, 
+		squadgroupName, 
+		squadBlueprint, 
+		pos, 
+		numsquads, 
+		0	-- use min loadout
+	)	
+end
+
+--? @shortdesc Creates a given number of squads at a marker position and adds them to a squadgroup.  The squadgroup will be created if it doesnt exist.
+--? @extdesc Squads will be created with min loadout.
+--? @args PlayerID playerId, String squadgroupName, String squadBlueprint, String markername, Integer numsquads
+--? @result SGroupID
+function Util_CreateSquadsAtMarker(playerId, squadgroupName, squadBlueprint, markerName, numsquads)
+	return Util_CreateSquadsAtPositionEx( 
+		playerId,
+		squadgroupName,
+		squadBlueprint,
+		Marker_GetPosition( Marker_FromName( markerName, "basic_marker" ) ),
+		numsquads,
+		0 -- use min loadout
+	)
+end
+
+--? @shortdesc Creates a given number of squads with a loadout at a position and adds them to a squadgroup.  The squads are then dropped in a droppod.
+--? @extdesc Use loadout of zero to create a squad at its min loadout.  Squads can never exceed their max loadout.
+--? @args PlayerID playerId, String squadgroupName, String squadBlueprint, Position pos, Integer numsquads, Integer loadout
+--? @result SGroupID
+function Util_CreateSquadsAndDropPodIn( playerId, squadgroupName, squadBlueprint, pos, numsquads, loadout )
+	local groupID = _ScarUtil_Private.CreateSquads(
+		playerId,
+		squadgroupName,
+		squadBlueprint,
+		pos,
+		numsquads,
+		loadout,
+		false -- do not spawn
+	)
+	
+	Util_DropPod( squadgroupName, pos )
+	
+	return groupID
+end
+
+--? @shortdesc Non-disrupting version of CreatSquadsAndDropPodIn.  Creates a given number of squads with a loadout at a position and adds them to a squadgroup.  The squads are then dropped in a droppod that has no disruption.
+--? @extdesc Use loadout of zero to create a squad at its min loadout.  Squads can never exceed their max loadout.
+--? @args PlayerID playerId, String squadgroupName, String squadBlueprint, Position pos, Integer numsquads, Integer loadout
+--? @result SGroupID
+function Util_CreateSquadsAndDropPodIn2( playerId, squadgroupName, squadBlueprint, pos, numsquads, loadout )
+	local groupID = _ScarUtil_Private.CreateSquads(
+		playerId,
+		squadgroupName,
+		squadBlueprint,
+		pos,
+		numsquads,
+		loadout,
+		false -- do not spawn
+	)
+	
+	Util_DropPod2( squadgroupName, pos )
+	
+	return groupID
+end
+
+--? @shortdesc Creates horrors and summons them in
+--? @extdesc Use loadout of zero to create a squad at its min loadout.  Squads can never exceed their max loadout.
+--? @args PlayerID playerId, String squadgroupName, Position pos, Integer numsquads, Integer loadout
+--? @result SGroupID
+function Util_CreateHorrorsAndSummon( playerId, squadgroupName, pos, numsquads, loadout )
+	local groupID = _ScarUtil_Private.CreateSquads(
+		playerId,
+		squadgroupName,
+		"chaos_squad_horror",
+		pos,
+		numsquads,
+		loadout,
+		false -- do not spawn
+	)
+	
+	Util_Summon( squadgroupName, pos )
+	
+	return groupID
+end
+
+--? @shortdesc If only one team is alive, players on that team win.  Returns true if one team left.
+--? @args String win_condition
+--? @result Boolean
+function Util_CheckOneTeamLeft( win_condition )
+	local count = World_GetPlayerCount();
+
+	local team_first = -1;
+	local player_alive;
+	
+	for i = 0, count-1
+	do
+		local player = World_GetPlayerAt(i);
+		
+		if( Player_IsAlive(player) ) then
+			if( team_first == -1 ) then
+				player_alive = player;
+				team_first = Player_GetTeam( player );
+			else
+				local team = Player_GetTeam( player );
+				if( team ~= team_first ) then
+					return false;
+				end
+			end
+		end
+	end
+	
+	World_SetTeamWin( player_alive, win_condition);
+	World_SetGameOver();
+	
+	return true;
+end
+
+-- TODO: make sure to document how to create the table etc
+function Util_NearMkrGoMkr(playerId, tableName, mkr1, mkr2)
+	local range = table.getn(tableName)
+	for r = 1, range do
+		if Prox_AllSquadsNearMarker(tableName[r], mkr1) then
+			Cmd_MoveToMarker(tableName[r], mkr2)
+		end
+	end
+end
+--For a given player, checks a table of sgroups to see if they are near mkr1, and if they are, sends them to mkr2
+
+
+--SGROUP - ADD BATTLEGROUP AT MARKER
+-- TODO: make sure to mention that armyType must be ORK_LIGHT or ORK_HEAVY
+-- ALSO: this could get done better ( ask randy )
+function Util_CreateBattleGroupAtMarker(playerId, squadgroupName, armyType, makerName)
+	local sgroupId = SGroup_FromName(squadgroupName)
+	local scarPos = Marker_GetPosition(Marker_FromName(makerName, "basic_marker"))
+	if armyType == ORK_LIGHT then
+		local squadList = {"ork_squad_grot", "ork_squad_shoota_boy", "ork_squad_slugga", "ork_squad_wartrak", "ork_squad_slugga", "ork_squad_grot", "ork_squad_shoota_boy"}
+		local range = table.getn(squadList)
+		for i = 1, range do
+			local squadId = Squad_Create(
+									squadList[i], 
+									playerId, 
+									scarPos,
+									0 -- use min loadout
+								)
+			SGroup_Add(sgroupId, squadId)
+			Squad_Spawn(squadId, scarPos)
+		end
+	elseif armyType == ORK_HEAVY then
+		local squadList = {"ork_squad_nob", "ork_squad_tankbusta", "ork_squad_tankbusta", "ork_squad_wartrak", "ork_squad_wartrak", "ork_squad_killa_kan", "ork_squad_killa_kan", "ork_squad_looted_tank"}
+		local range = table.getn(squadList)
+		for i = 1, range do
+			local squadId = Squad_Create(
+									squadList[i], 
+									playerId, 
+									scarPos,
+									0 -- use min loadout
+								)
+			SGroup_Add(sgroupId, squadId)
+			Squad_Spawn(squadId, scarPos )
+		end
+	end
+end
+--add (int) number of squads to a squadgroup and spawn it at a marker 
+
+-- this function orders the squad to move to a location, but to take its time
+function Util_SGroupAmble( sgroup, finalMarker )
+	
+	local finalPosition = Marker_GetPosition( Marker_FromName( finalMarker, "basic_marker")  ) 
+	if not finalPosition then
+		print("SU_ERROR: finalPosition isnt valid")
+		return false
+	end
+	local currentSquadPosition = SGroup_GetPosition( SGroup_FromName( sgroup ) )
+	if not currentSquadPosition then
+		print("SU_ERROR: currentSquadPosition isnt valid")
+		return false
+	end
+	local currentDistanceToFinal = World_DistancePointToPoint ( finalPosition, currentSquadPosition ) 
+	local n = 0
+	-- we need to pick a new position that is closer to the final position
+	while true do
+		-- this is our failsafe.  If weve iterated too many times (10 is too many) we exit out of the loop.  Otherwise we risk falling into an infinite
+		n = n + 1		
+		if n > 10 then
+			print("SU_ERROR: too many iterations of the loop!")
+			return false
+		end
+		
+		if finalPosition.x < currentSquadPosition.x then
+			newX = World_GetRand(finalPosition.x,currentSquadPosition.x)
+		else
+			newX = World_GetRand(currentSquadPosition.x,finalPosition.x)
+		end	
+		if finalPosition.z < currentSquadPosition.z then
+			newZ = World_GetRand(finalPosition.z,currentSquadPosition.z)
+		else
+			newZ = World_GetRand(currentSquadPosition.z,finalPosition.z)
+		end
+		
+		local newAmblePosition = World_Pos( newX ,0, newZ )
+		
+		if World_DistancePointToPoint( newAmblePosition, currentSquadPosition ) < currentDistanceToFinal then
+			return newAmblePosition
+		end   -- exit the loop if the condition is true
+	end
+end
+
+
+--? @group FOW
+--? @shortdesc Reveals an area the size of a given markers proximity at that markers position for a given amount of time.  YOU SHOULD ONLY CALL THIS ONCE FOR EACH AREA.
+--? @extdesc Pass in a duration of -1 for indefinite duration.
+--? @extdesc This function will reveal the FOW for ALL alive players.
+--? @args String markername, Real durationSecs
+--? @result Void
+function FOW_RevealMarker( markername, durationSecs )
+	local markerID = Marker_FromName( markername, "basic_marker" )
+	local markerPos = Marker_GetPosition( markerID )
+	local markerProx = Marker_GetProximity( markerID )
+	
+	-- reveal the area
+	FOW_RevealArea( markerPos.x, markerPos.z, markerProx, durationSecs )
+end
+--? @group Util
+
+--? @shortdesc Function takes multiple strings and returns a BlueprintTable ( used for SGroup_ContainsBlueprints )
+--? @args Args args
+--? @result BlueprintTable
+--? @extdesc
+--? Example:\n
+--? \tlocal bpTable = Util_MakeBlueprintTable( "chaos_marine_squad", "chaos_marine_squad", "chaos_squad_bloodthirster" )\n
+--? \t--Check if SGroup contains ALL items from the list (two chaos marines and a bloodthirster)\n
+--? \tlocal result = SGroup_ContainsBlueprints( "sg_MyGroup", bpTable, true )\n\n
+--? \t--Check if an SGroup contains ANY blueprints from the list
+--? \tresult = SGroup_ContainsBlueprints( "sg_MyGroup", bpTable, false )\n\n
+--? \tIf the first parameter is a table, it will append entries to the existing table
+function Util_MakeBlueprintTable(...)
+	local BlueprintTable = {}
+		
+	for i=1, table.getn( arg ) do
+		local bp = arg[ i ]
+		
+		if( i == 1 and type(bp) == "table" ) then
+			-- use existing table
+			BlueprintTable = bp
+		else
+			if( type( bp ) ~= "string" ) then
+				error( "Arguments for Util_MakeBlueprintTable must be strings.")
+			end
+		
+			-- make sure blueprint exists
+			
+			-- check if bp exists in table already
+			local found = false
+			for j=1, table.getn( BlueprintTable ) do
+				local val = BlueprintTable[ j ]
+				if( type(val) == "string" and val.name == bp ) then
+					val.count = val.count + 1
+					found = true
+				end
+			end
+			
+			-- make new entry if one wasnt found
+			if( found == false ) then
+				local entry = { name = bp, count = 1 }
+				table.insert( BlueprintTable, entry )
+			end
+		end
+		
+	end
+	
+	-- return the table
+	return BlueprintTable
+	
+end
+
+--? @shortdesc Find all the squads with a given armour type in sourcegroup and add them to destgroup.
+--? @result Void
+--? @args String sourcegroup, String destgroup, String armourtype
+--? @extdesc destgroup will be created if it does not already exist.  See Squad_HasArmourType for list of valid armour types.
+function Util_GetSquadsByArmourType( sourcegroup, destgroup, armourtype )
+		
+	if( sourcegroup == destgroup ) then
+		error( "Function does not support source and dest groups that are the same!" )
+	end
+	
+	destgroupID = SGroup_CreateIfNotFound( destgroup )
+	srcgroupID = SGroup_FromName( sourcegroup )
+	
+	local CheckArmourType = function( groupid, itemindex, itemid )
+		if( Squad_HasArmourType( itemid, armourtype ) ) then
+			-- add to dest group
+			SGroup_Add( destgroupID, itemid )
+		end
+	end
+	
+	SGroup_ForEach( srcgroupID, CheckArmourType )
+	
+end
+
+function _GetGroupByBP( srcGroupName, destGroupName, groupcaller, bpname )
+	if( srcGroupName == destGroupName ) then
+		error( "Function does not support source and destination groups of the same name")
+	end
+	
+	srcID = groupcaller.FromName( srcGroupName )
+	destID = groupcaller.CreateIfNotFound( destGroupName )
+	
+	local CheckBP = function( groupid, itemindex, itemid )
+		local base, attached = groupcaller.GetItemBlueprint( itemid )
+		if( base == bpname or attached == bpname ) then
+			-- blueprint matches, add to dest group
+			groupcaller.AddItem( destID, itemid )
+		end
+	end
+	
+	groupcaller.ForEach( srcID, CheckBP )
+end
+
+--? @shortdesc Find all the squads with a given blueprint in sourcegroup and add them to destgroup.
+--? @result Void
+--? @args String sourcegroup, String destgroup, String bpname
+--? @extdesc destgroup will be created if it does not already exist. 
+function Util_GetSquadsByBP( sourcegroup, destgroup, bpname )
+	_GetGroupByBP(
+		sourcegroup,
+		destgroup,
+		SGroupCaller,
+		bpname
+	)
+end
+
+--? @shortdesc Find all the entities with a given blueprint in sourcegroup and add them to destgroup.
+--? @result Void
+--? @args String sourcegroup, String destgroup, String bpname
+--? @extdesc destgroup will be created if it does not already exist. 
+function Util_GetEntitiesByBP( sourcegroup, destgroup, bpname )
+	_GetGroupByBP(
+		sourcegroup,
+		destgroup,
+		EGroupCaller,
+		bpname
+	)
+end
+
+--? @shortdesc Returns trailing numbers from a string, if it exists, nil otherwise. E.G. "marker23" would return 23.
+--? @result Number
+--? @args String val
+function Util_GetTrailingNumber( val )
+
+	local trail = nil
+	for d in string.gfind( val, "%a+(%d+)" ) do
+		trail = d
+	end
+	
+	return trail
+
+end
+
+--? @shortdesc Play an events file at a given markers location
+--? @result void
+--? @args String markername, String eventfile
+--? @extdesc You need to specify the path for the eventfile (e.g. "data:Art/Events/Guard/Abilities/Strafe_ordered_target")
+function Util_MarkerFX( markername, eventfile )
+	World_FXEvent( eventfile, Marker_GetPosition( Marker_FromName( markername, "basic_marker" ) ) )
+end
+
+--? @shortdesc Play a NISlet.
+--? @extdesc This function should used instead of Event_Start because it handles priorities.  If an nislet is triggered during an intel event, the intel event will be cancelled, and if an intel event is triggered during a nislet, the intel event will be queued.
+--? @result Void
+--? @args LuaFunction func
+function Util_StartNIS( func )
+	Event_Start( func, 0 ) -- 0 is highest priority
+end
+
+--? @shortdesc Play a Intel event.
+--? @extdesc This function should used instead of Event_Start because it handles priorities.  If an nislet is triggered during an intel event, the intel event will be cancelled, and if an intel event is triggered during a nislet, the intel event will be queued.
+--? @result Void
+--? @args LuaFunction func
+function Util_StartIntel( func )
+	-- 1 is lower priority then 0
+	-- This means that if a NISlet is triggered during an intel event, the intel event will be cancelled.
+	Event_Start( func, 1 ) 
+end
+
+
+--? @shortdesc Set the Force Commanders weapon to be Power Sword
+--? @extdesc This function should be used in any mission where the Force Commander shouldnt have a Daemon hamemr.
+--? @result Void
+--? @args PlayerID playerId
+function SetCommanderPowerSword( player )
+	local modifier = Modifier_Create(
+			 MAT_EntityType,      -- This modifier will be applied to an entity blueprint
+			 "default_weapon_modifier_hardpoint2",   -- Modify entity sight radius
+			 MUT_Addition,     -- Multiply sight radius by 0.5 non exclusive
+			 false, 
+			 1, 
+			"force_commander"     -- Do this to all scout marines
+		)
+		
+		-- apply it to the player
+		local modID = Modifier_ApplyToPlayer( modifier, player )
+		
+	local modifier1 = Modifier_Create(
+			 MAT_EntityType,      -- This modifier will be applied to an entity blueprint
+			 "default_weapon_modifier_hardpoint2",   -- Modify entity sight radius
+			 MUT_Addition,     -- Multiply sight radius by 0.5 non exclusive
+			 false, 
+			 1, 
+			"force_commander_sp"     -- Do this to all scout marines
+		)
+		
+		-- apply it to the player
+		local modID1 = Modifier_ApplyToPlayer( modifier1, player )
+end
+
+--? @shortdesc Set the Inquisitors weapon to be Power Sword
+--? @extdesc This function should be used in any mission where the Toth (Inquisitor) shouldnt have a Daemon hamemr.
+--? @result Void
+--? @args PlayerID playerId
+function SetInquisitorPowerSword( player )
+	local modifier = Modifier_Create(
+			 MAT_EntityType,      -- This modifier will be applied to an entity blueprint
+			 "default_weapon_modifier_hardpoint2",   -- Modify entity sight radius
+			 MUT_Addition,     -- Multiply sight radius by 0.5 non exclusive
+			 false, 
+			 1, 
+			"guard_inquisitor"     -- Do this to all scout marines
+		)
+		
+		-- apply it to the player
+		local modID = Modifier_ApplyToPlayer( modifier, player )
+
+end
+
+--? @shortdesc Checks if any input event have occured in the last second
+--? @result Void
+--? @args Void
+function Misc_DetectAnyInput()	
+	return ( Misc_DetectMouseInput() or Misc_DetectKeyboardInput() )
+end
+
+--? @shortdesc Breaks the morale of the currently selected squad
+--? @result Void
+--? @args Void
+function Misc_BreakCurrentlySelectedSquad()
+	local sgroup = SGroup_CreateIfNotFound( "break_current_selected_squad" )
+	Misc_GetSelectedSquads( sgroup )
+	SGroup_SetAvgMorale( "break_current_selected_squad", 0.0 )
+end
+
+--? @shortdesc Drop-pod an existing squadgroup to a position on the map
+--? @extdesc Works on spawned or depspawned group
+--? @result Void
+--? @args String sgroupname, ScarPosition pos
+function Util_DropPod( sgroupname, pos )
+	-- depspawn
+	SGroup_DeSpawn( sgroupname )
+		
+	-- drop pod
+	Squad_DeepStrikeToPos( sgroupname, "space_marine_single_player_only_drop_pod_building", pos )
+	
+end
+
+--? @shortdesc Drop-pod an existing squadgroup to a position on the map with no disruption
+--? @extdesc Works on spawned or depspawned group
+--? @result Void
+--? @args String sgroupname, ScarPosition pos
+function Util_DropPod2( sgroupname, pos )
+	-- depspawn
+	SGroup_DeSpawn( sgroupname )
+		
+	-- drop pod
+	Squad_DeepStrikeToPos( sgroupname, "space_marine_single_player_only_drop_pod_building_2", pos )
+	
+end
+
+--? @shortdesc Drop-pod an existing squadgroup to a marker on the map
+--? @extdesc Works on spawned or depspawned group
+--? @result Void
+--? @args String sgroupname, String markername
+function Util_DropPodMarker( sgroupname, markername)
+	local marker = Marker_FromName( markername, "basic_marker" )	
+	Util_DropPod( sgroupname, Marker_GetPosition( marker ) )
+end
+
+--? @shortdesc Summon an existing squadgroup to a position on the map
+--? @extdesc Works on spawned or depspawned group
+--? @result Void
+--? @args String sgroupname, ScarPosition pos
+function Util_Summon( sgroupname, pos )
+	-- despawn
+	SGroup_DeSpawn( sgroupname )
+		
+	-- summon!
+	Squad_DeepStrikeToPos( sgroupname, "chaos_single_player_only_sacrificial_circle", pos )
+	
+end
+
+--? @shortdesc Play the mission title fade.
+--? @result Void
+--? @args LocString loc_str 
+function Util_MissionTitle( loc_str )
+	-- validate parm
+	if type( loc_str) ~= "string" then
+		error("invalid loc_id - must be a string")
+	end
+	
+	-- NOTE: this function could easily be made to wait for 2 seconds if designers want to wait on it
+	
+	-- params: loc_str, fade_in_secs, lifetime_secs, fade_out_secs
+	W40k_TextTitleFade( loc_str, 2, 3, 2 )
+
+end
+
+--? @shortdesc Create a looping ping.
+--? @extdesc Works with the Util_Ping_Stop( ) to allow for the easy removal of looping pings without having to save pingID variables. Make up a pingname string and pass it in.
+--? @result Void
+--? @args String pingname, String markername
+function Util_Ping_LoopingMkr(pingname, markername)
+
+	if _ping_table == nil then
+		_ping_table = {}
+	end
+	
+	local pingID = Ping_Position(Marker_GetPosition(Marker_FromName(markername, "basic_marker")), true)
+	
+	table.insert(_ping_table, {pingID, pingname})
+
+end
+
+--? @shortdesc Stops a looping ping
+--? @extdesc Works with the Util_Ping_LoopingMkr( ) to allow for the easy removal of looping pings without having to save pingID variables. Use the pingname to recall and stop a previously created looping ping
+--? @result Void
+--? @args String pingname 
+function Util_Ping_Stop(pingname)
+	
+	if _ping_table ~= nil then
+		for i = 1, table.getn(_ping_table) do
+			if pingname == _ping_table[i][2] then
+				Ping_Stop(_ping_table[i][1])
+				table.remove(_ping_table, i)
+				break
+			end
+		end
+	end
+
+end
+
+--? @shortdesc Tracks a character and, if dead, drop pods a new one in.
+--? @extdesc Use this function to track whether the player has a force commander etc.  If ever that character dies, a replacement will drop pod in at the specified marker
+--? @result Void
+--? @args Integrer playerid, String characterGroup, String characterBlueprint, String characterDropPodMarkerName
+function Util_TrackCharacterAndDropPodIn( playerid, characterGroup, characterBlueprint, characterDropPodMarkerName )
+	local blueprinttable = Util_MakeBlueprintTable(characterBlueprint)
+	if not SGroup_ContainsBlueprints( characterGroup, blueprinttable, false) then
+		SGroup_Clear(characterGroup)
+		-- 
+		Util_CreateSquadsAndDropPodIn( playerid, characterGroup, characterBlueprint, Marker_GetPosition( Marker_FromName( characterDropPodMarkerName, "basic_marker" ) ),1,1)
+		
+--~ 		EventCue_DoEvent( "warning", "this_is_not_the_real_sound_we_need_a_sound_here", "$60450", Loc_FormatText1( 60452, Loc_ConvertNumber( teamName ) ) )
+		local soundfiletoplay = "none"
+		if characterBlueprint == "space_marine_squad_force_commander" then
+			soundfiletoplay = "Speech/Races/Space_Marines/Force_commander/Unit_complete"
+		elseif characterBlueprint == "space_marine_squad_librarian" then
+			soundfiletoplay = "Speech/Races/Space_Marines/Librarian/Unit_complete"
+		elseif characterBlueprint == "guard_squad_colonel" then
+			soundfiletoplay = "Speech/Single_player/Colonel_brom/Unit_complete"
+		elseif characterBlueprint == "guard_squad_inquisitor" then
+			soundfiletoplay = "Speech/Single_player/Inquisitor_toth/Unit_complete"
+		end
+		
+		EventCue_DoEvent( "recruit_commander", soundfiletoplay, "$42890", "$42892" )
+		
+	end
+end
+
+
+
+--? @shortdesc Creates an Autosave and prints text to screen to let player know its happening.
+--? @extdesc Use this function to create a save game in the single player game
+--? @result Void
+--? @args String localizedID
+function Util_Autosave( text_id ) 
+
+	-- NOTE: we would have to move the "Autosaving.,.." text to a dat file somewhere
+    W40k_TextTitleFade( "$43200", 1, 2, 1 )
+ 
+    if ( g_util_autosave_text_id == nil ) then 
+		-- call this rule after fading for once second
+		if not Rule_Exists( _Util_Autosave_Rule ) then Rule_AddInterval( _Util_Autosave_Rule, 1 ) end
+		
+	end
+ 
+    g_util_autosave_text_id = text_id    
+
+end
+
+_Util_Autosave_Rule = function ()
+	if not Event_IsAnyRunning() then
+		-- remove rule and clear varibale BEFORE the save
+        Rule_Remove( _Util_Autosave_Rule )
+		local text = g_util_autosave_text_id
+		g_util_autosave_text_id = nil
+  
+			W40k_Autosave( text )   -- save it!
+        
+	end
+end
+
+
+--? @shortdesc Creates an objective and plays the objective created stinger to accompany it.
+--? @extdesc Use this function to create an objective with the sound
+--? @result Void
+--? @args LuaTable objectiveTable, boolean primary
+function Util_ObjectiveCreate( objectiveTable, primary )
+	Objective_Add( objectiveTable, primary )
+	Sound_PlayStinger( "stinger_newobjective" )
+end
+
+--? @shortdesc Marks the specified objective as completed
+--? @extdesc Use this function to complete an objective with the sound
+--? @result Void
+--? @args Integer titleid
+function Util_ObjectiveComplete( objectiveTableTitleId )
+	Objective_SetState( objectiveTableTitleId, OS_Complete )
+	Sound_PlayStinger( "stinger_completeobjective" )
+end
+
+--? @shortdesc Makes the specified objective as failed
+--? @extdesc Use this function to fail an objective with the sound
+--? @result Void
+--? @args Integer titleid
+function Util_ObjectiveFail( objectiveTableTitleId )
+	Objective_SetState( objectiveTableTitleId, OS_Failed )
+	Sound_PlayStinger( "stinger_completeobjective" )
+end
+
+--? @shortdesc Reset the contruction state for a building and order a builder group to start rebuilding the structure
+--? @extdesc The building group must contain one and only one structure
+--? @result Void
+--? @args String building_groupname, String builder_groupname
+function Util_ResetAndRebuild( building_groupname, builder_groupname )
+
+	-- validate 
+	if( EGroup_Count( building_groupname ) ~= 1 )	then
+		error( "building_groupname "..building_groupname.." must contain one and only one structure" )
+	end
+	
+	-- reset 
+	local buildingID = EGroup_GetSpawnedEntityAt( building_groupname, 1 )
+	Entity_ResetConstructionState( buildingID )
+	
+	-- issue order
+	if( SGroup_Count( builder_groupname ) > 0 ) then
+		
+		Command_SquadEntity( 
+			Entity_GetPlayerOwner( buildingID  ),
+			builder_groupname,
+			SCMD_BuildStructure,
+			building_groupname
+		)	
+		
+	end
+	
+end
+
+--? @shortdesc Muffles / Unmuffles all background FX sounds for NIS's
+--? @result Void
+--? @args Boolean mute
+function Util_MuffleNISSound( mute )
+--[[	-- init global flags
+	if util_g_muffle == nil then util_g_muffle = false end
+	if util_g_muffle_vol == nil then util_g_muffle_vol = 1.0 end
+	
+	--
+	if mute and util_g_muffle == false then
+		-- muffle sound
+		util_g_muffle = true
+	
+		-- store old volume
+		util_g_muffle_vol = Sound_SetGlobalFXVolume( 0.7 )
+		
+	elseif not mute and util_g_muffle == true then
+		-- unmuffle sound
+		util_g_muffle = false
+		
+		if util_g_muffle_vol == nil then 
+			util_g_muffle_vol = 1.0
+		end
+		
+		-- restore old volume
+		Sound_SetGlobalFXVolume( util_g_muffle_vol )
+		
+	end]]
+end
+
+--? @shortdesc Sets sounds properly for Intelevents.  set true for start of IE and false for end of IE
+--? @result Void
+--? @args Boolean enter
+function Util_SetIE( bool )
+	if bool then
+		Util_MuffleNISSound( true )
+		Sound_PlaylistMute( PC_Music )
+--~ 		EventCue_Enable( false )
+	elseif not bool then
+		Sound_PlaylistUnMute( PC_Music )
+		Util_MuffleNISSound( false )
+--~ 		EventCue_Enable( true )
+	end
+end

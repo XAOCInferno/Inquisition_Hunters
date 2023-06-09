@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "witch_hunters_race/valorousheart",
+	associated_race = "witch_hunters_race",
+	banner_name = "witch_hunters_race/valorousheart",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Order of the Valorous Heart II",
+	Eyes =  
+	{
+		b = 41,
+		g = 41,
+		r = 41,
+	},
+	Weapons =  
+	{
+		b = 112,
+		g = 110,
+		r = 106,
+	},
+	Primary =  
+	{
+		b = 41,
+		g = 41,
+		r = 41,
+	},
+	Trim =  
+	{
+		b = 202,
+		g = 202,
+		r = 202,
+	},
+	Secondary =  
+	{
+		b = 41,
+		g = 41,
+		r = 41,
+	},
+}
+

@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "sisters_race/EBONCHALICE",
+	associated_race = "witch_hunters_race",
+	banner_name = "witch_hunters_race/Order_of_the_ebon_chalice_banner",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Order of the Ebon Chalice",
+	Eyes =  
+	{
+		b = 40,
+		g = 149,
+		r = 208,
+	},
+	Weapons =  
+	{
+		b = 111,
+		g = 109,
+		r = 108,
+	},
+	Primary =  
+	{
+		b = 35,
+		g = 35,
+		r = 35,
+	},
+	Trim =  
+	{
+		b = 254,
+		g = 254,
+		r = 254,
+	},
+	Secondary =  
+	{
+		b = 252,
+		g = 254,
+		r = 254,
+	},
+}
+

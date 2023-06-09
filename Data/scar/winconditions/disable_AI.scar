@@ -1,0 +1,17 @@
+import("ScarUtil.scar")
+import("WXPScarUtil.scar")
+
+function  DisableAI_Init()
+  FOW_RevealAll()
+    
+  Rule_AddOneShot(Rule_Disable_AI, 180 )   
+ end
+
+Scar_AddInit(DisableAI_Init)
+
+function Rule_Disable_AI()
+  
+  Cpu_EnableAll( false )
+  
+  EventCue_DoEvent("recruit_commander", "taskbar_button_click", "AI disabled", "AI disabled")
+end

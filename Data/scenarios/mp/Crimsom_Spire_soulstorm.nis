@@ -1,0 +1,330 @@
+-- -----------------------------------------------------------------
+-- IDHmod : Crimson Spire- NIS, NISlets and Intel Event
+-- (c) 2009 Jaguar House Entertainement
+-- -----------------------------------------------------------------
+
+
+
+
+
+
+EVENTS ={}
+
+--define icon
+Inquisitor =	{	squadID = nil,	blueprint = "inquisitor_lord",	icon = [[Data:scenarios\mp\crimson_icon\inquisitor.tga]]	}
+Evilinq =	{	squadID = nil,	blueprint = "guard_inquisitor",	icon = [[Data:scenarios\mp\crimson_icon\evilinq.tga]]	}
+ChaosLord = {	squadID = nil,	blueprint = "chaos_squad_lord",	icon = [[Data:scenarios\mp\crimson_icon\chaos_lord.tga]]	}
+ChaosChamp = {	squadID = nil,	blueprint = "chaos_aspiring_champion",	icon = [[Data:scenarios\mp\crimson_icon\chaos_champ.tga]]	}
+ChaosSorcerer = {	squadID = nil,	blueprint = "chaos_sorcerer_stronghold_sp",	icon = [[Data:scenarios\mp\crimson_icon\chaos_sorcerer.tga]]	}
+
+
+EVENTS.NIS_IntroSequence1 = function()
+	Cpu_EnableAll( false ) --prevent cpu from doing anything silly
+--start intro sequence:
+	W40k_ImageFade( "fade_CrimsonSpire_intro1", 2 , 1 , 2 )			
+end
+
+EVENTS.NIS_IntroSequence2 = function()
+	W40k_ImageFade( "fade_CrimsonSpire_intro2", 2 , 1 , 2 )
+	
+end
+
+EVENTS.NIS_IntroSequence3 = function()
+	W40k_ImageFade( "fade_CrimsonSpire_intro3", 2 , 3 , 2 )
+end
+
+
+EVENTS.NIS_Opening = function() --nis intro
+
+	FOW_RevealAll()	--reveal FOW	
+	
+	Rule_RemoveAll() --remove all game rule thay may have been fired
+	
+	for j = 1, 8 do
+		SGroup_DeSpawn("victims"..j)  --despawn the psykers, they will be respawn later
+	end
+
+	--[[turn off events]]
+	Util_NIS_ToggleModifierEvents(g_Player1, false) 
+	Util_NIS_ToggleModifierEvents(g_Player2, false)		
+	
+	
+	
+	
+	--set camera in place instead of focused at player1 hq by default, we focus it at frame"start" of the "canim_intro1" camera path.
+	CPath_Start( "canim_chaos_champ", "start", "end" )
+	CPath_CutToPoint("canim_chaos_champ", "start")
+
+	--PLAY MISSION TITLE
+
+	--Util_MissionTitle("CRIMSON SPIRE") --play mission title during 3 seconds
+	--CTRL.Event_Delay(3)
+	Fade_Start( 0, false )
+	CTRL.WAIT()
+
+	--play first anim : chaos champion running at chaos lord
+	Fade_Start( 2.0, true )	
+		CTRL.CPath_CutToPath("canim_chaos_champ", "start", "end")
+
+			SGroup_FaceMarker("sg_Nis_chaosLord","mk_Nis_ChaosLord")
+			SGroup_FaceMarker("sg_Nis_ChaosSorc","mk_Nis_ChaosLord")
+			SGroup_FaceMarker("sg_Nis_Inquisitor","mk_Nis_ChaosLord")
+			
+			
+			Cmd_MoveToMarker("sg_Nis_ChaosChamp","mk_Nis_ChaosLord")
+		CTRL.WAIT()				
+			
+
+		CPath_CutToPath( "canim_NIS_Intro_Briefing", "start", "mid" )
+			SGroup_FaceEachOther("sg_Nis_chaosLord","sg_Nis_ChaosChamp")
+			
+			CTRL.Actor_PlaySpeech( ChaosLord, 16023087 ) --haa... Shar'lek ! At last you have return, Did you find the ritual place ?
+			CTRL.WAIT()
+			
+			
+			CTRL.Actor_PlaySpeech( ChaosChamp, 16023088 ) --yes my Lord, it is located in the lost temple ruins, up the cliff.
+			CTRL.WAIT()
+			
+			
+			
+		CPath_CutToPoint( "canim_NIS_Intro_Briefing", "champ")
+		
+			CTRL.Actor_PlaySpeech( ChaosChamp, 16023089 ) --it can  only  be reached  via the old tunnels we found two days ago.
+			CTRL.WAIT()
+			CTRL.Actor_PlaySpeech( ChaosChamp, 16023090 ) --but the blood pulses from the spires killed everyone, i'm the only one left...
+			CTRL.WAIT()
+			
+		CPath_CutToPoint( "canim_NIS_Intro_Briefing", "inq") 
+		
+			CTRL.Actor_PlaySpeech( Evilinq, 16023091 ) --Lead me there without delay, i have to prepare the ritual.
+			CTRL.WAIT()
+		
+		CPath_CutToPoint( "canim_NIS_Intro_Briefing", "sorc") 
+		
+			CTRL.Actor_PlaySpeech( ChaosSorcerer, 16023092 )--How dare you !! We don't take orders from an Inquisition traitor !!
+			CTRL.WAIT()
+			
+		CPath_CutToPoint( "canim_NIS_Intro_Briefing", "mid")
+	
+			CTRL.Actor_PlaySpeech( ChaosLord, 16023093 )--So true, indeed ! What about those special needs...the psykers..
+			CTRL.WAIT()
+			
+		CPath_CutToPoint( "canim_NIS_Intro_Briefing", "inq")
+		
+			CTRL.Actor_PlaySpeech( Evilinq, 16023094 ) --I need height of them the more powerfull they are the better. Capture them and lead them to the soul cage.
+			CTRL.WAIT()
+		
+		CPath_CutToPoint( "canim_NIS_Intro_Briefing", "mid")
+		
+			CTRL.Actor_PlaySpeech( ChaosLord, 16023095 ) --Shar'lek lead our ...guest..to the ritual place.
+			CTRL.WAIT()
+			
+		CTRL.CPath_CutToPath("canim_NIS_Intro_Briefing", "inq_leave", "end")
+			Cmd_SetStance( "sg_Nis_ChaosChamp", STANCE_CeaseFire )
+			Cmd_SetStance( "sg_Nis_Inquisitor", STANCE_CeaseFire )
+			Cmd_MoveToMarker("sg_Nis_ChaosChamp","mk_nis_RitualAccess")
+			Cmd_MoveToMarker("sg_Nis_Inquisitor","mk_nis_RitualAccess")
+		CTRL.WAIT()
+	Fade_Start( 2.0, false )	
+		
+--[[IntroNis  :Part 2 : Inquisition part, The inquisitor brief is men]]--
+
+	Util_MissionTitle("At the same time, not far away") --
+	CTRL.Event_Delay(1)
+
+		SGroup_FaceMarker("sg_Nis_loyal_inquisitor","mkr_Nis_inquisitorFacing")
+		SGroup_FaceMarker("sg_nis_inqtroops1","mkr_Nis_inquisitorFacing")
+		SGroup_FaceMarker("sg_nis_inqtroops2","mkr_Nis_inquisitorFacing")
+
+Fade_Start( 2.0, true )
+	CTRL.CPath_CutToPath("canim_Inquistion", "start", "end")
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023097 ) --True folower of the Emperor, our time as come ! Elamius Torque as been declared traitor excomunicatis 
+	
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023098 ) --we have been hunting his filthy trail for years and now our prey is at handreach.
+	CTRL.WAIT()
+	
+	CPath_CutToPoint( "canim_Inquistor_close", "start")
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023099 ) --this world is filled with the daemonic energy of decay and murder, but the divine fury of our duty	
+	CTRL.WAIT()
+	
+	CPath_CutToPoint( "canim_Inquistor_close", "midL")
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023101 )--will open a clear path to our goal. Remember that the traitor is no more an inquisitor, show no mercy
+	
+	CTRL.WAIT()
+	
+	CPath_CutToPoint( "canim_Inquistor_close", "midR")
+	Anim_PlaySGroupAnim(SGroup_FromName("sg_nis_inqtroops1"), "capture_strategic_point")
+	Anim_PlaySGroupAnim(SGroup_FromName("sg_nis_inqtroops2"), "capture_strategic_point")
+
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023102 )--Begin the litanies of Hate and  bless your weapons, we are the Emperor Will incarnate.	
+	CTRL.WAIT()
+	
+	CTRL.CPath_CutToPath("canim_Inquistion", "midR", "end")
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023103 )--AD GLORIAM EMPEROR EXTERMIS....
+	CTRL.WAIT()
+	--end NIs settings and prepare for gamestart
+	
+	Util_MuffleNISSound( false )
+	W40k_Letterbox( false, 2 )
+	FOW_Reset() --FOW is enabled
+	CPath_Blendout( 3 )
+	EventCue_Enable(true)
+	CTRL.WAIT()
+	
+	
+	Util_NIS_ToggleModifierEvents(g_Player1, true)
+	Util_NIS_ToggleModifierEvents(g_Player2, true)
+
+
+
+-------------------------------------------
+--[[PREPARE MAP FOR GAMEPLAY]]
+------------------------------------------
+
+--despawn all nis actors
+	--chaos actors
+	SGroup_DeSpawn("sg_Nis_chaosLord")
+	SGroup_DeSpawn("sg_Nis_ChaosSorc")
+	SGroup_DeSpawn("sg_Nis_Inquisitor")
+	SGroup_DeSpawn("sg_Nis_ChaosChamp")
+	
+	--inquisition actors
+	SGroup_DeSpawn("sg_Nis_loyal_inquisitor")
+	SGroup_DeSpawn("sg_nis_inqtroops1")
+	SGroup_DeSpawn("sg_nis_inqtroops2")
+	SGroup_DeSpawn("sg_Nis_InqRhino1")
+	SGroup_DeSpawn("sg_Nis_InqRhino2")
+	SGroup_DeSpawn("sg_Nis_Landraider")
+	
+--destroy all squads
+	SGroup_DestroyAllSquads("sg_All_actors_Nis")
+	SGroup_Destroy(SGroup_FromName("sg_All_actors_Nis"))
+	
+--respawn the psykers.	
+	for k = 1, 8 do
+		SGroup_ReSpawn("victims"..k)  
+	end
+	
+	
+	
+	--fire the gamestart rule	
+		Rule_AddOneShot(Rule_GameStart, 1)
+end
+
+
+
+
+--INTRO
+EVENTS.Intro = function() --intro
+	Util_SetIE( true)
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023062 )
+	CTRL.WAIT()
+	CTRL.Actor_PlaySpeech( Evilinq, 16023064 )
+	CTRL.WAIT()
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023066 )
+	CTRL.WAIT()
+	CTRL.Actor_PlaySpeech( Evilinq, 16023068 )
+	CTRL.WAIT()
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023070 ) 
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+
+EVENTS.SancIntro = function() --Inq player is told about sanctuary(a)
+	Util_SetIE(true)
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023056 )
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+
+EVENTS.OathIntro = function() -- Chaos player is told about psykers(a)
+	Util_SetIE( true )
+	CTRL.Actor_PlaySpeech( Evilinq, 16023072 )
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+
+--Inquisition intel
+EVENTS.DaemonPrince = function() -- the inq meet the daemon prince
+	Util_SetIE(true)
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023058 )
+	CTRL.WAIT()
+	Util_SetIE(false )
+end
+
+EVENTS.Sanctuary = function() -- the inq make the sanctuary( b)
+	Util_SetIE( true )
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023060 )
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+
+
+
+EVENTS.AssassinsFFON = function() -- inquisition lament at FF being ON(d)
+	Util_SetIE( true )
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023074	 )
+	CTRL.WAIT()
+	CTRL.Actor_PlaySpeech( ACT.Psyker, 16023076	 )
+	CTRL.WAIT()
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023078	 )
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+
+EVENTS.Assassins = function() -- assassins are being dropped in
+	Util_SetIE( true )
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023080	 )
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+
+EVENTS.AssassinsFFOFF = function() -- inquisition deactivate force field(c)
+	Util_SetIE( true )
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023082	 )
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+
+EVENTS.SanctuaryINQLOSS = function()  -- inquisition lose sanctuary(e)
+	Util_SetIE( true )
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023084	 )
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+
+EVENTS.SanctuaryTAINT = function()  -- inq meets taint
+	Util_SetIE( true )
+	CTRL.Actor_PlaySpeech( Inquisitor, 16023100 )
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+
+--Chaos intel
+EVENTS.AssassinsChaosFFON = function() --chaos switch FF ON(d)
+	Util_SetIE( true )
+	CTRL.Actor_PlaySpeech( Evilinq, 16023086	 )
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+EVENTS.AssassinsChaosEnd = function() --chaos end is nigh, FFoff(c)
+	Util_SetIE( true )
+	CTRL.Actor_PlaySpeech( Evilinq, 16023088	 )
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+EVENTS.SanctuaryCHAOSGAIN = function()  --chaos gain sanctuary(e)
+	Util_SetIE( true )
+	CTRL.Actor_PlaySpeech( Evilinq, 16023090 )
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+EVENTS.SanctuaryCHAOS = function() -- chaos worry about emperors light(b)
+	Util_SetIE( true )
+	CTRL.Actor_PlaySpeech( Evilinq, 16023092 )
+	CTRL.WAIT()
+	Util_SetIE( false )
+end
+
+
+

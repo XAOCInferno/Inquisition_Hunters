@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "witch_hunters_race/bloodyrose",
+	associated_race = "witch_hunters_race",
+	banner_name = "witch_hunters_race/bloodyrose",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Order of the Bloody Rose II",
+	Eyes =  
+	{
+		b = 245,
+		g = 245,
+		r = 245,
+	},
+	Weapons =  
+	{
+		b = 41,
+		g = 41,
+		r = 41,
+	},
+	Primary =  
+	{
+		b = 33,
+		g = 31,
+		r = 187,
+	},
+	Trim =  
+	{
+		b = 43,
+		g = 134,
+		r = 185,
+	},
+	Secondary =  
+	{
+		b = 41,
+		g = 41,
+		r = 41,
+	},
+}
+

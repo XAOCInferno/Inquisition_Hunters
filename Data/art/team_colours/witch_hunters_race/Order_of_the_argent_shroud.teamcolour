@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "sisters_race/ARGENTSHROUD",
+	associated_race = "witch_hunters_race",
+	banner_name = "witch_hunters_race/Order_of_the_argent_shroud_banner",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Order of the Argent Shroud",
+	Eyes =  
+	{
+		b = 43,
+		g = 134,
+		r = 185,
+	},
+	Weapons =  
+	{
+		b = 19,
+		g = 9,
+		r = 155,
+	},
+	Primary =  
+	{
+		b = 195,
+		g = 195,
+		r = 195,
+	},
+	Trim =  
+	{
+		b = 202,
+		g = 202,
+		r = 202,
+	},
+	Secondary =  
+	{
+		b = 241,
+		g = 254,
+		r = 252,
+	},
+}
+

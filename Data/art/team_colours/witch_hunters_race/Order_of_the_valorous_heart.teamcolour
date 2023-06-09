@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "sisters_race/VALOROUSHEART",
+	associated_race = "witch_hunters_race",
+	banner_name = "witch_hunters_race/Order_of_the_valorous_heart_banner",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Order of the Valorous Heart",
+	Eyes =  
+	{
+		b = 19,
+		g = 9,
+		r = 155,
+	},
+	Weapons =  
+	{
+		b = 43,
+		g = 41,
+		r = 40,
+	},
+	Primary =  
+	{
+		b = 42,
+		g = 42,
+		r = 42,
+	},
+	Trim =  
+	{
+		b = 252,
+		g = 254,
+		r = 254,
+	},
+	Secondary =  
+	{
+		b = 35,
+		g = 35,
+		r = 35,
+	},
+}
+

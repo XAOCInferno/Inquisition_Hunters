@@ -1,0 +1,42 @@
+LocalInfo =  
+{
+	badge_name = "witch_hunters_race/bluerobe",
+	associated_race = "witch_hunters_race",
+	banner_name = "witch_hunters_race/bluerobe",
+}
+UnitCustomization =  
+{
+	pattern_name = "default",
+	force_name = "Order of the Blue Robe",
+	Eyes =  
+	{
+		b = 189,
+		g = 115,
+		r = 94,
+	},
+	Weapons =  
+	{
+		b = 245,
+		g = 245,
+		r = 245,
+	},
+	Primary =  
+	{
+		b = 245,
+		g = 245,
+		r = 245,
+	},
+	Trim =  
+	{
+		b = 202,
+		g = 202,
+		r = 202,
+	},
+	Secondary =  
+	{
+		b = 189,
+		g = 115,
+		r = 94,
+	},
+}
+

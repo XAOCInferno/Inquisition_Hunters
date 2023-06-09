@@ -1,0 +1,371 @@
+----------------------------------------------------------------------------------------------------------------
+-- Annihilate Win Condtition (for all mod factions)
+-- Edited by Thudmeizer  @ 04.06.2008
+--
+--	Last player standing wins.
+--
+-- (c) 2003 Relic Entertainment Inc.
+import("ScarUtil.scar");
+
+function Annihilate()
+
+	-- wait 0.25 secs before adding this rule. this is so it is not executed
+	-- on the same frame as the other win conditions
+	Rule_AddOneShot( Annihilate_AddMainRule, 0.25 )
+	
+	obj_table_P1 = { title_id = 60000, short_desc_id = 60300, help_tip_id = 60300 }
+	
+	Objective_Add( obj_table_P1, 1 )
+	
+end
+
+function Annihilate_AddMainRule()
+	Rule_AddInterval(CheckAnnihilate, 2)
+end
+
+_Annihilate = 
+{
+	--don't count these when counting the number of buildings owned
+	g_annihilate_exceptions = 
+	{
+		"chaos_armoury",
+		"chaos_listening_post",
+		"chaos_mine_field",
+		"chaos_plasma_generator",
+		"chaos_thermo_plasma_generator",
+		"chaos_turret_bolter",
+
+		"dark_eldar_haemonculus_laboratory",
+		"dark_eldar_listening_post",
+		"dark_eldar_plasma_generator",
+		"dark_eldar_slave_caravel",
+		"dark_eldar_soul_cage",
+		"dark_eldar_thermo_plasma",
+		"dark_eldar_wych_cult_arena",
+
+		"eldar_advanced_warp_generator",
+		"eldar_listening_post",
+		"eldar_mine_field",
+		"eldar_soul_shrine",
+		"eldar_support_platform_scatterlaser",
+		"eldar_warp_generator",
+
+		"guard_listening_post",
+		"guard_mines",
+		"guard_plasma_generator",
+		"guard_tactica",
+		"guard_thermo_plasma",
+		"guard_turret_heavy_bolter",
+
+	    	"necron_listening_post",
+		"necron_summoning_core",
+		"necron_plasma_generator",
+		"necron_energy_core",
+		"necron_greater_summoning_core",
+		"necron_forbidden_archive",
+		"necron_thermoplasma_generator",
+		"necron_turret",
+
+		"ork_bigger_generator",
+		"ork_generator",
+		"ork_gork_totem",
+		"ork_mine_field",
+		"ork_pile_o_guns",
+		"ork_waagh_banner",
+
+		"sisters_holy_reliquary",
+		"sisters_listening_post",
+		"sisters_mines",
+		"sisters_plasma_generator",
+		"sisters_sanctuary",
+		"sisters_thermo_plasma",
+		"sisters_turret_flamer",
+
+		"space_marine_armoury",
+		"space_marine_generator",
+		"space_marine_listening_post",
+		"space_marine_mine_field",
+		"space_marine_turret_bolter",
+		"space_marine_thermo_generator",
+		
+		"tau_listening_post",
+		"tau_research_building",
+		"tau_shrine_of_kauyon",
+		"tau_shrine_of_montka",
+		"tau_thermoplasma_generator",
+		"tau_turret_sp",	
+		"tau_plasma_generator",
+
+		-- Armoured Company
+		"ac_listening_post",
+		"ac_power_generator",
+		"ac_thermo_generator",
+		"ac_research_building",
+
+		-- 13th Company
+		"thirteenthcom_armoury",
+		"thirteenthcom_boobytrap",
+		"thirteenthcom_mine_field",
+		"thirteenthcom_razor_wire",
+		"thirteenthcom_tank_trap",		
+
+		-- Alliance
+		"imperium_armoury",
+		"imperium_listening_post",
+		"imperium_turret_heavy_bolter",
+		"imperium_turret_missile_launcher_sp",
+
+		-- Black Templars
+		"black_templars_adv_generator",
+		"black_templars_generator",
+		"black_templars_lp",
+		"black_templars_statue",
+    
+    		-- Black Templars (Jones1979)
+    		"black_marine_thermo_generator",
+    		"black_marine_listening_post",
+    		"black_marine_mine_field",
+    		"black_marine_turret_bolter",
+
+		-- Blood Angels
+		"blood_angel_armoury",
+		"blood_angel_generator",
+		"blood_angel_listening_post",
+		"blood_angel_mine_field",
+		"blood_angel_turret_bolter",
+		"blood_angel_thermo_generator",
+
+		-- Catachans
+		"catachan_listening_post",
+		"catachan_generator",
+		"catachan_turret",
+		"catachan_mine_shredder",
+		"catachan_mine_plasma",
+		"catachan_thermo_generator",
+		"catachan_vox_tent",
+		
+		-- Craftworlds
+		"craftworld_advanced_warp_generator",
+		"craftworld_listening_post",
+		"craftworld_mine_field",
+		"craftworld_support_platform_scatterlaser",
+		"craftworld_warp_generator",
+
+		-- Daemons
+		"daemons_healing_rift",
+
+		-- Dark Angels
+		"darkangels_armoury",
+		"darkangels_generator",
+		"darkangels_listening_post",
+		"darkangels_mine_field",	
+		"darkangels_thermo_generator",
+		"darkangels_turret_bolter",
+
+		-- Dark Eldar
+		"dark_eldar_mod_big_generator",
+		"dark_eldar_mod_dark_pillar",
+		"dark_eldar_mod_generator",
+		"dark_eldar_mod_psychic_resonator",
+		"dark_eldar_mod_webway_gate",
+
+		-- Death Guard
+		"death_guard_armoury",
+		"death_guard_listening_post",
+		"death_guard_mine_field",
+		"death_guard_plasma_generator",
+		"death_guard_thermo_plasma_generator",
+		"death_guard_turret_bolter",
+
+		-- Deathwing
+		"deathwing_listening_post",
+		"deathwing_armoury",
+
+		-- Emperor's Children
+		"emperors_children_armoury",
+		"emperors_children_listening_post",
+		"emperors_children_mine_field",
+		"emperors_children_plasma_generator",
+		"emperors_children_thermo_plasma_generator",
+		"emperors_children_turret_bolter",
+
+		-- Elysians
+		"elysian_listening_post",
+		"elysian_turret",
+
+		-- FirstBorn/Vostroyan
+		"firstborn_listening_post",
+		"firstborn_plasma_generator",
+		"firstborn_thermo_plasma",
+		"firstborn_turret",
+
+		-- Harlequins
+		"harlequin_armoury",
+		"harlequin_listening_post",
+	
+		-- His Righteous
+		"imperial_guard_mod_barbed_wire",
+		"imperial_guard_mod_generator",
+		"imperial_guard_mod_research_building",
+		"imperial_guard_mod_slag_generator",
+		"imperial_guard_mod_space_station",
+		"imperial_guard_mod_turret",
+
+		-- Inquisition DaemonHunt
+		"inquisition_imperial_icon",
+		"inquisition_purification_decree",
+		"inquisition_warp_generator",
+		"inquisition_warp_reactor",
+
+		-- Iron Warriors
+		"iron_warriors_armoury",
+		"iron_warriors_listening_post",
+		"iron_warriors_mine_field",
+		"iron_warriors_plasma_generator",
+		"iron_warriors_razor_wire",
+		"iron_warriors_tank_trap",
+		"iron_warriors_thermo_plasma_generator",
+		"iron_warriors_turret_bolter",
+		"iron_warriors_warp_gate",
+
+		-- Legion of the Damned
+		"legion_armoury",
+		"legion_generator",
+		"legion_listening_post",
+		"legion_mine_field",
+		"legion_thermo_generator",
+		"legion_turret_bolter",
+
+		-- Lost and the Damned
+		"latd_listening_post",
+		"latd_mines",
+		"latd_plasma_generator",
+		"latd_tactica",
+		"latd_temple",
+		"latd_thermo_plasma",
+		"latd_turret_heavy_bolter",
+
+		-- Tyranids
+		"tyranids_adv_magma_vent",
+
+   		-- Ork Armageddon
+		"orka_artillery",
+		"orka_bigger_generator",
+		"orka_bunker",
+		"orka_generator",
+		"orka_gorka_totem",
+		"orka_mine_field",
+
+		-- Praetorian
+		"praetorian_aid_station",
+		"praetorian_company_standard",
+		"praetorian_facility",
+		"praetorian_listening_post",
+		"praetorian_turret_earthshaker",
+
+		-- Steel Legions
+		"steel_legion_dragonteeth",
+		"steel_legion_tarantula",
+		"steel_legion_personal_mine",
+		"steel_legion_generator",
+		"steel_legion_reactor",
+
+		-- Strike Marines
+		"strike_marine_barracks",
+		"strike_marine_fire_control",
+		"strike_marine_listening_post",	
+		"strike_marine_requisition_tower",
+		
+		-- Tau XP
+		"tauva_arsenal",
+		"tauva_drone_turret_structure",
+		"tauva_generator",
+		"tauva_ion_generator",
+		"tauva_listening_post",
+		"tauva_mine_field",
+		"tauva_mine_field_emp",
+		"tauva_remote_sensor_tower",
+
+		-- Thousand Sons
+		"thousand_sons_altar_of_tzeentch",
+		"thousand_sons_generator",
+		"thousand_sons_library",
+		"thousand_sons_listening_post",
+		"thousand_sons_mine_field",
+		"thousand_sons_thermo_generator",
+		"thousand_sons_turret_bolter",
+
+		-- TSons
+		"tsons_plasma_generator",
+		"tsons_listening_post",
+		"tsons_mine_field",
+		"tsons_mine_field_decept",
+		"tsons_thermo_plasma_generator",
+		"tsons_turret_bolter",
+
+		-- UltraMarines
+		"ultra_marine_generator",
+		"ultra_marine_listening_post",
+		"ultra_marine_thermo_generator",
+		"ultra_marine_turret_bolter",
+		"ultra_marine_mine_field",
+
+		-- Visions of Chaos
+		"voc_chaos_armoury",
+		"voc_chaos_listening_post",
+		"voc_chaos_mine_field",
+		"voc_chaos_plasma_generator",
+		"voc_chaos_thermo_plasma_generator",
+		"voc_chaos_turret_bolter",
+		"voc_chaos_turret_slaanesh",
+
+		-- WitchHunters
+		"witch_hunters_adeptus_arbites_listening_post",
+		"witch_hunters_generator",
+		"witch_hunters_thermo_generator",
+		"witch_hunters_turret_heavy_flamer",
+		
+		-- WorldEaters
+		"world_eater_armoury",
+		"world_eater_listening_post",
+		"world_eater_mine_field",
+		"world_eater_plasma_generator",
+		"world_eater_shrine_of_skulls",
+		"world_eater_thermo_plasma_generator",
+		"world_eater_turret_bolter",
+
+		-- Wraithstalkers
+		"stalker_armoury",
+		"stalker_generator",
+		"stalker_turret_bolter",
+		"stalker_turret_missile",
+	},
+	
+	-- at least this number of units if no buildings
+	g_NumUnits = 0,
+}
+
+function CheckAnnihilate()
+
+	-- total number of players
+	local count = World_GetPlayerCount();
+	
+	--check for annihilated dudes
+	for i = 0, count-1
+	do
+		-- check if player has been annihilated
+		local player = World_GetPlayerAt(i);
+	
+		-- if no buildings then you die
+		if( Player_IsAlive(player) ) then
+			if( Player_HasBuildingsExcept( player, _Annihilate.g_annihilate_exceptions ) == false ) then
+				Player_Kill(player);
+ 				end
+		end
+	end
+	
+	-- check if only one team left -- if only one team left, they win and everybody else loses
+	Util_CheckOneTeamLeft("annihilate");
+end
+
+Scar_AddInit(Annihilate)
