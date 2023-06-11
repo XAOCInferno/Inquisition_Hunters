@@ -31,7 +31,7 @@ simvis_attributes =
 	vehicle_acceleration_factor	= -0.2,
 	vehicle_gravity			= 0.7,
 	vehicle_debug_render		= 0,
-	vehicle_height_offset           = 0,
+	vehicle_height_offset = 3.5
 	vehicle_float_on_water		= 1,
 	vehicle_render_offset		= 0.5,
 	
