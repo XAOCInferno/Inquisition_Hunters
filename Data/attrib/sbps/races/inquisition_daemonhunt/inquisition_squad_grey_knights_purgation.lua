@@ -482,7 +482,6 @@ GameData["squad_requirement_ext"]["requirements"]["required_10"]["is_display_req
 GameData["squad_requirement_ext"]["requirements"]["required_10"]["structure_name"] = [[ebps\races\inquisition_daemonhunt\structures\inquisition_grey_knights_teleporter_gk.lua]]
 GameData["squad_transportable_ext"] = Reference([[sbpextensions\squad_transportable_ext.lua]])
 GameData["squad_transportable_ext"]["nr_spots"] = 2
-GameData["squad_transportable_ext"]["transport_type"] = Reference([[type_transportable\transport_inquisition_infantry_deepstriked.lua]])
 GameData["squad_ui_ext"] = Reference([[sbpextensions\squad_ui_ext.lua]])
 GameData["squad_ui_ext"]["multi_select_priority"] = 3
 GameData["squad_ui_ext"]["ui_info"]["help_text_list"]["text_01"] = [[$16020191]] -- - Heavy Infantry.

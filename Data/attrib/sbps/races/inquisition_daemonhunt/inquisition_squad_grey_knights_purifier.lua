@@ -518,7 +518,6 @@ GameData["squad_requirement_ext"]["requirements"]["required_10"]["structure_name
 GameData["squad_requirement_ext"]["requirements"]["required_11"] = Reference([[requirements\required_structure.lua]])
 GameData["squad_requirement_ext"]["requirements"]["required_11"]["structure_name"] = [[ebps\races\inquisition_daemonhunt\structures\inquisition_librarium.lua]]
 GameData["squad_transportable_ext"] = Reference([[sbpextensions\squad_transportable_ext.lua]])
-GameData["squad_transportable_ext"]["transport_type"] = Reference([[type_transportable\transport_inquisition_infantry_deepstriked.lua]])
 GameData["squad_ui_ext"] = Reference([[sbpextensions\squad_ui_ext.lua]])
 GameData["squad_ui_ext"]["counter_text_id"] = [[$0]]
 GameData["squad_ui_ext"]["multi_select_priority"] = 3
