@@ -1,6 +1,7 @@
 GameData = Inherit([[]])
 GameData["ability_ext"] = Reference([[ebpextensions\ability_ext.lua]])
 GameData["ability_ext"]["abilities"]["ability_01"] = [[abilities\inquisition_fearlessness.lua]]
+GameData["ability_ext"]["abilities"]["ability_02"] = [[abilities\inquisition_smite_strike.lua]]
 GameData["combat_ext"] = Reference([[ebpextensions\combat_ext.lua]])
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["attack_motion_variable_name"] = [[Weapon_Range_Tracking_Main]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["hardpoint_weapon_variant_motion_name"] = [[Weapon_Range_Upgrade_Main]]
@@ -8,7 +9,7 @@ GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["horizontal_aim_motion_vari
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["shoot_motion_variable_name"] = [[Weapon_Range_Firing_Main]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["vertical_aim_motion_variable_name"] = [[Aim_Vertical_Main]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_01"]["name_for_this_weapon_choice"] = [[id_storm_bolter]]
-GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_01"]["weapon"] = [[weapon\inquisition_storm_bolter_grey_knight.lua]]
+GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_01"]["weapon"] = [[weapon\inquisition_storm_bolter_grey_knight_strike.lua]]
 -- GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_02"]["name_for_this_weapon_choice"] = [[id_incinerator]]
 -- GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_02"]["weapon"] = [[weapon\inquisition_incinerator_grey_knight.lua]]
 -- GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_03"]["name_for_this_weapon_choice"] = [[id_psycannon]]
@@ -375,7 +376,7 @@ GameData["combat_ext"]["hardpoints"]["hardpoint_16"]["weapon_table"]["weapon_32"
 GameData["cost_ext"] = Reference([[ebpextensions\cost_ext.lua]])
 GameData["cost_ext"]["time_cost"]["cost"]["faith"] = 0
 GameData["cost_ext"]["time_cost"]["cost"]["power"] = 10
-GameData["cost_ext"]["time_cost"]["cost"]["requisition"] = 55
+GameData["cost_ext"]["time_cost"]["cost"]["requisition"] = 65
 GameData["cost_ext"]["time_cost"]["cost"]["souls"] = 0
 GameData["cost_ext"]["time_cost"]["time_seconds"] = 8.25
 GameData["cover_ext"] = Reference([[ebpextensions\cover_ext.lua]])
@@ -812,7 +813,7 @@ GameData["health_ext"] = Reference([[ebpextensions\health_ext.lua]])
 GameData["health_ext"]["armour"] = 100
 GameData["health_ext"]["death_event"] = [[data:/art/events/unit_death_events/sink_into_ground.events]]
 GameData["health_ext"]["display_health_bar"] = true 
-GameData["health_ext"]["hitpoints"] = 800
+GameData["health_ext"]["hitpoints"] = 785
 GameData["health_ext"]["morale_death"] = 40
 GameData["health_ext"]["poison_damage"] = 0.8000000119
 GameData["health_ext"]["poison_damage_duration"] = 15

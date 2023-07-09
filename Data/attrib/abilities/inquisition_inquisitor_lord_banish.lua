@@ -34,9 +34,9 @@ GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_03"]["armour_type"] = Reference([[type_armour\tp_commander.lua]])
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_15"]["armour_type"] = Reference([[type_armour\tp_air_med.lua]])
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["life_leech_damage"] = 0
-GameData["area_effect"]["weapon_damage"]["armour_damage"]["max_damage"] = 1400
-GameData["area_effect"]["weapon_damage"]["armour_damage"]["min_damage"] = 950
-GameData["area_effect"]["weapon_damage"]["armour_damage"]["min_damage_value"] = 475
+GameData["area_effect"]["weapon_damage"]["armour_damage"]["max_damage"] = 1150
+GameData["area_effect"]["weapon_damage"]["armour_damage"]["min_damage"] = 800
+GameData["area_effect"]["weapon_damage"]["armour_damage"]["min_damage_value"] = 425
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["morale_damage"] = 500
 GameData["area_effect"]["weapon_damage"]["hit_events"]["entry01"]["event"] = [[hit_events/psychic_hit_short]]
 GameData["area_effect"]["weapon_damage"]["hit_events"]["entry02"]["event"] = [[hit_events/psychic_hit_short]]

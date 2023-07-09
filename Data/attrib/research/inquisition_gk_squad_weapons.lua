@@ -1,11 +1,5 @@
 GameData = Inherit([[]])
 GameData["modifiers"] = Reference([[tables\modifier_table.lua]])
-GameData["modifiers"]["modifier_01"] = Reference([[modifiers\max_upgrades_squad_modifier.lua]])
-GameData["modifiers"]["modifier_01"]["target_type_name"] = [[inquisition_squad_grey_knights_interceptors]]
-GameData["modifiers"]["modifier_01"]["value"] = 2
-GameData["modifiers"]["modifier_02"] = Reference([[modifiers\max_upgrades_squad_modifier.lua]])
-GameData["modifiers"]["modifier_02"]["target_type_name"] = [[inquisition_squad_grey_knights_purgation]]
-GameData["modifiers"]["modifier_02"]["value"] = 2
 GameData["modifiers"]["modifier_03"] = Reference([[modifiers\max_upgrades_squad_modifier.lua]])
 GameData["modifiers"]["modifier_03"]["target_type_name"] = [[inquisition_squad_grey_knights_terminator_gk]]
 GameData["modifiers"]["modifier_03"]["value"] = 2
