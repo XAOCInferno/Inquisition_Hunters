@@ -388,7 +388,7 @@ GameData["squad_requirement_ext"]["requirements"]["required_1"]["global_addon_na
 GameData["squad_requirement_ext"]["requirements"]["required_2"] = Reference([[requirements\required_squad_cap.lua]])
 GameData["squad_requirement_ext"]["requirements"]["required_2"]["max_squad_cap"] = 4
 GameData["squad_requirement_ext"]["requirements"]["required_10"] = Reference([[requirements\required_structure.lua]])
-GameData["squad_requirement_ext"]["requirements"]["required_10"]["is_display_requirement"] = false 
+GameData["squad_requirement_ext"]["requirements"]["required_10"]["is_display_requirement"] = true 
 GameData["squad_requirement_ext"]["requirements"]["required_10"]["structure_name"] = [[ebps\races\inquisition_daemonhunt\structures\inquisition_landing_pad.lua]]
 GameData["squad_ui_ext"] = Reference([[sbpextensions\squad_ui_ext.lua]])
 GameData["squad_ui_ext"]["multi_select_priority"] = 10

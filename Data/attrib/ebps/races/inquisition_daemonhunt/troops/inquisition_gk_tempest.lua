@@ -506,5 +506,5 @@ GameData["ui_ext"]["ui_index_hint"] = 4
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_01"] = [[$4450039]] -- - Versatile assault gunship.
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_02"] = [[$4450040]] -- - Can upgrade default weaponry to specialize in either anti-infantry or anti-vehicle attacks.
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_03"] = [[$4450041]] -- - Effective against infantry.
-GameData["ui_ext"]["ui_info"]["icon_name"] = [[inquisition_icons/tempest_icon]]
+GameData["ui_ext"]["ui_info"]["icon_name"] = [[inquisition_icons/gk_tempest_icon]]
 GameData["ui_ext"]["ui_info"]["screen_name_id"] = [[$4450038]] -- Land Speeder Tempest
