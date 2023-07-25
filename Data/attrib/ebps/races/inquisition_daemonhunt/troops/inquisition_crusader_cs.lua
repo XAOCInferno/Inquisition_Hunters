@@ -1,6 +1,6 @@
 GameData = Inherit([[]])
 GameData["ability_ext"] = Reference([[ebpextensions\ability_ext.lua]])
-GameData["ability_ext"]["abilities"]["ability_01"] = [[abilities\witch_hunters_crusader_benefit.lua]]
+GameData["ability_ext"]["abilities"]["ability_01"] = [[abilities\inquisition_crusader_benefit.lua]]
 GameData["combat_ext"] = Reference([[ebpextensions\combat_ext.lua]])
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["attack_motion_variable_name"] = [[Weapon_Range_Tracking_Main]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["hardpoint_weapon_variant_motion_name"] = [[Weapon_Range_Upgrade_Main]]
@@ -8,7 +8,7 @@ GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["horizontal_aim_motion_vari
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["shoot_motion_variable_name"] = [[Weapon_Range_Firing_Main]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["vertical_aim_motion_variable_name"] = [[Aim_Vertical_Main]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_01"]["name_for_this_weapon_choice"] = [[witch_hunters_shield]]
-GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_01"]["weapon"] = [[weapon\witch_hunters_crusader_shield.lua]]
+GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_01"]["weapon"] = [[weapon\inquisition_crusader_shield.lua]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_06"] = nil
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_07"] = nil
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_08"] = nil
@@ -38,7 +38,7 @@ GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_31"
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_32"] = nil
 GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["hardpoint_weapon_variant_motion_name"] = [[Upgrade_Melee_Main]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["weapon_table"]["weapon_01"]["name_for_this_weapon_choice"] = [[Space_Marines_Knife]]
-GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["weapon_table"]["weapon_01"]["weapon"] = [[weapon\witch_hunters_crusader_power_sword.lua]]
+GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["weapon_table"]["weapon_01"]["weapon"] = [[weapon\inquisition_crusader_power_axe.lua]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["weapon_table"]["weapon_06"] = nil
 GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["weapon_table"]["weapon_07"] = nil
 GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["weapon_table"]["weapon_08"] = nil
@@ -883,8 +883,7 @@ GameData["ui_ext"]["ui_index_hint"] = 5
 GameData["ui_ext"]["ui_info"]["help_text_id"] = [[$9000000]] -- 
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_01"] = [[$9000170]] -- - Close Combat Unit.
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_02"] = [[$9000171]] -- - Protects the Inquisitor Squad from melee and range damage with his suppression shield.
-GameData["ui_ext"]["ui_info"]["help_text_list"]["text_03"] = [[$9000173]] -- - Improves the melee damage dealt by the Inquisitor Squad.
-GameData["ui_ext"]["ui_info"]["help_text_list"]["text_04"] = [[$9000172]] -- - Very effective against all Infantry types.
+GameData["ui_ext"]["ui_info"]["help_text_list"]["text_03"] = [[$9000172]] -- - Very effective against all Infantry types.
 GameData["ui_ext"]["ui_info"]["icon_name"] = [[inquisition_icons/witch_hunters_crusader_command_squad]]
 GameData["ui_ext"]["ui_info"]["screen_name_id"] = [[$9000169]] -- Crusader
 GameData["ui_ext"]["ui_info"]["no_button"] = nil
