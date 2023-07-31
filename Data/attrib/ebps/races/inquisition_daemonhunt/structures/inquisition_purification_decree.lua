@@ -256,7 +256,9 @@ GameData["requirement_ext"]["requirements"]["required_1"]["this_structure_count"
 GameData["requirement_ext"]["requirements"]["required_2"] = Reference([[requirements\required_structure.lua]])
 GameData["requirement_ext"]["requirements"]["required_2"]["structure_name"] = [[ebps\races\inquisition_daemonhunt\structures\inquisition_librarium.lua]]
 GameData["requirement_ext"]["requirements"]["required_10"] = Reference([[requirements\required_total_pop.lua]])
-GameData["requirement_ext"]["requirements"]["required_10"]["is_display_requirement"] = true 
+GameData["requirement_ext"]["requirements"]["required_10"]["is_display_requirement"] = true
+GameData["research_ext"] = Reference([[ebpextensions\research_ext.lua]])
+GameData["research_ext"]["research_table"]["research_01"] = [[research\inquisition_pentagrams.lua]] 
 GameData["sight_ext"] = Reference([[ebpextensions\sight_ext.lua]])
 GameData["sight_ext"]["keen_sight_radius"] = 35
 GameData["sight_ext"]["sight_radius"] = 35

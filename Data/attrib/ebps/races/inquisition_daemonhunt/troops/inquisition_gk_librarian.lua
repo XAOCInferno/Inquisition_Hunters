@@ -967,6 +967,7 @@ GameData["ui_ext"]["minimap_enable"] = true
 GameData["ui_ext"]["minimap_teamcolor"] = true 
 GameData["ui_ext"]["speech_directory"] = [[speech\races\inquisition_daemonhunt\librarian]]
 GameData["ui_ext"]["ui_hotkey_name"] = [[inquisition_grey_knights_lord]]
+GameData["ui_ext"]["ui_index_hint"] = 4
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_01"] = [[$16022231]] -- - Command Unit (Secondary). Detects Infiltrators.
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_02"] = [[$16022232]] -- - Initially equipped with an Incinerator, set to promptly counter warp creatures and Daemons.
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_03"] = [[$16022233]] -- - Wields a powerful Force Staff that also acts as a focus for his psyker abilities.
