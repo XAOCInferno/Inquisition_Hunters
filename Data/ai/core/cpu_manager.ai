@@ -1,10 +1,9 @@
 -- Debug display
-import( 'Core/debug_display.ai' )
+import( 'debug_display.ai' )
 
 -- Utility
 import( 'Core/utility.ai' )
 import( 'Core/CpuPrerequisites2.ai' ) -- Dark40k 10.2008 -- line added
-import( 'MapDB/mapdb.ai' ) -- Larkin 04.2009 project mapDB	
 
 -- Global unit stats
 UnitStats = {}
@@ -117,7 +116,6 @@ CpuManager.AISettings =
 	bRelicUnits = true,
 	bTurrets = true,
 	bMines = true,
-	bUseMapDB = false,
 	bHighSpeedAI = false,
 	bFortressMode = false,
 	bMassiveBattlesMode = false
@@ -153,6 +151,11 @@ function CpuManager:__init( cpu_player_id )
 	-- currently running strategies
 	self.strategies = {}
 
+	--enable debug display according to self.debug_view
+	self.debug = false
+	--draw color circles for debug purposes
+	self.dcircle = false
+
 	self.events = {}
 
 	--shortest path at gamestart
@@ -169,6 +172,9 @@ function CpuManager:__init( cpu_player_id )
 	self.components[ CpuPlayer.CT_BuildAddOns ] 	= true
 	self.components[ CpuPlayer.CT_Tactics ]		 	= true
 
+	self.debug_display_height = 0.04
+
+	self.debug_view = 4
 	
 	--true if i talk smack
 	self.lippy = true
@@ -271,9 +277,6 @@ function CpuManager:__init( cpu_player_id )
 	
 	-- Arkhan 03.2008: Init jump target list
 	self.m_aJumpTargets = {}
-	
-	-- Arkhan 04.2009: Init map DB
-	self.m_oMapDB = nil
 end
 
 function CpuManager:Initialize()
@@ -459,15 +462,6 @@ function CpuManager:Initialize()
 	-- Init player list
 	for oPlayer in self.stats:GetPlayerStats() do
 		table.insert(self.m_aPlayers, { oPlayer:GetPlayerID(), not self.player_stats:IsEnemy(oPlayer) })
-	end
-	
-	-- Arkhan 04.2009: Init map DB and make Eldar stronghold map check
-	self.m_oMapDB = MapDB()
-	self.m_bEldarStronghold = false
-	if (self.m_oMapDB:GetMapName() == "009-1174-97-1138") then
-		print("Eldar Fortress Map: Shut down AI!!!")
-		aitrace("CpuManager: Eldar Fortress Map: Shut down AI!!!", true)
-		self.m_bEldarStronghold = true
 	end
 		
 	-- Return success
@@ -980,6 +974,22 @@ function CpuManager:UpdateObjectTable()
 					-- Get unit strength
 					local iSquadStrength = cpu_manager:GetUnitStrength(oSquad)
 				
+					-- Check if the engineer is building something
+					--[[if (oSquad:IsEngineer() and not bEnemy and not bAlly and oSquad:IsBuilding() ~= 0) then
+					
+						-- Get unfinished building
+						local oBuilding = build_manager:FindUnfinishedBuilding(oSquad:IsBuilding())
+						if (oBuilding ~= nil) then
+							
+							-- Check if building is in building assist range
+							local iDistance = distance_sqr(oBuilding:GetPosition(), cpu_manager.start_pos)
+							if (iDistance < iRangeBuildingAssist) then
+								self.m_oUnfinishedBuilding = oBuilding
+								iRangeBuildingAssist = iDistance
+							end
+						end
+					end]]
+					
 					-- Check for armed units
 					if (iSquadStrength > 0 and not oSquad:IsEngineer()) then
 					
@@ -1356,32 +1366,11 @@ function CpuManager:UpdateDeepStrikeArmyStrength()
 	end
 end
 
-function CpuManager:IsPosOnMap(vPosition)
-
-	-- Check if position is on map
-	if (CpuManager.AISettings.bUseMapDB) then
-		return self.m_oMapDB:IsPosOnMap(vPosition)
-	end
-	return true
-end
-
 function CpuManager:Update()
-
-	-- Check Eldar Fortress flag
-	if (self.m_bEldarStronghold) then
-		return
-	end
 
 	-- Update time game
 	g_iGMT = cpu_manager.cpu_player:GetGameTime() / 8
 
-	-- Larkin 04.2009 project mapDB	
-	if (not CpuManager.AISettings.bUseMapDB and g_bUseMapDB) then
-		print("AI "..self.player_id..": Map DB setting activated!")
-		CpuManager.AISettings.bUseMapDB = true
-		self.m_oMapDB:ReadStatus()
-	end
-		
 	-- Check for AI highspeed setting
 	if (not CpuManager.AISettings.bHighSpeedAI and g_bHighSpeedAI) then
 		print("AI "..self.player_id..": Highspeed setting activated!")
@@ -1401,11 +1390,6 @@ function CpuManager:Update()
 	end
 		
 	aipushtrace ("CpuManager: Starting AI Think", true, true)
-	
-	-- Larkin 04.2009 project mapDB	
-	if (CpuManager.AISettings.bUseMapDB and self.m_oMapDB:UseAnalyzer()) then
-		self.m_oMapDB:WriteStatus("false")
-	end
 	
 	-- Trace resources
 	aitrace("Req: "..tostring(resource_manager:GetResourceAmount():Get(ResourceAmount.RT_Requisition) )..
@@ -1544,10 +1528,6 @@ function CpuManager:Update()
 		aipoptrace("CpuManager: Update unit tactics...", true)
 	end
 		
-	-- Larkin 04.2009 project mapDB	
-	if (CpuManager.AISettings.bUseMapDB and self.m_oMapDB:UseAnalyzer()) then
-		self.m_oMapDB:WriteStatus("true")
-	end
 	aipoptrace ("CpuManager: End AI Think", true)
 
 	aipushtrace ("AI Difficulty Setting")
@@ -1782,38 +1762,31 @@ function CpuManager:GetClosestUnlockedSquad( pos, range, functor )
 	return squad_ai
 end
 
-function CpuManager:GetClosestSquad(vPosition, iRange, oFunctor, iCount)
-    
-    -- Init variables
-	local oCurrentSquad = nil
-	local vCurrentPos = Vector3f()
-	local iCurrentDistanceSqr = 0
-	local iRangeSqr = sqr(iRange)
-	if (iCount == nil) then
-		iCount = 1
-	end
+function CpuManager:GetClosestSquad( pos, range, functor )
 	
-	-- Compute all squads
-	for oSquad in military_manager:GetSquads() do
+	local squad_ai = nil
+	local current_pos = nil
+	local range_sqr = range*range
 	
-	   -- Check requirements
-	   if (oSquad:IsValid() and oFunctor(oSquad, iCount)) then
-	      
-	      -- Check if squad is in range
-	      local vSquadPos = oSquad:GetPosition()
-	      local iDistanceSqr = distance_sqr(vSquadPos, vPosition)
-	      if (iDistanceSqr <= iRangeSqr) then
-	            
-	         -- Check if it's closer than the last one
-	         if (oCurrentSquad == nil or iDistanceSqr < iCurrentDistanceSqr) then
-				oCurrentSquad = oSquad
-				vCurrentPos = vSquadPos
-				iCurrentDistanceSqr = iDistanceSqr
-	         end                
-	      end          
+	for squad in military_manager:GetSquads() do
+	
+	   --fulfills requirements
+	   if squad:IsValid() and functor( squad ) then
+		  
+		  local squad_pos = squad:GetPosition()
+		  
+		  --is in range
+		  if distance_sqr( squad_pos, pos ) <= range_sqr then
+				
+			 --check if it's closer
+			 if squad_ai == nil or distance_sqr( current_pos, pos ) > distance_sqr( squad_pos, pos ) then
+				squad_ai = squad
+				current_pos = squad_pos
+			 end				
+		  end		  
 	   end
 	end
-	return oCurrentSquad
+	return squad_ai
 end
 
 function CpuManager:FindFirstFriendly( functor )
@@ -2574,14 +2547,7 @@ function CpuManager:HasThreatOnPath(vPos1, vPos2, iRange)
 		return false
 	end
 	
-	-- Larkin 04.2009 project mapDB	
-	if (CpuManager.AISettings.bUseMapDB == true) then
-		local bUseTA = self.m_oMapDB:UseAnalyzer() 
-		if (bUseTA == true) then
-			local bThreat = self.terrain_analyzer:HasThreatOnPath(vPos1, vPos2, iRange)
-			return bThreat
-		end
-	end
+	--return self.terrain_analyzer:HasThreatOnPath(vPos1, vPos2, iRange)
 	
 	-- Calculate airline vector
 	local vAirline = Vector3f()
