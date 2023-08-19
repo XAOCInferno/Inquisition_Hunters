@@ -10,13 +10,13 @@ BuildBaseStrategyInfo =
 		flag_capture = 2,
 
 		--reserve this amount for building units/buildings (not for use in upgrading/ reinforcing)
-		req_reserve = 100,
+		req_reserve = 25,
 		
 		--need at least this at all times
-		squad_cap_threshold = 2,
+		squad_cap_threshold = 0,
 
 		--need at least this at all times
-		support_cap_threshold = 3,
+		support_cap_threshold = 0,
 		
 		--used to calculate wants for engineers
 		Engineers =
@@ -33,33 +33,35 @@ BuildBaseStrategyInfo =
 		{
 			-- Infantry strategy
 			{
+				{ 1, 0, 0, 0, 1,	 "Rush", 	"Prepare" },
+				{ 1, 170, 0, 0, 2,		"Unit",		"inquisition_squad_shock_troops" },
+				{ 1, 200, 40, 0, 1,		"Unit",		"inquisition_squad_inquisitor_lord" },
+				{ 1, 200, 40, 0, 1,		"Unit",		"inquisition_squad_inquisitor_lord_cs" },
+				{ 1, 180, 40, 0, 1,		"Unit",		"inquisition_squad_bodyguard" },
 				{ 1, 450, 0, 0, 1,		"Building",	"inquisition_tower_hq" },
 				{ 1, 250, 0, 0, 1,		"Building",	"inquisition_watch" },
 				{ 1, 125, 0, 0, 1,		"Building",	"inquisition_warp_generator" },
-				{ 1, 170, 0, 0, 2,		"Unit",		"inquisition_squad_shock_troops" },
-				{ 1, 200, 40, 150, 1,		"Unit",		"inquisition_squad_inquisitor_lord" },
-				{ 1, 180, 40, 300, 1,		"Unit",		"inquisition_squad_bodyguard" },
-				{ 1, 170, 0, 400, 3,		"Unit",		"inquisition_squad_shock_troops" },
-				{ 1, 90, 70, 500, 1,	"Research",	"inquisition_inquisitor_lord_bodyguards_research" },
+				{ 1, 170, 0, 900, 3,		"Unit",		"inquisition_squad_shock_troops" },
+				{ 1, 90, 70, 1200, 1,	"Research",	"inquisition_inquisitor_lord_bodyguards_research" },
 				{ 1, 100, 75, 300, 2,	"TurretAddon",	"inquisition_imperial_icon_addon_1" },
 				{ 1, 80, 45, 400, 1,	"Building",	"inquisition_purification_decree" },
 				{ 1, 125, 0, 200, 3,	"Building",	"inquisition_warp_generator" },
 				{ 1, 80, 45, 650, 2,	"Building",	"inquisition_purification_decree" },
 				{ 1, 125, 0, 600, 4,	"Building",	"inquisition_warp_generator" },
-				{ 1, 300, 150, 750, 1,	"Addon",	"inquisition_tower_addon" },
-				{ 1, 100, 75, 800, 3,	"TurretAddon",	"inquisition_imperial_icon_addon_1" },
+				{ 1, 300, 150, 1800, 1,	"Addon",	"inquisition_tower_addon" },
+				{ 1, 100, 75, 1000, 3,	"TurretAddon",	"inquisition_imperial_icon_addon_1" },
 			
-				{ 2, 100, 30, 0, 1,	"Research",	"inquisition_bodyguard_upgrade_1" },
-				{ 2, 80, 35, 0, 1,	"Addon",	"inquisition_vehicle_depot" },
 				{ 2, 100, 80, 0, 2,		"Unit",		"inquisition_squad_chimera_transport" },
-				{ 2, 120, 60, 700, 1,	"Research",	"inquisition_targeters" },
-				{ 2, 150, 60, 800, 1,	"Research",	"inquisition_medikits" },
-				{ 2, 200, 60, 600, 1,		"Unit",		"inquisition_squad_servitor_ranged" },				
-				{ 2, 70, 40, 700, 1,	"Research",	"inquisition_psy_power_1" },
+				{ 2, 100, 30, 0, 1,	"Research",	"inquisition_bodyguard_upgrade_1" },
+				{ 2, 80, 35, 0, 1,	"Addon",	"inquisition_vheicle_depot_addon" },
+				{ 2, 120, 60, 1100, 1,	"Research",	"inquisition_targeters" },
+				{ 2, 150, 60, 1200, 1,	"Research",	"inquisition_medikits" },
+				{ 2, 200, 60, 600, 1,		"Unit",		"inquisition_squad_servitor_ranged" },		
 				{ 2, 175, 80, 750, 1,	"Building",	"inquisition_astra_telepathica" },
 				{ 2, 200, 60, 800, 2,		"Unit",		"inquisition_squad_servitor_ranged" },
-				{ 2, 100, 125, 800, 2,		"Unit",		"inqusition_squad_gk_tempest" },
-				{ 2, 175, 50, 1000, 1,	"Building",	"inquisition_librarium" },
+				{ 2, 100, 125, 800, 2,		"Unit",		"inquisition_squad_gk_tempest" },
+				{ 2, 175, 50, 1000, 1,	"Building",	"inquisition_librarium" },		
+				{ 2, 70, 40, 700, 1,	"Research",	"inquisition_psy_power_1" },
 				{ 2, 340, 340, 1500, 1,	"Research",	"inquisition_temporal_power" },
 				{ 2, 260, 150, 1500, 25,"TurretAddon",	"inquisition_imperial_icon_addon_2" },
 				{ 2, 125, 0, 800, 6,	"Building",	"inquisition_warp_generator" },
@@ -76,7 +78,7 @@ BuildBaseStrategyInfo =
 				{ 3, 100, 50, 650, 1,	"Research",	"inquisition_bodyguard_upgrade_2" },
 				{ 3, 270, 90, 800, 1,	"Unit",		"inquisition_squad_grey_knights_brother_captain" },
 				{ 3, 180, 75, 700, 1,	"Research",	"inqusition_special_squads" },
-				{ 1, 170, 0, 0, 4,		"Unit",		"inquisition_squad_shock_troops_extra" },
+				{ 3, 170, 0, 0, 4,		"Unit",		"inquisition_squad_shock_troops_extra" },
 				{ 3, 160, 70, 800, 1,	"Research",	"inquisition_targeters_improved" },			
 				{ 3, 100, 55, 1000, 1,	"Research",	"inquisition_psy_power_2" },
 				{ 3, 225, 100, 1500, 1,	"Building",	"inquisition_landing_pad" },
@@ -159,7 +161,6 @@ BuildOrderStrategyInfo =
 		{
 			{ "flag_capture" }, { "flag_capture" },
 			{ "flag_capture" }, { "flag_capture" },
-			{ "squad", "inquisition_squad_archivist" },
 			{ "post_builder" }
 		},
 		
@@ -168,14 +169,12 @@ BuildOrderStrategyInfo =
 			{ "flag_capture" }, { "flag_capture" },
 			{ "flag_capture" },
 			{ "post_builder" },
-			{ "squad", "inquisition_squad_archivist" }
 		},
 		
 		LargeMap =
 		{
 			{ "flag_capture" }, { "flag_capture" },
 			{ "flag_capture" }, { "flag_capture" },
-			{ "squad", "inquisition_squad_archivist" },
 			{ "post_builder" }
 		}
 	}
