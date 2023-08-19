@@ -1,6 +1,6 @@
 GameData = Inherit([[]])
 GameData["ability_ext"] = Reference([[ebpextensions\ability_ext.lua]])
-GameData["ability_ext"]["abilities"]["ability_01"] = [[abilities\witch_hunters_eversor_berserk.lua]]
+GameData["ability_ext"]["abilities"]["ability_01"] = [[abilities\inquisition_eversor_combat_drugs.lua]]
 GameData["aftermath_ext"] = Reference([[ebpextensions\aftermath_ext.lua]])
 GameData["aftermath_ext"]["chance"] = 0.6999999881
 GameData["aftermath_ext"]["duration"] = 2.349999905
@@ -487,7 +487,6 @@ GameData["event_manager_ext"]["event_34"]["event_entry_01"]["event_name"] = [[wi
 GameData["event_manager_ext"]["event_34"]["modifier_name"] = [[ability_tau_shield_event]]
 GameData["event_manager_ext"]["event_35"]["event_entry_01"]["event_name"] = [[witch_hunters\hexagrams]]
 GameData["event_manager_ext"]["event_35"]["modifier_name"] = [[ability_chaos_purge_the_weak_event]]
-GameData["event_manager_ext"]["event_36"] = nil
 GameData["health_ext"] = Reference([[ebpextensions\health_ext.lua]])
 GameData["health_ext"]["armour"] = 100
 GameData["health_ext"]["armour_minimum"] = 2.5

@@ -1052,6 +1052,8 @@ bindings =
 	inquisition_warp_generator			= "P",
 	inquisition_warp_reactor			= "T",
 	inquisition_watch				= "W",
+	inquisition_greyknights_Machinecult		= "M",
+
 
 	--Addons
 	inquisition_extremis_diabolus			= "U",
@@ -1068,8 +1070,10 @@ bindings =
 	inquisition_advanced_weapons_2			= "W",
 	inquisition_special_squads			= "W",
 	inquisition_targeters				= "T",
-	inquisition_bodyguard_research_1		= "D",
-	inquisition_bodyguard_research_2		= "D",
+	inquisition_bodyguard_research_1		= "V",
+	inquisition_bodyguard_research_2		= "E",
+	inquisition_Brotherhood_champ_wargear		= "W",
+	inquisition_Inquisitor's_Retinue		= "R",
 	inquisition_requisition_1			= "R",
 	inquisition_requisition_2			= "R",
 	inquisition_power_increase_1			= "P",
@@ -1081,6 +1085,7 @@ bindings =
 	inquisition_psychic_power_3			= "P",
 	inquisition_squad_cap_research			= "I",
 	inquisition_support_cap_research		= "V",
+
 
 	--Abilities
 	inquisition_crack_grenades			= "X",

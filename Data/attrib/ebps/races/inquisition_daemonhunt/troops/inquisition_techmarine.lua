@@ -1,7 +1,5 @@
 GameData = Inherit([[]])
 GameData["ability_ext"] = Reference([[ebpextensions\ability_ext.lua]])
-GameData["ability_ext"]["abilities"]["ability_01"] = [[abilities\inquisition_frag_grenades_techmarine.lua]]
-GameData["ability_ext"]["abilities"]["ability_02"] = [[abilities\inquisition_melta_bombs_techmarine.lua]]
 GameData["building_engineer_ext"] = Reference([[ebpextensions\building_engineer_ext.lua]])
 GameData["combat_ext"] = Reference([[ebpextensions\combat_ext.lua]])
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["attack_motion_variable_name"] = [[Weapon_Range_Tracking_Main]]
@@ -696,7 +694,7 @@ GameData["ui_ext"]["minimap_enable"] = true
 GameData["ui_ext"]["minimap_teamcolor"] = true 
 GameData["ui_ext"]["speech_directory"] = [[Speech/Races/Inquisition_Daemonhunt/Techmarine]]
 GameData["ui_ext"]["ui_hotkey_name"] = [[marine_scout]]
-GameData["ui_ext"]["ui_index_hint"] = 8
+GameData["ui_ext"]["ui_index_hint"] = 5
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_01"] = [[$16021511]] -- - Heavy Infantry. Builder and Primary Repairer Unit.
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_02"] = [[$16021512]] -- - Highly flexible squad with many customisation options.
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_03"] = [[$16021513]] -- - Can be equipped with Frag Grenades and Melta Bombs.

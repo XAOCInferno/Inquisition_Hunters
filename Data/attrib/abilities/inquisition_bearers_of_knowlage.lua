@@ -1,6 +1,6 @@
 GameData = Inherit([[]])
 GameData["ability_cursor_event"] = [[]]
-GameData["ability_motion_name"] = [[frag_grenades]]
+GameData["ability_motion_name"] = [[capture_strategic_point]]
 GameData["ability_ordered_event_mp"] = [[]]
 GameData["ability_ordered_event_mp_building"] = false
 GameData["ability_ordered_event_name"] = [[]]

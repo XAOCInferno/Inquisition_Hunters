@@ -1,7 +1,4 @@
 GameData = Inherit([[]])
-GameData["ability_ext"] = Reference([[ebpextensions\ability_ext.lua]])
-GameData["ability_ext"]["abilities"]["ability_01"] = [[abilities\inquisition_hq_area.lua]]
-GameData["ability_ext"]["abilities"]["ability_02"] = [[abilities\inquisition_bigger_inq_retinue.lua]]
 GameData["addon_ext"] = Reference([[ebpextensions\addon_ext.lua]])
 GameData["addon_ext"]["addons"]["addon_01"] = [[addons\inquisition_tower_addon.lua]]
 GameData["cost_ext"] = Reference([[ebpextensions\cost_ext.lua]])
