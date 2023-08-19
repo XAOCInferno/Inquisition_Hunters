@@ -156,10 +156,6 @@ function BuildBaseStrategy:__init( baseinfo ) super( baseinfo )
 			self.m_iTechBreak = 4
 		end		
 	end
-	
-	-- Workaround squad cap
-	self.m_iSquadCap = 0
-	self.m_iLastSquadCapCalculation = 0
 end
 
 -- Arkhan 10.2005: Chooses a random build program for a race at the start
@@ -377,17 +373,8 @@ function BuildBaseStrategy:EvaluateSquadCap()
 end
 
 -- Arkhan 10.2005: Calculates, if more squad cap is needed
--- Larkin, 05.2009: Reverse oder, first cap, than req check
 function BuildBaseStrategy:CheckSquadCap(iMinRequisition, iMinPower)
 
-	-- Check squad cap
-	local iSquadCapTotalMax		= build_manager:GetSquadCapTotalMax()
-	local iSquadCapLeft			= self:GetSquadCapLeft()
-	local iSquadCapCurrentMax	= self:GetSquadCap() + iSquadCapLeft
-	if (iSquadCapLeft > self.info.squad_cap_threshold or iSquadCapCurrentMax >= iSquadCapTotalMax) then
-		return false
-	end
-	
 	-- Check requisition
 	local iRequisition = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Requisition ) / self.m_iTechBreak
 	local iPower = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Power ) / self.m_iTechBreak
@@ -395,7 +382,16 @@ function BuildBaseStrategy:CheckSquadCap(iMinRequisition, iMinPower)
 		self:SaveRessources(true)
 		return false
 	end
-	return true
+	
+	-- Check squad cap
+	local iSquadCapTotalMax		= build_manager:GetSquadCapTotalMax()
+	local iSquadCapLeft			= build_manager:GetSquadCapLeft()
+	local iSquadCapCurrentMax	= self:GetCurrentSquadCap() + iSquadCapLeft
+	if (iSquadCapLeft <= self.info.squad_cap_threshold and iSquadCapCurrentMax < iSquadCapTotalMax) then
+		return true
+	end
+	
+	return false
 end
 
 -- Arkhan 10.2005: Calculates, if more support cap is needed
@@ -405,14 +401,6 @@ function BuildBaseStrategy:CheckSupportCap(iMinRequisition, iMinPower)
 	if (self:GetBuildingCountByName(self:GetBuildingName("VehicleBuilding", true)) <= 0) then
 		return false
 	end
-	
-	-- Check squad cap
-	local iSupportCapTotalMax	= build_manager:GetSupportCapTotalMax()
-	local iSupportCapCurrentMax	= build_manager:GetSupportCapCurrentMax()
-	local iSupportCapLeft		= build_manager:GetSupportCapLeft()
-	if (iSupportCapLeft > self.info.support_cap_threshold or iSupportCapCurrentMax >= iSupportCapTotalMax) then
-		return false
-	end
 
 	-- Check requisition
 	local iRequisition = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Requisition ) / self.m_iTechBreak
@@ -420,8 +408,17 @@ function BuildBaseStrategy:CheckSupportCap(iMinRequisition, iMinPower)
 	if (iRequisition < iMinRequisition or iPower < iMinPower) then
 		self:SaveRessources(true)
 		return false
-	end	
-	return true
+	end
+	
+	-- Check squad cap
+	local iSupportCapTotalMax	= build_manager:GetSupportCapTotalMax()
+	local iSupportCapCurrentMax	= build_manager:GetSupportCapCurrentMax()
+	local iSupportCapLeft		= build_manager:GetSupportCapLeft()
+	if (iSupportCapLeft <= self.info.support_cap_threshold and iSupportCapCurrentMax < iSupportCapTotalMax) then
+		return true
+	end
+	
+	return false
 end
 
 function BuildBaseStrategy:DevalueUnitByTier( unit_stats )
@@ -809,7 +806,7 @@ function BuildBaseStrategy:CalculateSquadDemand( unit_id, unit_stats )
 	local iPower = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Power )
 
 	-- Arkhan 11.2005: Check squad and support cap
-	local iSquadCap				= self:GetSquadCap()
+	local iSquadCap				= self:GetCurrentSquadCap()
 	local iSquadCapTotalMax		= build_manager:GetSquadCapTotalMax()
 	local fSquadPercentage		= iSquadCap / iSquadCapTotalMax
 	local iSupportCap			= build_manager:GetSupportCapCurrentMax() - build_manager:GetSupportCapLeft()
@@ -923,8 +920,8 @@ function BuildBaseStrategy:ComputeBuildProgram()
 	local iPower = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Power ) / self.m_iTechBreak
 
 	-- Check squad and support cap
-	local iSquadCapLeft		= self:GetSquadCapLeft()
-	local iSquadCap			= self:GetSquadCap()
+	local iSquadCapLeft		= build_manager:GetSquadCapLeft()
+	local iSquadCap			= self:GetCurrentSquadCap()
 	local iSupportCapLeft	= build_manager:GetSupportCapLeft()
 	local iSupportCap		= build_manager:GetSupportCapCurrentMax() - iSupportCapLeft
 	
@@ -1601,13 +1598,8 @@ function BuildBaseStrategy:DynamicAddon(sAddonName, iAddonCount, iMinTier, iRequ
 		return
 	end
 	
-	-- Check if Relic is required
-	if (not self:HasRelic() and self:RelicRequired(sAddonName)) then
-		return
-	end
-	
 	-- Check squad and support cap
-	local iSquadCap = self:GetSquadCap()
+	local iSquadCap = self:GetCurrentSquadCap()
 	local iSupportCap = build_manager:GetSupportCapCurrentMax() - build_manager:GetSupportCapLeft()
 	if (iSquadCap < iMinSquadCap or iSupportCap < iMinSupportCap) then
 		return
@@ -1680,13 +1672,8 @@ function BuildBaseStrategy:DynamicResearch(sResearchName, iMinTier, iRequisition
 		return
 	end
 	
-	-- Check if Relic is required
-	if (not self:HasRelic() and self:RelicRequired(sResearchName)) then
-		return
-	end
-	
 	-- Check squad and support cap
-	local iSquadCap = self:GetSquadCap()
+	local iSquadCap = self:GetCurrentSquadCap()
 	local iSupportCap = build_manager:GetSupportCapCurrentMax() - build_manager:GetSupportCapLeft()
 	if (iSquadCap < iMinSquadCap or iSupportCap < iMinSupportCap) then
 		return
@@ -1742,13 +1729,8 @@ function BuildBaseStrategy:DynamicBuild(sBuildingName, iBuildingCount, iMinTier,
 		return
 	end
 	
-	-- Check if Relic is required
-	if (not self:HasRelic() and self:RelicRequired(sBuildingName)) then
-		return
-	end
-	
 	-- Check squad and support cap
-	local iSquadCap = self:GetSquadCap()
+	local iSquadCap = self:GetCurrentSquadCap()
 	local iSupportCap = build_manager:GetSupportCapCurrentMax() - build_manager:GetSupportCapLeft()
 	if (iSquadCap < iMinSquadCap or iSupportCap < iMinSupportCap) then
 		return
@@ -1763,65 +1745,34 @@ function BuildBaseStrategy:DynamicBuild(sBuildingName, iBuildingCount, iMinTier,
 	end
 end
 
--- Arkhan 10.2005: Returns the current squad cap max
-function BuildBaseStrategy:GetSquadCapCurrentMax()
-
-	-- Check current squad cap max 
-	local iCurrentSquadCapMax = build_manager:GetSquadCapCurrentMax()
-	if (iCurrentSquadCapMax < 0 or iCurrentSquadCapMax > 200) then
-		return 20
-	end
-	return iCurrentSquadCapMax
-end
-
--- Arkhan 10.2005: Returns the left squad cap
-function BuildBaseStrategy:GetSquadCapLeft()
-
-	-- This should normally work
-	local iSquadCapLeft	= build_manager:GetSquadCapLeft()
-	if (iSquadCapLeft < 0 or iSquadCapLeft > 200) then
-		return (self:GetSquadCapCurrentMax() - self:CalculateSquadCap())
-	end
-	return iSquadCapLeft
-end
-
--- Arkhan 10.2005: Returns the squad cap
-function BuildBaseStrategy:GetSquadCap()
-
-	-- This should normally work
-	local iCurrentSquadCapMax	= self:GetSquadCapCurrentMax()
-	local iSquadCapLeft			= self:GetSquadCapLeft()
-	local iSquadCap 			= iCurrentSquadCapMax - iSquadCapLeft
-	if (iSquadCap >= 0 and iSquadCap <= 200) then
-		return self:CalculateSquadCap()
-	end
-	return iSquadCap
-end
-
 -- Arkhan 10.2005: Returns the current squad cap
-function BuildBaseStrategy:CalculateSquadCap()
+function BuildBaseStrategy:GetCurrentSquadCap()
 
-	-- Check last squad cap calculation time
-	if (g_iGMT <= self.m_iLastSquadCapCalculation) then
-		return self.m_iSquadCap
+	-- This should normally work
+	local iSquadCapLeft			= build_manager:GetSquadCapLeft()
+	local iCurrentSquadCapMax	= build_manager:GetSquadCapCurrentMax()
+	local iCurrentSquadCap 		= iCurrentSquadCapMax - iSquadCapLeft
+	if (iCurrentSquadCap <= 100) then
+		return iCurrentSquadCap
 	end
-	self.m_iLastSquadCapCalculation = g_iGMT
-
-	-- Calculate squad cap
-	self.m_iSquadCap = 0
-	for oUnit in cpu_manager.player_stats:GetSquads() do
-		
-		-- Check if unit is valid				
-		if (oUnit:IsValid()) then
+	
+	-- Try alternative way
+	aitrace("Function GetSquadCapCurrentMax() screwed up! Try alternative way...")
+	iCurrentSquadCap = 0
+	for oSquad in cpu_manager.player_stats:GetSquads() do
+							
+		if (oSquad:IsValid()) then
 			
+			-- Get squad stats
+			local oUnitStats = oSquad:GetStats()
+
 			-- Get squad cap
-			local oUnitStats = oUnit:GetStats()
 			if (oUnitStats ~= nil) then
-				self.m_iSquadCap = self.m_iSquadCap + oUnitStats:GetSquadCapReq()
+				iCurrentSquadCap = iCurrentSquadCap + oUnitStats:GetSquadCapReq()
 			end
 		end
 	end
-	return self.m_iSquadCap
+	return iCurrentSquadCap
 end
 
 -- Arkhan 11.2005: Abstract method that returns the squad cap and support cap of the given squad

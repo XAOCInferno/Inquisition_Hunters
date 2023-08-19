@@ -17,101 +17,68 @@ Filters =
 		return cpu_manager.cpu_player:FindFirstHurtSquad( position, tolerance )
 	end,
 
-	CloseLowHealth = function(vPosition, iTolerance, iCount)
+	CloseLowHealth = function( position, tolerance, count )
 
-		-- Make sure that count is valid
-		if (iCount == nil) then
-			iCount = 1
-		end
-
-		-- Squad check
-		local oSquad = cpu_manager.cpu_player:FindFirstHurtSquad(vPosition, iTolerance)
-		if (oSquad ~= nil and oSquad:GetHealthPercentage() <= 0.6 and oSquad:GetNumTroopers() >= iCount) then
+		local oSquad = cpu_manager.cpu_player:FindFirstHurtSquad(position, tolerance)
+		if (oSquad ~= nil and oSquad:GetHealthPercentage() <= 0.6) then
 			return oSquad
 		end
 		return nil
 	end,
 
-	CloseInfiltrator = function(vPosition, iTolerance, iCount)
-	
-		-- Make sure that count is valid
-		if (iCount == nil) then
-			iCount = 1
-		end
+	CloseInfiltrator = function( position, tolerance, count )
 	
 		-- Quick check
-		if (not cpu_manager:CloseEnemyInfiltrators(vPosition, iTolerance)) then
+		if (not cpu_manager:CloseEnemyInfiltrators(position, tolerance)) then
 			return nil
 		end
 	
-		-- Squad check
-		local oFunctor = function(oSquad, iCount)
+		functor = function(oSquad, iCount)
 			return (oSquad:IsInfiltrating() and oSquad:GetNumTroopers() >= iCount)
 		end
-		return cpu_manager:GetClosestSquad(vPosition, iTolerance, oFunctor, iCount)
+		return cpu_manager:GetClosestSquad( position, tolerance, functor )
 	end,
 
-	CloseInCombat = function(vPosition, iTolerance, iCount)
+	CloseInCombat = function( position, tolerance, count )
 	
-		-- Squad check
-		return cpu_manager.cpu_player:FindFirstSquadInCombat(vPosition, iTolerance)
+		return cpu_manager.cpu_player:FindFirstSquadInCombat( position, tolerance )
 	end,
 	
-	CloseEnemy = function(vPosition, iTolerance, iCount)
-	
-		-- Make sure that count is valid
-		if (iCount == nil) then
-			iCount = 1
-		end
+	CloseEnemy = function( position, tolerance, count )
 	
 		-- Quick check
-		if (not cpu_manager:CloseEnemyUnits(vPosition, iTolerance)) then
+		if (not cpu_manager:CloseEnemyUnits(position, tolerance)) then
 			return nil
 		end
-		return cpu_manager.cpu_player:FindFirstEnemy(vPosition, iTolerance, iCount)
+		return cpu_manager.cpu_player:FindFirstEnemy( position, tolerance, count )
 	end,
 	
-	CloseVehicleEnemy = function(vPosition, iTolerance, iCount)
-
-		-- Make sure that count is valid
-		if (iCount == nil) then
-			iCount = 1
-		end
+	CloseVehicleEnemy = function( position, tolerance, count )
 
 		-- Quick check
-		if (not cpu_manager:CloseEnemyUnits(vPosition, iTolerance)) then
+		if (not cpu_manager:CloseEnemyUnits(position, tolerance)) then
 			return nil
 		end
-		return cpu_manager.cpu_player:FindFirstVehicleEnemy(vPosition, iTolerance, iCount)
+		return cpu_manager.cpu_player:FindFirstVehicleEnemy( position, tolerance, count )
 	end,
 	
-	CloseInfantryEnemy = function(vPosition, iTolerance, iCount)
-	
-		-- Make sure that count is valid
-		if (iCount == nil) then
-			iCount = 1
-		end
+	CloseInfantryEnemy = function( position, tolerance, count )
 	
 		-- Quick check
-		if (not cpu_manager:CloseEnemyUnits(vPosition, iTolerance)) then
+		if (not cpu_manager:CloseEnemyUnits(position, tolerance)) then
 			return nil
 		end
-		return cpu_manager.cpu_player:FindFirstInfantryEnemy(vPosition, iTolerance, iCount)
+		return cpu_manager.cpu_player:FindFirstInfantryEnemy( position, tolerance, count )
 	end,
 	
-	CloseSquadEnemy = function(vPosition, iTolerance, iCount)
-	
-		-- Make sure that count is valid
-		if (iCount == nil) then
-			iCount = 1
-		end
+	CloseSquadEnemy = function( position, tolerance, count )
 	
 		-- Quick check
-		if (not cpu_manager:CloseEnemyUnits(vPosition, iTolerance)) then
+		if (not cpu_manager:CloseEnemyUnits(position, tolerance)) then
 			return nil
 		end
 	
-		local oSquad = cpu_manager.cpu_player:FindFirstInfantryEnemy(vPosition, iTolerance, iCount)
+		local oSquad = cpu_manager.cpu_player:FindFirstInfantryEnemy( position, tolerance, count )
 		if (oSquad ~= nil and oSquad:GetNumTroopers() >= 4 and not oSquad:IsEngineer()) then
 			return oSquad
 		else
@@ -119,130 +86,99 @@ Filters =
 		end
 	end,
 	
-	CloseCommanderEnemy = function(vPosition, iTolerance, iCount)
-		
-		-- Make sure that count is valid
-		if (iCount == nil) then
-			iCount = 1
-		end
+	CloseCommanderEnemy = function( position, tolerance, count )
 		
 		-- Quick check
-		if (not cpu_manager:CloseEnemyUnits(vPosition, iTolerance)) then
+		if (not cpu_manager:CloseEnemyUnits(position, tolerance)) then
 			return nil
 		end
-		return cpu_manager.cpu_player:FindFirstCommanderEnemy(vPosition, iTolerance, iCount)
+		return cpu_manager.cpu_player:FindFirstCommanderEnemy( position, tolerance, count )
 	end,
 
 
-	CloseBroken = function(vPosition, iTolerance, iCount)
+	CloseBroken = function( position, tolerance, count )
 
-		-- Make sure that count is valid
-		if (iCount == nil) then
-			iCount = 1
+		functor = function(oSquad, iCount)
+			return (oSquad:IsBroken() and iCount ~= nil and oSquad:GetNumTroopers() >= iCount)
 		end
-
-		local oFunctor = function(oSquad, iCount)
-			return (oSquad:IsBroken() and oSquad:GetNumTroopers() >= iCount)
-		end
-		return cpu_manager:GetClosestSquad(vPosition, iTolerance, oFunctor, iCount)
+		return cpu_manager:GetClosestSquad(position, tolerance, functor)
 	end,
 
-	CloseInfantryEnemyCC = function(vPosition, iTolerance, iCount)
+	CloseInfantryEnemyCC = function( position, tolerance, count )
 	
-		-- Make sure that count is valid
-		if (iCount == nil) then
-			iCount = 1
-		end
-		
 		-- Quick check
-		if (not cpu_manager:CloseEnemyUnits(vPosition, iTolerance)) then
+		if (not cpu_manager:CloseEnemyUnits(position, tolerance)) then
 			return nil
 		end
 		
-		local oFunctor = function(oSquad, iCount)
-			return (not oSquad:IsRanged() and oSquad:GetNumTroopers() >= iCount)
+		functor = function(oSquad, iCount)
+			return (not oSquad:IsRanged() and iCount ~= nil and oSquad:GetNumTroopers() >= iCount)
 		end
-		return cpu_manager:GetClosestSquad(vPosition, iTolerance, oFunctor, iCount)
+		return cpu_manager:GetClosestSquad( position, tolerance, functor )
 	end,
 
-	CloseVehicleHighEnemy = function(vPosition, iTolerance, iCount)
-
-		-- Make sure that count is valid
-		if (iCount == nil) then
-			iCount = 1
-		end
+	CloseVehicleHighEnemy = function( position, tolerance, count)
 
 		-- Quick check
-		if (not cpu_manager:CloseEnemyUnits(vPosition, iTolerance)) then
+		if (not cpu_manager:CloseEnemyUnits(position, tolerance)) then
 			return nil
 		end
 
-		local oFunctor = function(oSquad, iCount)
+		functor = function(oSquad, iCount)
 			local oStats = oSquad:GetStats()
 			if (oStats == nil) then
 				return false
 			end
-			return ((oStats:GetClass() == UnitStatsAI.UC_VehicleHigh) and oSquad:GetNumTroopers() >= iCount)
+			return ((oStats:GetClass() == UnitStatsAI.UC_VehicleHigh) and iCount ~= nil and oSquad:GetNumTroopers() >= iCount)
 		end
-		return cpu_manager:GetClosestSquad(vPosition, iTolerance, oFunctor, iCount)
+		return cpu_manager:GetClosestSquad( position, tolerance, functor )
 	end,
 	
-	CloseMonsterHighEnemy = function(vPosition, iTolerance, iCount)
-
-		-- Make sure that count is valid
-		if (iCount == nil) then
-			iCount = 1
-		end
+	CloseMonsterHighEnemy = function( position, tolerance, count)
 
 		-- Quick check
-		if (not cpu_manager:CloseEnemyUnits(vPosition, iTolerance)) then
+		if (not cpu_manager:CloseEnemyUnits(position, tolerance)) then
 			return nil
 		end
 
-		local oFunctor = function(oSquad, iCount)
+		functor = function(oSquad, iCount)
 			local oStats = oSquad:GetStats()
 			if (oStats == nil) then
 				return false
 			end
-			return ((oStats:GetClass() == UnitStatsAI.UC_MonsterHigh) and oSquad:GetNumTroopers() >= iCount)
+			return ((oStats:GetClass() == UnitStatsAI.UC_MonsterHigh) and iCount ~= nil and oSquad:GetNumTroopers() >= iCount)
 		end
-		return cpu_manager:GetClosestSquad(vPosition, iTolerance, oFunctor, iCount)
+		return cpu_manager:GetClosestSquad( position, tolerance, functor )
 	end,
 
-	CloseMonsterEnemy = function(vPosition, iTolerance, iCount)
-
-		-- Make sure that count is valid
-		if (iCount == nil) then
-			iCount = 1
-		end
+	CloseMonsterEnemy = function( position, tolerance, count)
 
 		-- Quick check
-		if (not cpu_manager:CloseEnemyUnits(vPosition, iTolerance)) then
+		if (not cpu_manager:CloseEnemyUnits(position, tolerance)) then
 			return nil
 		end
 
-		local oFunctor = function(oSquad, iCount)
+		functor = function(oSquad, iCount)
 			local oStats = oSquad:GetStats()
 			if (oStats == nil) then
 				return false
 			end
-			return ((oStats:GetClass() == UnitStatsAI.UC_MonsterHigh or oStats:GetClass() == UnitStatsAI.UC_MonsterMed) and oSquad:GetNumTroopers() >= iCount)
+			return ((oStats:GetClass() == UnitStatsAI.UC_MonsterHigh or oStats:GetClass() == UnitStatsAI.UC_MonsterMed) and	iCount ~= nil and oSquad:GetNumTroopers() >= iCount)
 		end
-		return cpu_manager:GetClosestSquad(vPosition, iTolerance, oFunctor, iCount)
+		return cpu_manager:GetClosestSquad( position, tolerance, functor )
 	end,
 	
-	CloseInfiltratedEnemy = function(vPosition, iTolerance, iCount)
-	
-		-- Make sure that count is valid
-		if (iCount == nil) then
-			iCount = 1
-		end
+	CloseInfiltratedEnemy = function( position, range, count )
 	
 		-- Quick check
-		if (not cpu_manager:CloseEnemyInfiltrators(vPosition, iTolerance)) then
+		if (not cpu_manager:CloseEnemyInfiltrators(position, range)) then
 			return nil
 		end
-		return cpu_manager.cpu_player:FindFirstInfiltratedEnemy(vPosition, iTolerance, iCount)
+	
+		if count == nil then
+			count = 1
+		end
+		return cpu_manager.cpu_player:FindFirstInfiltratedEnemy( position, range, count )
 	end,
 
 	CloseStrategicPoint = function( position, range, args )

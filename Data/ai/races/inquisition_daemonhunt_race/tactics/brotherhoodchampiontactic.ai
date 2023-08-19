@@ -21,30 +21,6 @@ function BrotherhoodChampionTactic:IsDefender()
 end
 
 
-function BrotherhoodChampionTactic:InitAbilities()
-
-	if (BrotherhoodChampionGK.trance == nil) then
-	    BrotherhoodChampionGK.trance = cpu_manager.stats:GetAbilityID( "inquisition_trance" )	
-	end
-end
-
-
-function BrotherhoodChampionTactic:DoAbilities()
-	if self.squad_ai:CanDoAbility(BrotherhoodChampionGK.trance) and self.squad_ai:WasRecentlyHurt()
-	and not self.squad_ai:IsAttached() then
-		if (self.squad_ai:IsInCombat() and self.squad_ai:GetHealthPercentage() < 0.35) then
-			self.squad_ai:DoSpecialAbilitySquad(BrotherhoodChampionGK.trance, self.squad_ai:GetSquad())
-		else
-			local iPos = self.squad_ai:GetPosition()
-			if cpu_manager.terrain_analyzer:HasThreat(iPos, 50) and
-			not cpu_manager.terrain_analyzer:HasThreat(iPos, 20) then
-				self.squad_ai:DoSpecialAbilitySquad(BrotherhoodChampionGK.trance, self.squad_ai:GetSquad())
-			end
-		end
-	end
-end
-
-
 function BrotherhoodChampionTactic:Update()
 
 	if (self:IsComplete()) then

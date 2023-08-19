@@ -3,6 +3,7 @@
 -- Edited by Thudmeizer @ 19.11.2018
 
 UnitStrengths.inquisition_squad_archivist = 0
+UnitStrengths.inquisition_squad_thunderhawk = 0
 UnitStrengths.inquisition_squad_bodyguard = 80
 UnitStrengths.inquisition_squad_brotherhood_champion = 85
 UnitStrengths.inquisition_squad_shock_troops = 80
@@ -23,6 +24,7 @@ UnitStrengths.inquisition_squad_grey_knight_brother_captain = 310
 UnitStrengths.inquisition_squad_gk_terminator_librarian = 250
 UnitStrengths.inquisition_squad_gk_librarian = 220
 UnitStrengths.inquisition_squad_gk_chaplain = 220
+UnitStrengths.inquisition_squad_eversor = 280
 UnitStrengths.inquisition_squad_inquisitor_lord = 310
 UnitStrengths.inquisition_squad_inquisitor_lord_cs = 360
 UnitStrengths.inquisition_squad_rhino = 145
@@ -36,15 +38,12 @@ UnitStrengths.inquisition_squad_land_raider = 750
 UnitStrengths.inquisition_squad_land_raider_crusader = 750
 UnitStrengths.inquisition_squad_stormraven_fury = 750
 
-LeaderStrengths.inquisition_squad_exorcist_sister = 180
+--[[LeaderStrengths.inquisition_squad_exorcist_sister = 180
 LeaderStrengths.inquisition_squad_inquisitor_lord_cs = 0
 
---Attachments.inquisition_squad_bodyguard = { "inquisition_squad_gk_chaplain", "inquisition_squad_gk_apothecary", "inquisition_squad_gk_librarian", "inquisition_squad_grey_knight_brother_captain" } 
 Attachments.inquisition_squad_scholars = { "inquisition_squad_gk_librarian", "inquisition_squad_gk_apothecary", "inquisition_squad_gk_chaplain", "inquisition_squad_grey_knight_brother_captain" } 
---Attachments.inquisition_squad_shock_troops = { "inquisition_squad_gk_apothecary", "inquisition_squad_gk_chaplain", "inquisition_squad_grey_knight_brother_captain", "inquisition_squad_gk_librarian" }
 Attachments.inquisition_squad_grey_knights = { "inquisition_squad_gk_chaplain", "inquisition_squad_gk_apothecary", "inquisition_squad_gk_librarian", "inquisition_squad_grey_knight_brother_captain" }
 Attachments.inquisition_squad_grey_knights_terminator = { "inquisition_squad_grey_knight_brother_captain", "inquisition_squad_gk_chaplain", "inquisition_squad_gk_librarian", "inquisition_squad_gk_apothecary" }
---Attachments.inquisition_squad_exorcist_sister = { "inquisition_squad_brotherhood_champion", "inquisition_squad_grey_knights_apothecary", "inquisition_squad_grey_knight_brother_captain", "inquisition_squad_grey_knights_librarian" }
 Attachments.inquisition_squad_grey_knights_interceptors = { "inquisition_squad_brotherhood_champion", "inquisition_squad_grey_knights_apothecary" }
 Attachments.inquisition_squad_grey_knights_purgation = { "inquisition_squad_brotherhood_champion", "inquisition_squad_grey_knights_apothecary" }
 Attachments.inquisition_squad_grey_knights_purifier = { "inquisition_squad_grey_knights_apothecary", "inquisition_squad_brotherhood_champion" }
@@ -59,11 +58,8 @@ OccupiedSlotsIDH.inquisition_squad_dreadnought_assault = 2
 OccupiedSlotsIDH.inquisition_squad_dreadnought_support = 2
 OccupiedSlotsIDH.inquisition_squad_dreadnought_venerable = 2
 OccupiedSlotsIDH.inquisition_squad_dreadnought_venerable_hf = 2
---OccupiedSlotsIDH.inquisition_squad_grey_knights_interceptors = 2
---OccupiedSlotsIDH.inquisition_squad_grey_knights_purgation = 2
---OccupiedSlotsIDH.inquisition_squad_grey_knights_purifier = 2
 OccupiedSlotsIDH.inquisition_squad_grey_knights_paladin = 2
-OccupiedSlotsIDH.inquisition_squad_grey_knights_terminator = 2
+OccupiedSlotsIDH.inquisition_squad_grey_knights_terminator = 2]]
 
 
 DaemonhuntUnitStats =
@@ -74,6 +70,21 @@ DaemonhuntUnitStats =
 			sbp_name = "inquisition_squad_archivist",
 			ebp_name = "inquisition_archivist",
 			class = UnitStatsAI.UC_VehicleMed,
+			rating = 0,
+			potential =
+			{
+				{
+					name = "none",
+					effectiveness = GenerateUnitEffectiveness(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_None,
+				},
+			}
+		},
+		{
+			name = "Inquisition Thunderhawk",
+			sbp_name = "inquisition_squad_thunderhawk",
+			ebp_name = "inquisition_transport_thunderhawk",
+			class = UnitStatsAI.UC_VehicleLow,
 			rating = 0,
 			potential =
 			{
@@ -150,7 +161,7 @@ DaemonhuntUnitStats =
 			}
 		},
 		{
-			name = "Inquisition Shock Troops",
+			name = "Inquisition Shock Troops Extra",
 			sbp_name = "inquisition_squad_shock_troops_extra",
 			ebp_name = "inquisition_shock_troops",
 			class = UnitStatsAI.UC_LightInfantryMed,
@@ -508,8 +519,7 @@ DaemonhuntUnitStats =
 					range = UnitStatsAI.RT_Melee,
 				},
 			}
-		},
-		
+		},		
 		{
 			name = "Inquisition Grey Knights Terminator",
 			sbp_name = "inquisition_squad_grey_knights_terminator",
@@ -656,7 +666,27 @@ DaemonhuntUnitStats =
 			}
 		},
 		{
-			name = "Inquisition Grey Knight Hero",
+			name = "Inquisition Eversor Assassin",
+			sbp_name = "inquisition_squad_eversor",
+			ebp_name = "inquisition_eversor",
+			class = UnitStatsAI.UC_Commander,
+			rating = 8,
+			potential =
+			{
+				{
+					name = "inquisition_eversor_executioner_pistol",
+					effectiveness = GenerateUnitEffectiveness(math.random(6*10,7*10)/10,math.random(6*10,7*10)/10,math.random(6*10,7*10)/10,math.random(6*10,7*10)/10,math.random(6*10,7*10)/10,math.random(6*10,7*10)/10,math.random(6*10,7*10)/10,math.random(6*10,7*10)/10,6.1,2.3,3.1,3.7,1.9,0.0,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Ranged,
+				},
+				{
+					name = "inquisition_eversor_neuro_gauntlet",
+					effectiveness = GenerateUnitEffectiveness(10.0,10.0,3.7,10.0,10.0,6.5,4.6,2.8,10.0,10.0,10.0,2.8,1.3,0.9,0.0,0.0,0.0),
+					range = UnitStatsAI.RT_Melee,
+				},
+			}
+		},
+		{
+			name = "Inquisition Grey Knight Brother Captain",
 			sbp_name = "inquisition_squad_grey_knight_brother_captain",
 			ebp_name = "inquisition_grey_knight_brother_captain",
 			class = UnitStatsAI.UC_Commander,
@@ -711,7 +741,7 @@ DaemonhuntUnitStats =
 			}
 		},
 		{
-			name = "Inquisitor Lord",
+			name = "Inquisition Inquisitor Lord CS",
 			sbp_name = "inquisition_squad_inquisitor_lord_cs",
 			ebp_name = "inquisition_inquisitor_lord",
 			class = UnitStatsAI.UC_Commander,
@@ -761,7 +791,7 @@ DaemonhuntUnitStats =
 			}
 		},
 		{
-			name = "Inquisition Chimera Transport",
+			name = "Inquisition Assault Chimera",
 			sbp_name = "inquisition_squad_chimera_transport",
 			ebp_name = "inquisition_chimera_transport",
 			class = UnitStatsAI.UC_VehicleMed,
@@ -1084,5 +1114,5 @@ DaemonhuntUnitStats =
 					range = UnitStatsAI.RT_Ranged,
 				},
 			}
-		},
+		},    
 }
