@@ -1060,4 +1060,4 @@ GameData["ui_ext"]["ui_info"]["help_text_list"]["text_02"] = [[$16021393]] -- - 
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_03"] = [[$16021395]] -- - Aura of Faith increases health regenration of his squad.
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_04"] = [[$16021396]] -- - Effective versus infantry and deamons.
 GameData["ui_ext"]["ui_info"]["icon_name"] = [[inquisition_icons/exorcist_icon]]
-GameData["ui_ext"]["ui_info"]["screen_name_id"] = [[$16021390]] -- Exorcist
+GameData["ui_ext"]["ui_info"]["screen_name_id"] = [[$16021390]] -- Ministorum Emissary

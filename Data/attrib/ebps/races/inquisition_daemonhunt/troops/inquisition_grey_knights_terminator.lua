@@ -953,6 +953,5 @@ GameData["ui_ext"]["ui_info"]["help_text_list"]["text_04"] = [[$16021315]] -- - 
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_05"] = [[$16021316]] -- - Can upgrade their ranged of weapons with Incinerators or Psycannons.
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_06"] = [[$16021317]] -- - Can use their teleporters to access remote or unreachable locales on the map.
 GameData["ui_ext"]["ui_info"]["help_text_list"]["text_07"] = [[$16021318]] -- - Effective against most units, extremely effective at countering Vehicles in melee.
-GameData["ui_ext"]["ui_info"]["help_text_list"]["text_08"] = [[$16020179]] -- - NOTE: Recruitment cost is higher that reinforcement cost, for all Grey Knights squads!
 GameData["ui_ext"]["ui_info"]["icon_name"] = [[inquisition_icons/grey_knight_terminator_paladin_icon]]
 GameData["ui_ext"]["ui_info"]["screen_name_id"] = [[$16021311]] -- Grey Knight Terminator
