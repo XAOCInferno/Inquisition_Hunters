@@ -28,6 +28,12 @@ GameData["area_effect"]["area_effect_information"]["target_filter"]["entry_08"] 
 GameData["area_effect"]["area_effect_information"]["target_filter"]["entry_09"] = Reference([[type_armour\tp_monster_med.lua]])
 GameData["area_effect"]["area_effect_information"]["target_filter"]["entry_10"] = Reference([[type_armour\tp_monster_high.lua]])
 GameData["area_effect"]["area_effect_information"]["target_filter"]["entry_10"]["screen_name_id"] = [[$90107]] -- Vehicle
+GameData["area_effect"]["sweeping_information"]["sweep_duration"] = 0.125
+GameData["area_effect"]["sweeping_information"]["sweep_type"] = Reference([[type_areasweep\tp_areasweep_in_to_out.lua]])
+GameData["area_effect"]["throw_data"]["force_max"] = 46.5
+GameData["area_effect"]["throw_data"]["force_min"] = 41.75
+GameData["area_effect"]["throw_data"]["up_angle_max"] = 45
+GameData["area_effect"]["throw_data"]["up_angle_min"] = 25
 GameData["area_effect"]["throw_data"]["direction_angle_random"] = 10
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing"] = 100
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_01"]["armour_piercing_value"] = 60
