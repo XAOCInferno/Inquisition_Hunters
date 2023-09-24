@@ -247,6 +247,7 @@ GameData["research_ext"]["research_table"]["research_04"] = [[research\inquisiti
 GameData["research_ext"]["research_table"]["research_05"] = [[research\inquisition_librarian_tome_defensive.lua]]
 GameData["research_ext"]["research_table"]["research_06"] = [[research\inquisition_librarian_tome_offensive.lua]]
 GameData["research_ext"]["research_table"]["research_07"] = [[research\inquisition_apo_lib_termi_research.lua]]
+GameData["research_ext"]["research_table"]["research_08"] = [[research\inquisition_Tomes_of_titan_research.lua]]
 GameData["sight_ext"] = Reference([[ebpextensions\sight_ext.lua]])
 GameData["sight_ext"]["sight_radius"] = 15
 GameData["sim_entity_ext"] = Reference([[ebpextensions\sim_entity_ext.lua]])

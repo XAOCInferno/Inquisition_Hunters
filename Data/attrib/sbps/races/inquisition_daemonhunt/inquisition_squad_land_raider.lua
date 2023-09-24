@@ -384,7 +384,6 @@ GameData["squad_requirement_ext"]["requirements"]["required_1"]["research_name"]
 GameData["squad_requirement_ext"]["requirements"]["required_2"] = Reference([[requirements\required_cumulative_squad_cap.lua]])
 GameData["squad_requirement_ext"]["requirements"]["required_2"]["max_cumulative_squad_cap"] = 1
 GameData["squad_requirement_ext"]["requirements"]["required_2"]["squad_table"]["squad_01"] = [[sbps\races\inquisition_daemonhunt\inquisition_squad_land_raider_crusader.lua]]
-GameData["squad_requirement_ext"]["requirements"]["required_2"]["squad_table"]["squad_02"] = [[sbps\races\inquisition_daemonhunt\inquisition_squad_stormraven_fury.lua]]
 GameData["squad_requirement_ext"]["requirements"]["required_4"] = Reference([[requirements\required_ownership.lua]])
 GameData["squad_requirement_ext"]["requirements"]["required_4"]["own_name"] = [[relic_struct]]
 GameData["squad_requirement_ext"]["requirements"]["required_4"]["owned_count"] = 1

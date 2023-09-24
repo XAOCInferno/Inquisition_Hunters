@@ -1,8 +1,6 @@
 GameData = Inherit([[]])
 GameData["ability_ext"] = Reference([[ebpextensions\ability_ext.lua]])
-GameData["ability_ext"]["abilities"]["ability_01"] = [[abilities\inquisition_purge_daemonhost.lua]]
-GameData["ability_ext"]["abilities"]["ability_02"] = [[abilities\inquisition_healing.lua]]
-GameData["ability_ext"]["abilities"]["ability_03"] = [[abilities\inquisition_healing_touch.lua]]
+GameData["ability_ext"]["abilities"]["ability_01"] = [[abilities\inquisition_healing.lua]]
 GameData["combat_ext"] = Reference([[ebpextensions\combat_ext.lua]])
 GameData["combat_ext"]["complex_upgrades"] = true 
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["attack_motion_variable_name"] = [[Weapon_Range_Tracking_Main]]

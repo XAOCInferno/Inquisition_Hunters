@@ -2,6 +2,7 @@ GameData = Inherit([[]])
 GameData["ability_ext"] = Reference([[ebpextensions\ability_ext.lua]])
 GameData["ability_ext"]["abilities"]["ability_01"] = [[abilities\inquisition_exterminatus.lua]]
 GameData["ability_ext"]["abilities"]["ability_02"] = [[abilities\inquisition_mega_melta.lua]]
+GameData["ability_ext"]["abilities"]["ability_03"] = [[abilities\inquisition_mega_orbital_strike.lua]]
 GameData["cost_ext"] = Reference([[ebpextensions\cost_ext.lua]])
 GameData["cost_ext"]["time_cost"]["cost"]["faith"] = 0
 GameData["cost_ext"]["time_cost"]["cost"]["power"] = 80
