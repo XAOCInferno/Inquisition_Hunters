@@ -384,8 +384,6 @@ GameData["squad_requirement_ext"]["requirements"]["required_1"]["research_name"]
 GameData["squad_requirement_ext"]["requirements"]["required_2"] = Reference([[requirements\required_cumulative_squad_cap.lua]])
 GameData["squad_requirement_ext"]["requirements"]["required_2"]["max_cumulative_squad_cap"] = 1
 GameData["squad_requirement_ext"]["requirements"]["required_2"]["squad_table"]["squad_01"] = [[sbps\races\inquisition_daemonhunt\inquisition_squad_land_raider.lua]]
-GameData["squad_requirement_ext"]["requirements"]["required_2"]["squad_table"]["squad_02"] = [[sbps\races\inquisition_daemonhunt\inquisition_squad_stormraven_fury.lua]]
-GameData["squad_requirement_ext"]["requirements"]["required_2"]["squad_table"]["squad_03"] = [[sbps\races\inquisition_daemonhunt\inquisition_squad_dreadknight.lua]]
 GameData["squad_requirement_ext"]["requirements"]["required_3"] = Reference([[requirements\required_structure.lua]])
 GameData["squad_requirement_ext"]["requirements"]["required_3"]["is_display_requirement"] = true 
 GameData["squad_requirement_ext"]["requirements"]["required_3"]["structure_name"] = [[ebps\races\inquisition_daemonhunt\structures\inquisition_astra_telepathica.lua]]
@@ -396,6 +394,7 @@ GameData["squad_requirement_ext"]["requirements"]["required_10"] = Reference([[r
 GameData["squad_requirement_ext"]["requirements"]["required_10"]["is_display_requirement"] = true 
 GameData["squad_requirement_ext"]["requirements"]["required_10"]["structure_name"] = [[ebps\races\inquisition_daemonhunt\structures\inquisition_tower_hq.lua]]
 GameData["squad_transportable_ext"] = Reference([[sbpextensions\squad_transportable_ext.lua]])
+GameData["squad_transportable_ext"]["nr_spots"] = 1
 GameData["squad_transportable_ext"]["transport_type"] = Reference([[type_transportable\transport_inquisition_land_raider.lua]])
 GameData["squad_ui_ext"] = Reference([[sbpextensions\squad_ui_ext.lua]])
 GameData["squad_ui_ext"]["multi_select_priority"] = 13

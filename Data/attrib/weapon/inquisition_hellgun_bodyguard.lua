@@ -1,6 +1,6 @@
 GameData = Inherit([[]])
 GameData["accuracy"] = 0.6000000238
-GameData["accuracy_reduction_when_moving"] = 0.2200000238
+GameData["accuracy_reduction_when_moving"] = 0.3400000238
 GameData["area_effect"] = Reference([[tables\area_effect_table.lua]])
 GameData["area_effect"]["area_effect_information"]["remove_modifiers_with_source_entity"] = true 
 GameData["area_effect"]["area_effect_information"]["start_from_caster"] = false
@@ -65,7 +65,7 @@ GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_15"]["armour_type"] = Reference([[type_armour\tp_air_med.lua]])
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_15"]["armour_type"]["screen_name_id"] = [[$4450037]] -- Aircraft
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["life_leech_damage"] = 0
-GameData["area_effect"]["weapon_damage"]["armour_damage"]["max_damage"] = 24
+GameData["area_effect"]["weapon_damage"]["armour_damage"]["max_damage"] = 21.75
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["min_damage"] = 16.5
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["min_damage_value"] = 1
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["morale_damage"] = 0.200000003
@@ -151,7 +151,7 @@ GameData["raider_weapon_index"] = 0
 GameData["random_aim_on_create"] = false
 GameData["rear_facing"] = false
 GameData["reload_show_progress"] = false
-GameData["reload_time"] = 0.400000006
+GameData["reload_time"] = 0.500000006
 GameData["requirements"] = Reference([[tables\requirements.lua]])
 GameData["setup_time"] = 0
 GameData["shot_delay_time"] = 0

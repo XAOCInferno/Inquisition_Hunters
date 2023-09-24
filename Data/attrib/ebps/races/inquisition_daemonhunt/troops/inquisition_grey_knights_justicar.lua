@@ -1,6 +1,8 @@
 GameData = Inherit([[]])
 GameData["ability_ext"] = Reference([[ebpextensions\ability_ext.lua]])
-GameData["ability_ext"]["abilities"]["ability_02"] = [[abilities\inquisition_fearlessness.lua]]
+GameData["ability_ext"]["abilities"]["ability_01"] = [[abilities\inquisition_fearlessness.lua]]
+GameData["ability_ext"]["abilities"]["ability_02"] = [[abilities\inquisition_psychic_shroud.lua]]
+GameData["ability_ext"]["abilities"]["ability_03"] = [[abilities\inquisition_psychic_shroud_improved.lua]]
 GameData["combat_ext"] = Reference([[ebpextensions\combat_ext.lua]])
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["attack_motion_variable_name"] = [[Weapon_Range_Tracking_Main]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["hardpoint_weapon_variant_motion_name"] = [[Weapon_Range_Upgrade_Main]]
@@ -8,6 +10,7 @@ GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["horizontal_aim_motion_vari
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["shoot_motion_variable_name"] = [[Weapon_Range_Firing_Main]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["vertical_aim_motion_variable_name"] = [[Aim_Vertical_Main]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_01"]["weapon"] = [[weapon\inquisition_storm_bolter_gk_justicar.lua]]
+GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_02"]["weapon"] = [[weapon\inquisition_storm_bolter_gk_justicar_psybolts.lua]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_11"] = nil
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_12"] = nil
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_13"] = nil
@@ -35,7 +38,7 @@ GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["hardpoint_weapon_variant_m
 GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["horizontal_aim_motion_variable_name"] = [[]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["shoot_motion_variable_name"] = [[]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["vertical_aim_motion_variable_name"] = [[]]
-GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["weapon_table"]["weapon_01"]["weapon"] = [[weapon\inquisition_nemesis_weapon_captain.lua]]
+GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["weapon_table"]["weapon_01"]["weapon"] = [[weapon\inquisition_nemesis_weapon_grey_knight_jstcr.lua]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["weapon_table"]["weapon_11"] = nil
 GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["weapon_table"]["weapon_12"] = nil
 GameData["combat_ext"]["hardpoints"]["hardpoint_02"]["weapon_table"]["weapon_13"] = nil
@@ -868,7 +871,7 @@ GameData["mob_ext"]["mob_value"] = -1
 GameData["modifier_apply_ext"] = Reference([[ebpextensions\modifier_apply_ext.lua]])
 GameData["modifier_apply_ext"]["modifiers"]["modifier_01"] = Reference([[modifiers\squad_cap_player_modifier.lua]])
 GameData["modifier_apply_ext"]["modifiers"]["modifier_01"]["shield_of_faith"] = false
-GameData["modifier_apply_ext"]["modifiers"]["modifier_01"]["value"] = 2
+GameData["modifier_apply_ext"]["modifiers"]["modifier_01"]["value"] = 1
 GameData["modifier_apply_ext"]["modifiers"]["modifier_02"]["shield_of_faith"] = false
 GameData["modifier_apply_ext"]["modifiers"]["modifier_03"]["shield_of_faith"] = false
 GameData["modifier_apply_ext"]["modifiers"]["modifier_04"]["shield_of_faith"] = false
@@ -1093,7 +1096,6 @@ GameData["requirement_ext"]["requirements"]["required_10"]["is_display_requireme
 GameData["requirement_ext"]["requirements"]["required_10"]["structure_name"] = [[ebps\races\inquisition_daemonhunt\structures\inquisition_tower_hq.lua]]
 GameData["sight_ext"] = Reference([[ebpextensions\sight_ext.lua]])
 GameData["sight_ext"]["keen_sense"] = false
-GameData["sight_ext"]["keen_sight_radius"] = 20
 GameData["sight_ext"]["sight_radius"] = 25
 GameData["sim_entity_ext"] = Reference([[ebpextensions\sim_entity_ext.lua]])
 GameData["sim_entity_ext"]["is_collide"] = true 

@@ -10,85 +10,36 @@ function DaemonhuntBuildBaseStrategy:__init( baseinfo ) super( baseinfo )
 	-- Add detector units (Best first, worst last)
 	self:AddDetectorUnit("inquisition_squad_inquisitor_lord")
 	self:AddDetectorUnit("inquisition_squad_inquisitor_lord_cs")
-	self:AddDetectorUnit("inquisition_squad_grey_knights_librarian")
+	self:AddDetectorUnit("inquisition_squad_gk_terminator_librarian")
 	self:AddDetectorUnit("inquisition_squad_gk_librarian")
-	self:AddDetectorUnit("inquisition_squad_grey_knight_hero")
-	self:AddDetectorUnit("inquisition_squad_grey_knight_hero_gk")
+	self:AddDetectorUnit("inquisition_squad_grey_knight_brother_captain")
 	self:AddDetectorUnit("inquisition_squad_brotherhood_champion")
-	self:AddDetectorUnit("inquisition_squad_grey_knights")
-	self:AddDetectorUnit("inquisition_squad_grey_knights_terminator")
 	self:AddDetectorUnit("inquisition_squad_bodyguard")
 	self:AddDetectorUnit("inquisition_squad_dreadnought_venerable")
 	self:AddDetectorUnit("inquisition_squad_dreadnought_venerable_hf")
-	self:AddDetectorUnit("inquisition_squad_dreadknight")
 
-	-- Global var that modifies the possibility of choosing the Daemon discipline for the Librarian...
-	g_Inq_Daemonic_Discipline = 2
-	-- Check the existence of possible enemies with daemons, or Chaos Daemon players.
-	for oPlayer in cpu_manager.stats:GetPlayerStats() do
-		if not oPlayer:IsPlayerDead() then
-			if cpu_manager.player_stats:IsEnemy(oPlayer) then
-				local oRace = oPlayer:GetPlayerRaceName()
-				if oRace == "chaos_marine_race" or oRace == "khorne_marine_race"
-				or oRace == "night_lords_race" or oRace == "thousand_sons_race" then
-					g_Inq_Daemonic_Discipline = g_Inq_Daemonic_Discipline + 4
-				elseif oRace == "deamons_race" then
-					g_Inq_Daemonic_Discipline = g_Inq_Daemonic_Discipline + 8
-				end
-			end
-		end
-	end
 end
 
 
 function DaemonhuntBuildBaseStrategy:ChooseBuildProgram()
 
-	-- NOTE: The actual strategy is chosen in daemonhuntstrategyinfo !! See there.
-
-	-- Return a valid strategy on AI re-initiation
-	if cpu_manager.cpu_player:IsResearchComplete("inquisition_branch_inq") or IDH_AI_StrategyChosen == 1 or IDH_AI_StrategyChosen == 2 then
-		IDH_AI_StrategyChosen = math.random( 1, 2 )  -- Inquisition Branch
-		return IDH_AI_StrategyChosen
-	elseif cpu_manager.cpu_player:IsResearchComplete("inquisition_branch_gk") or IDH_AI_StrategyChosen == 3 or IDH_AI_StrategyChosen == 4 then
-		IDH_AI_StrategyChosen = math.random( 3, 4 )  -- Grey Knights Branch
-		return IDH_AI_StrategyChosen
-	end
+	return 1
+	
 end
 
 
 function DaemonhuntBuildBaseStrategy:EvaluateSquadCap()
 
-	-- Check squad cap
-	if (self:CheckSquadCap(350, 0)) then
+	-- Check squad cap and support cap
+	if (self:CheckSquadCap(350, 0) or self:CheckSupportCap(300, 0)) then
 		
 		local tBuildType = CpuBuildType()
 		tBuildType.btype = CpuPrerequisites.BT_Research
 		
-		if (not cpu_manager.cpu_player:IsResearchComplete( "inquisition_squad_cap" )) then
-			tBuildType.name = "inquisition_squad_cap"
-		else
-			return
-		end
-		
-		if (self:TryBuild( tBuildType )) then
-			aitrace("BuildController: Dynamic research of "..tBuildType.name)
-		end
-	end
-	
-	-- Check support cap
-	if (self:CheckSupportCap(300, 0)) then
-		
-		local tBuildType = CpuBuildType()
-		tBuildType.btype = CpuPrerequisites.BT_Research
-		
-		if (not cpu_manager.cpu_player:IsResearchComplete( "inquisition_support_cap_1" )) then
-			tBuildType.name = "inquisition_support_cap_1"
-		elseif (not cpu_manager.cpu_player:IsResearchComplete( "inquisition_support_cap_2" )) then
-			tBuildType.name = "inquisition_support_cap_2"
-		elseif (not cpu_manager.cpu_player:IsResearchComplete( "inquisition_support_cap_3" )) then
-			tBuildType.name = "inquisition_support_cap_3"
-		elseif (not cpu_manager.cpu_player:IsResearchComplete( "inquisition_support_cap_4" )) then
-			tBuildType.name = "inquisition_support_cap_4"
+		if (not cpu_manager.cpu_player:IsResearchComplete( "inquisition_squad_and_support_cap_1" )) then
+			tBuildType.name = "inquisition_squad_and_support_cap_1"
+		elseif (not cpu_manager.cpu_player:IsResearchComplete( "inquisition_squad_and_support_cap_2" )) then
+			tBuildType.name = "inquisition_squad_and_support_cap_2"
 		else
 			return
 		end
@@ -113,11 +64,8 @@ function DaemonhuntBuildBaseStrategy:GetBuildingName( sType )
 		return "inquisition_warp_reactor"
 		
 	elseif (sType == "VehicleBuilding") then
-		if IDH_AI_StrategyChosen == 3 or IDH_AI_StrategyChosen == 4 then
-			return "inquisition_astra_telepathica_gk" 
-		elseif IDH_AI_StrategyChosen == 1 or IDH_AI_StrategyChosen == 2 then
-			return "inquisition_watch"
-		end
+		return "inquisition_landing_pad"
+
 	elseif (sType == "ListeningPost") then
 		return "inquisition_imperial_icon"
 		
@@ -144,13 +92,10 @@ function DaemonhuntBuildBaseStrategy:GetAddonBuilding( sType )
 		
 	elseif (sType == "inquisition_extremis_diabolus") then
 		return "inquisition_purification_decree"
+	
+	elseif (sType == "inquisition_vheicle_depot_addon") then
+		return "inquisition_watch"
 
-	elseif (sType == "inquisition_mass_teleporter") then
-		if IDH_AI_StrategyChosen == 3 or IDH_AI_StrategyChosen == 4 then
-			return "inquisition_grey_knights_teleporter_gk"	
-		elseif IDH_AI_StrategyChosen == 1 or IDH_AI_StrategyChosen == 2 then
-			return "inquisition_grey_knights_teleporter"
-		end
 	end
 	return nil
 end
@@ -169,13 +114,13 @@ end
 -- Returns the squad cap and support cap of the given squad
 function DaemonhuntBuildBaseStrategy:GetUnitStats(sSquadName)
 
-	if (sSquadName == "inquisition_squad_servitor_maintenance") then
-		return 1, 0
-	elseif (sSquadName == "inquisition_squad_servitor_ranged") then
+	if (sSquadName == "inquisition_squad_servitor_ranged") then
 		return 2, 0
 	elseif (sSquadName == "inquisition_squad_bodyguard") then
 		return 2, 0
 	elseif (sSquadName == "inquisition_squad_shock_troops") then
+		return 2, 0
+	elseif (sSquadName == "inquisition_squad_shock_troops_extra") then
 		return 2, 0
 	elseif (sSquadName == "inquisition_squad_exorcist_sister") then
 		return 2, 0
@@ -191,8 +136,6 @@ function DaemonhuntBuildBaseStrategy:GetUnitStats(sSquadName)
 		return 3, 0
 	elseif (sSquadName == "inquisition_squad_grey_knights_terminator") then
 		return 4, 0
-	elseif (sSquadName == "inquisition_squad_grey_knights_terminator_gk") then
-		return 4, 0
 	elseif (sSquadName == "inquisition_squad_grey_knights_paladin") then
 		return 4, 0
 	elseif (sSquadName == "inquisition_squad_rhino") then
@@ -205,8 +148,6 @@ function DaemonhuntBuildBaseStrategy:GetUnitStats(sSquadName)
 		return 0, 3
 	elseif (sSquadName == "inquisition_squad_dreadnought_support") then
 		return 0, 4
-	elseif (sSquadName == "inquisition_squad_dreadnought") then
-		return 0, 4
 	elseif (sSquadName == "inquisition_squad_dreadnought_venerable") then
 		return 0, 4
 	elseif (sSquadName == "inquisition_squad_dreadnought_venerable_hf") then
@@ -217,8 +158,6 @@ function DaemonhuntBuildBaseStrategy:GetUnitStats(sSquadName)
 		return 0, 4
 	elseif (sSquadName == "inquisition_squad_stormraven_fury") then
 		return 0, 4
-	elseif (sSquadName == "inquisition_squad_dreadknight") then
-		return 0, 8
 	end
 	return 0, 0
 end
@@ -257,7 +196,7 @@ function DaemonhuntBuildBaseStrategy:BuildFlexible()
 
 	local iInquisitorSquads = self:CountSquads("inquisition_squad_inquisitor_lord") + self:CountSquads("inquisition_squad_inquisitor_lord_cs")
 	local iBodyguardSquads = self:CountSquads("inquisition_squad_bodyguard")
-	local iStormTrooperSquads = self:CountSquads("inquisition_squad_shock_troops")
+	local iStormTrooperSquads = self:CountSquads("inquisition_squad_shock_troops") + self:CountSquads("inquisition_squad_shock_troops_extra")
 
 	-- Dynamic research
 	-- Item-Syntax: ResearchName, MinTier, RequisitionCost, PowerCost, MinSquadCap, MinSupportCap, SquadName, SquadMinCount
@@ -267,10 +206,10 @@ function DaemonhuntBuildBaseStrategy:BuildFlexible()
 		
 		-- Compute commander researches
 		if (iInquisitorSquads > 0) then
-			self:DynamicResearch("inquisition_psy_power_1", 1, 50, 40, 0, 0, nil, 0)
+			self:DynamicResearch("inquisition_psy_power_1", 1, 70, 40, 0, 0, nil, 0)
 			-- Compute shock trooper researches. Do not spend resources before hiring first Inq.Lord
 			if (iStormTrooperSquads + iBodyguardSquads) >= 3 then
-				self:DynamicResearch("inquisition_advanced_weapons", 1, 100, 100, 0, 0, nil, 0)   
+				self:DynamicResearch("inquisition_advanced_weapons", 1, 90, 35, 0, 0, nil, 0)   
 			end
 		end
 	end
@@ -279,21 +218,17 @@ function DaemonhuntBuildBaseStrategy:BuildFlexible()
 	if (self.tierLevel >= 2) then
 
 		-- Compute general military researches
-		self:DynamicResearch("inquisition_grenades1_gk", 2, 100, 120, 0, 0, nil, 0)
-		self:DynamicResearch("inquisition_gk_squad_size", 2, 100, 100, 0, 0, nil, 0)
+		self:DynamicResearch("inquisition_gk_squad_size", 2, 130, 60, 0, 0, nil, 0)
 
 		-- Compute interceptor researches
-		if IDH_AI_StrategyChosen == 3 or IDH_AI_StrategyChosen == 4 then
-			self:DynamicResearch("inquisition_quickening_research", 2, 75, 50, 0, 0, "inquisition_squad_grey_knights_interceptors", 1)
-		end
+		self:DynamicResearch("inquisition_quickening_research", 2, 75, 50, 0, 0, "inquisition_squad_grey_knights_interceptors", 1)
 	
 		-- Compute general military researches
 		self:DynamicResearch("inquisition_pentagrams", 2, 80, 50, 0, 0, nil, 0)
-		self:DynamicResearch("inquisition_grenades2_gk", 2, 150, 200, 0, 0, nil, 0)
 
 		-- Compute commander researches
 		if (iInquisitorSquads > 0) then
-			self:DynamicResearch("inquisition_psy_power_2", 2, 60, 50, 0, 0, nil, 0)					 
+			self:DynamicResearch("inquisition_psy_power_2", 2, 100, 55, 0, 0, nil, 0)					 
 			-- Compute bodyguard researches
 			if (iBodyguardSquads) == 1 then
 				self:DynamicResearch("inquisition_bodyguard_upgrade_1", 2, 100, 30, 0, 0, nil, 0)
@@ -307,8 +242,8 @@ function DaemonhuntBuildBaseStrategy:BuildFlexible()
 		if (iStormTrooperSquads >= 2) then
 			self:DynamicResearch("inquisition_medikits", 2, 150, 60, 0, 0, nil, 0)
 			self:DynamicResearch("inquisition_targeters", 2, 120, 60, 0, 0, nil, 0)
-			self:DynamicResearch("inquisition_advanced_weapons", 2, 100, 100, 0, 0, nil, 0)   
-			self:DynamicResearch("inquisition_advanced_weapons_2", 2, 150, 175, 0, 0, nil, 0)
+			self:DynamicResearch("inquisition_advanced_weapons", 2, 90, 35, 0, 0, nil, 0)   
+			self:DynamicResearch("inquisition_advanced_weapons_2", 2, 150, 90, 0, 0, nil, 0)
 			self:DynamicResearch("inquisition_officers_weapons", 2, 100, 60, 0, 0, nil, 0)
 		end
 	end
@@ -317,8 +252,7 @@ function DaemonhuntBuildBaseStrategy:BuildFlexible()
 	if (self.tierLevel >= 3) then
 
 		-- Compute general military researches
-		self:DynamicResearch("inquisition_gk_squad_weapons", 3, 50, 20, 0, 0, nil, 0)
-		self:DynamicResearch("inquisition_psybolt_ammunition", 3, 250, 250, 0, 0, nil, 0)
+		self:DynamicResearch("inquisition_psybolt_ammunition", 3, 180, 120, 0, 0, nil, 0)
 
 		-- Compute bodyguard researches
 		if (iBodyguardSquads >= 1) then
@@ -329,28 +263,20 @@ function DaemonhuntBuildBaseStrategy:BuildFlexible()
 		self:DynamicResearch("inquisition_champion_wg_upgrade_2", 3, 100, 50, 0, 0, "inquisition_squad_brotherhood_champion", 1)
 
 		-- Compute general military researches
-		self:DynamicResearch("inquisition_blessed_aegis_seals_research", 3, 180, 40, 0, 0, nil, 0)
+		self:DynamicResearch("inquisition_blessed_aegis_seals_research", 3, 140, 80, 0, 0, nil, 0)
 
 		-- Compute techmarine researches
-		if IDH_AI_StrategyChosen == 3 or IDH_AI_StrategyChosen == 4 then
-			self:DynamicResearch("inquisition_techmarine_harness", 3, 100, 125, 0, 0, "inquisition_squad_techmarine", 1)
-		end
-
-		-- Compute commander researches
-		if (iInquisitorSquads > 0) then
-			if IDH_AI_StrategyChosen == 1 or IDH_AI_StrategyChosen == 2 then
-				self:DynamicResearch("inquisition_psy_power_3", 3, 70, 60, 0, 0, nil, 0)
-			end
-		end
+		self:DynamicResearch("inquisition_techmarine_harness", 3, 100, 125, 0, 0, "inquisition_squad_techmarine", 1)
 
 		-- Compute shock trooper researches
 		if (iStormTrooperSquads >= 2) then
-			self:DynamicResearch("inquisition_special_squads", 3, 150, 100, 0, 0, nil, 0)
+			self:DynamicResearch("inquisition_special_squads", 3, 180, 75, 0, 0, nil, 0)
+			self:DynamicResearch("inquisition_targeters_improved", 3, 160, 70, 0, 0, nil, 0)
 		end
 
 		-- Compute scholar or servitor researches
-		if (self:CountSquads("inquisition_squad_scholars") >= 1) or (self:CountSquads("inquisition_squad_servitor_ranged") >= 1) or (self:CountSquads("inquisition_squad_servitor_maintenance") >= 1) then
-			self:DynamicResearch("inquisition_servitor_upgrade", 3, 75, 100, 0, 0, nil, 0)
+		if ((self:CountSquads("inquisition_squad_scholars") >= 1) or (self:CountSquads("inquisition_squad_servitor_ranged") >= 1)) then
+			self:DynamicResearch("inquisition_servitor_upgrade", 3, 75, 125, 0, 0, nil, 0)
 		end
 	end
 
@@ -358,7 +284,6 @@ function DaemonhuntBuildBaseStrategy:BuildFlexible()
 	if (self.tierLevel >= 4) then
 
 		-- Compute general military researches
-		self:DynamicResearch("inquisition_dk_teleporter_research", 4, 100, 160, 0, 0, nil, 0)
 
 		local iRequisition = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Requisition )
 		local iPower = resource_manager:GetResourceAmount():Get( ResourceAmount.RT_Power )
@@ -368,19 +293,6 @@ function DaemonhuntBuildBaseStrategy:BuildFlexible()
 			self:DynamicAddon("inquisition_tower_addon", 100, 4, 300, 150, 0, 0, nil, nil, false)
 		end
 	end
-
-	-- Try to build an archivist squad for the GK branch - the AI has issues with its prerequisites for some reason!
-	if self:CountSquads("inquisition_squad_archivist_gk") < 2 then
-		local tBuildType = CpuBuildType()
-		tBuildType.btype = CpuPrerequisites.BT_Squad
-		tBuildType.name = "inquisition_squad_archivist_gk"
-		if (self:TryBuild(tBuildType)) then
-			return
-		end
-	end
-
-	-- Try to build the last support cap research, even if max cap is reached, so that to gain its benefits
-	self:DynamicResearch("inquisition_support_cap_4", 3, 800, 200, 0, 0, nil, 0)
 
 	-- Restrict dynamic builds to hard difficulty or higher
 	if (CpuManager.AISettings.bMultiBuildings) then
@@ -493,16 +405,8 @@ function DaemonhuntBuildBaseStrategy:GetPlacementType(iBuildingID)
 		else return "Front2" end
 	elseif  iBuildingID == cpu_manager.stats:GetBuildingID("inquisition_grey_knights_teleporter") then
 		return "Military"
-	elseif  iBuildingID == cpu_manager.stats:GetBuildingID("inquisition_grey_knights_teleporter_gk") then
-		local iCount = self:GetBuildingCountByName("inquisition_grey_knights_teleporter_gk", false)
-		if iCount < 2 then return "Military"
-		else return "Front2" end
 	elseif  iBuildingID == cpu_manager.stats:GetBuildingID("inquisition_astra_telepathica") then
 		local iCount = self:GetBuildingCountByName("inquisition_astra_telepathica", false)
-		if iCount < 2 then return "BaseBack"
-		else return "Military" end
-	elseif  iBuildingID == cpu_manager.stats:GetBuildingID("inquisition_astra_telepathica_gk") then
-		local iCount = self:GetBuildingCountByName("inquisition_astra_telepathica_gk", false)
 		if iCount < 2 then return "BaseBack"
 		else return "Military" end
 	end
@@ -517,8 +421,6 @@ function DaemonhuntBuildBaseStrategy:RelicRequired(sName)
 	if (sName == "inquisition_squad_land_raider") then
 		return true
 	elseif (sName == "inquisition_squad_land_raider_crusader") then
-		return true
-	elseif (sName == "inquisition_squad_dreadknight") then
 		return true
 	elseif (sName == "inquisition_squad_stormraven_fury") then
 		return true

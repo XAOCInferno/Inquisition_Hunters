@@ -30,12 +30,10 @@ function inquisition_daemonhunt_race:LoadRace( eDifficulty )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/Daemonhunt_InfantryTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/Daemonhunt_VehicleTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/ArchivistTactic.ai' )
-	import( 'Races/inquisition_daemonhunt_race/Tactics/MaintenanceTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/ShockTrooperTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/BodyGuardTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/ScholarsTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/GKTermieTactic.ai' )
-	import( 'Races/inquisition_daemonhunt_race/Tactics/DeathCultistTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/GKHeroTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/LibrarianGKTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/ChaplainGKTactic.ai' )
@@ -50,12 +48,10 @@ function inquisition_daemonhunt_race:LoadRace( eDifficulty )
 
 	import( 'Races/inquisition_daemonhunt_race/Tactics/Daemonhunt_InfantryGKTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/Daemonhunt_VehicleGKTactic.ai' )
-	import( 'Races/inquisition_daemonhunt_race/Tactics/AcolyteTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/DHLordGKTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/TechmarineTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/ApothecaryTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/PaladinGKTactic.ai' )
-	import( 'Races/inquisition_daemonhunt_race/Tactics/PaladinGK_KTGM_Tactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/InterceptorTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/GKHeroGKTactic.ai' )
 	import( 'Races/inquisition_daemonhunt_race/Tactics/LibrarianTermiTactic.ai' )
@@ -72,7 +68,7 @@ function inquisition_daemonhunt_race:LoadGlobalInfo()
 		
 	-- Import info files
 	import( 'Races/inquisition_daemonhunt_race/Info/daemonhuntunitstats.ai' )
-	
+
 	-- Add unit stats
 	table.insert(UnitStats, DaemonhuntUnitStats)
 	return true
@@ -93,76 +89,67 @@ function inquisition_daemonhunt_race:CreateTactic(oSquadAI)
 	local eClass = oSquadAI:GetStats():GetClass()
 
 	-- Check if there is a special tactic for the unit available, based on branch chosen
-	if (sUnitName == "inquisition_squad_archivist" or sUnitName == "inquisition_squad_archivist_gk") then
+	--[[if (sUnitName == "inquisition_squad_archivist" then
 		return ArchivistTactic(oSquadAI)
-	end
-	if cpu_manager.cpu_player:IsResearchComplete( "inquisition_branch_gk" ) then
-		if (sUnitName == "inquisition_squad_acolyte") then
-			return AcolyteGKTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_techmarine") then
-			return TechmarineGKTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_exorcist_sister") then
-			return ExorcistTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_grey_knights_interceptors") then
-			return InterceptorGKTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_grey_knights_paladin") then
-			return PaladinGKTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_grey_knights_paladin_ktgm") then
-			return PaladinGK_KTGM_Tactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_inquisitor_lord_cs") then
-			return DHLordGKTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_grey_knights_apothecary") then
-			return ApothecaryGKTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_brotherhood_champion") then
-			return BrotherhoodChampionTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_grey_knight_hero_gk") then
-			return GKHeroGKTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_grey_knights_librarian") then
-			return LibrarianTermiTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_razorback") then
-			return RazorbackTactic(oSquadAI)
-		elseif (eClass == UnitStatsAI.UC_VehicleLow or eClass == UnitStatsAI.UC_VehicleMed or eClass == UnitStatsAI.UC_VehicleHigh) then
+	elseif (sUnitName == "inquisition_squad_techmarine") then
+		return TechmarineGKTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_exorcist_sister") then
+		return ExorcistTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_grey_knights_interceptors") then
+		return InterceptorGKTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_grey_knights_paladin") then
+		return PaladinGKTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_inquisitor_lord_cs") then
+		return DHLordGKTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_gk_terminator_apothecary") then
+		return ApothecaryGKTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_brotherhood_champion") then
+		return BrotherhoodChampionTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_gk_terminator_librarian") then
+		return LibrarianTermiTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_razorback") then
+		return RazorbackTactic(oSquadAI)
+	elseif (eClass == UnitStatsAI.UC_VehicleLow or eClass == UnitStatsAI.UC_VehicleMed or eClass == UnitStatsAI.UC_VehicleHigh) then
 			return DaemonhuntVehicleGKTactic(oSquadAI)
-		end
-		return DaemonhuntInfantryGKTactic(oSquadAI)
-	elseif cpu_manager.cpu_player:IsResearchComplete( "inquisition_branch_inq" ) then
-		if (sUnitName == "inquisition_squad_servitor_maintenance") then
-			return MaintenanceTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_bodyguard") then
-			return BodyGuardTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_shock_troops") then
-			return ShockTrooperTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_scholars") then
-			return ScholarsTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_gk_apothecary") then
-			return ApothecaryGKTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_grey_knights_terminator") then
-			return GKTermieTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_grey_knight_hero") then
-			return GKHeroTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_gk_librarian") then
-			return LibrarianGKTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_gk_chaplain") then
-			return ChaplainGKTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_death_cultist") then
-			return DeathCultistTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_inquisitor_lord") then
-			return DHLordTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_rhino") then
-			return DHRhinoTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_chimera_transport") then
-			return DHChimeraTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_land_raider") then
-			return DHLandRaiderTactic(oSquadAI)
-		elseif (sUnitName == "inquisition_squad_land_raider_crusader") then
-			return DHLandRaiderCrusaderTactic(oSquadAI)
-		elseif (oSquadAI:IsEngineer()) then
-			return nil
-		elseif (eClass == UnitStatsAI.UC_VehicleLow or eClass == UnitStatsAI.UC_VehicleMed or eClass == UnitStatsAI.UC_VehicleHigh) then
-			return DaemonhuntVehicleTactic(oSquadAI)
-		end
-		return DaemonhuntInfantryTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_bodyguard") then
+		return BodyGuardTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_shock_troops" or sUnitName == "inquisition_squad_shock_troops_extra") then
+		return ShockTrooperTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_scholars") then
+		return ScholarsTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_gk_apothecary") then
+		return ApothecaryGKTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_grey_knights_terminator") then
+		return GKTermieTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_grey_knight_brother_captain") then
+		return GKHeroTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_gk_librarian") then
+		return LibrarianGKTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_gk_chaplain") then
+		return ChaplainGKTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_inquisitor_lord") then
+		return DHLordTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_rhino") then
+		return DHRhinoTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_chimera_transport") then
+		return DHChimeraTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_land_raider") then
+		return DHLandRaiderTactic(oSquadAI)
+	elseif (sUnitName == "inquisition_squad_land_raider_crusader") then
+		return DHLandRaiderCrusaderTactic(oSquadAI)
+	elseif (oSquadAI:IsEngineer()) then
+		return nil
+	elseif (eClass == UnitStatsAI.UC_VehicleLow or eClass == UnitStatsAI.UC_VehicleMed or eClass == UnitStatsAI.UC_VehicleHigh) then
+		return DaemonhuntVehicleTactic(oSquadAI)
 	end
+	
+	if (eClass == UnitStatsAI.UC_InfantryLow or eClass == UnitStatsAI.UC_InfantryMed or eClass == UnitStatsAI.UC_InfantryHigh) then
+		return DaemonhuntInfantryTactic(oSquadAI)
+	else
+		return DaemonhuntInfantryGKTactic(oSquadAI)
+	end]]
+
+	return
 end
 
 
@@ -177,9 +164,8 @@ function inquisition_daemonhunt_race:CreateBaseTactic(oBuilding)
 		return AstraTelepathicaTactic(oBuilding)
 	elseif (sBuildingName == "inquisition_watch") then
 		return DHWatchTactic(oBuilding)
-	elseif (sBuildingName == "inquisition_grey_knights_teleporter")
-		or (sBuildingName == "inquisition_grey_knights_teleporter_gk")
-		or (sBuildingName == "inquisition_astra_telepathica_gk") then
+	elseif (sBuildingName == "inquisition_grey_knights_teleporter") then
+	    --or (sBuildingName == "inquisition_landing_pad") then
 		return GreyKnightTransporterTactic(oBuilding)
 	end
 	return nil
@@ -207,11 +193,7 @@ function inquisition_daemonhunt_race:GetInfo(sType)
 	elseif (sType == "InvisibleBuildings") then
 		return false
 	elseif (sType == "HarassingLeader") then
-		if cpu_manager.cpu_player:IsResearchComplete("inquisition_branch_inq") then
-			return "inquisition_squad_inquisitor_lord"
-		elseif cpu_manager.cpu_player:IsResearchComplete("inquisition_branch_gk") then
-			return "inquisition_squad_inquisitor_lord_cs"
-		end
+		return "inquisition_squad_inquisitor_lord"
 	elseif (sType == "AutoConstructBuildings") then
 		return false
 	end
@@ -234,8 +216,8 @@ function inquisition_daemonhunt_race:GetBuildingType(sBuildingName)
 		
 	elseif (sBuildingName == "inquisition_watch") then
 		return "VehicleBuilding", 0
-
-	elseif (sBuildingName == "inquisition_astra_telepathica_gk") then
+		
+	elseif (sBuildingName == "inquisition_landing_pad") then
 		return "VehicleBuilding", 0
 
 	elseif (sBuildingName == "inquisition_librarium") then
@@ -245,7 +227,7 @@ function inquisition_daemonhunt_race:GetBuildingType(sBuildingName)
 		return "ListeningPost", 0
 
 	elseif (sBuildingName == "inquisition_purification_decree") then
-		return "Turret", 300
+		return "Turret", 200
 	end
 	return nil, 0
 end

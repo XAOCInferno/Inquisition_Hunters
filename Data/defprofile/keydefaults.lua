@@ -1,4 +1,9 @@
-----------------------------------------------------------------------------------------------------------------
+
+        ----------------------------------------------------------------------------------------------------------------
+        -- Created using Dawn of War Hotkey Editor Tool. https://www.moddb.com/mods/hotkey-editor-tool
+        ----------------------------------------------------------------------------------------------------------------
+
+
 -- Default Key Combo Bindings
 -- (c) 2004 Relic Entertainment Inc.
 
@@ -1018,8 +1023,8 @@ bindings =
 	--DAEMONHUNTERS
 	--Troops
 	inquisition_archivist				= "A",
-	inquisition_bodyguard				= "B",
-	inquisition_bodyguard_special_weapon		= "W",
+    inquisition_bodyguard = "B",
+    inquisition_bodyguard_special_weapon = "W",
 	inquisition_acolyte				= "C",
 	inquisition_servitor_melee			= "M",
 	inquisition_servitor_shoot			= "S",
@@ -1045,11 +1050,12 @@ bindings =
 	--Buildings
 	inquisition_astra_telepatica			= "A",
 	inquisition_grey_knigts_fort			= "G",
-	inquisition_imperial_icon			= "L",
+    inquisition_imperial_icon = "E",
 	inquisition_librarium				= "R",
+    inquisition_landing_pad = "M",
 	inquisition_purification_decree			= "D",
 	inquisition_hq					= "Q",
-	inquisition_warp_generator			= "P",
+    inquisition_warp_generator = "R",
 	inquisition_warp_reactor			= "T",
 	inquisition_watch				= "W",
 
@@ -1061,15 +1067,15 @@ bindings =
 	inquisition_hq_addon				= "H",
 	
 	--Research
-	inquisition_ultimate_forces			= "U",
+    inquisition_ultimate_forces = "U",
 	inquisition_temporal_power			= "T",
 	inquisition_officers_weapons			= "W",
-	inquisition_advanced_weapons			= "W",
-	inquisition_advanced_weapons_2			= "W",
+    inquisition_advanced_weapons = "A",
+    inquisition_advanced_weapons_2 = "A",
 	inquisition_special_squads			= "W",
 	inquisition_targeters				= "T",
-	inquisition_bodyguard_research_1		= "D",
-	inquisition_bodyguard_research_2		= "D",
+    inquisition_bodyguard_research_1 = "V",
+	inquisition_bodyguard_research_2		= "E",
 	inquisition_requisition_1			= "R",
 	inquisition_requisition_2			= "R",
 	inquisition_power_increase_1			= "P",
@@ -1101,7 +1107,7 @@ bindings =
 	inquisition_nemesis				= "N",
 	
 	--Weapon Upgrades
-	inquisition_assault_cannon			= "C",
+    inquisition_assault_cannon = "A",
 	inquisition_autocannon				= "C",
 	inquisition_flamer				= "F",
 	--includes GK Incinerators
@@ -1114,3 +1120,6 @@ bindings =
 	inquisition_psycannon				= "S",
 	
 	}
+----------------------------------------------------------------------------------------------------------------
+    
+

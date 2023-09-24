@@ -1,6 +1,6 @@
 GameData = Inherit([[]])
 GameData["ability_cursor_event"] = [[]]
-GameData["ability_motion_name"] = [[Weapon_Range_Firing_Main]]
+GameData["ability_motion_name"] = [[capture_strategic_point]]
 GameData["ability_ordered_event_mp"] = [[]]
 GameData["ability_ordered_event_mp_building"] = false
 GameData["ability_ordered_event_name"] = [[]]
@@ -120,7 +120,7 @@ GameData["caster_damage"]["modifiers"]["modifier_09"]["modifier"]["shield_of_fai
 GameData["caster_damage"]["modifiers"]["modifier_10"] = Reference([[tables\time_modify_entry.lua]])
 GameData["caster_damage"]["modifiers"]["modifier_10"]["modifier"]["shield_of_faith"] = false
 GameData["center_target_on_owner"] = false
-GameData["child_ability_name"] = [[inquisition_sabotage_damage]]
+GameData["child_ability_name"] = [[]]
 GameData["child_activation_percent"] = 1
 GameData["child_jump_event"] = [[]]
 GameData["child_range"] = 0
@@ -161,7 +161,7 @@ GameData["projectile_spawn_on_ground"] = true
 GameData["projectile_spawn_pos"] = Reference([[tables\position.lua]])
 GameData["projectile_spawn_pos"]["y"] = 1
 GameData["random_offset"] = 0
-GameData["range"] = 15.5
+GameData["range"] = 17.5
 GameData["recharge_time"] = 60
 GameData["recharge_timer_global"] = false
 GameData["recharge_timer_id"] = 0

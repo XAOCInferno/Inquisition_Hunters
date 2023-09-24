@@ -1,6 +1,6 @@
 GameData = Inherit([[]])
 GameData["ability_cursor_event"] = [[]]
-GameData["ability_motion_name"] = [[frag_grenades]]
+GameData["ability_motion_name"] = [[capture_strategic_point]]
 GameData["ability_ordered_event_mp"] = [[]]
 GameData["ability_ordered_event_mp_building"] = false
 GameData["ability_ordered_event_name"] = [[]]
@@ -98,7 +98,7 @@ GameData["caster_damage"]["modifiers"]["modifier_09"]["modifier"]["shield_of_fai
 GameData["caster_damage"]["modifiers"]["modifier_10"] = Reference([[tables\time_modify_entry.lua]])
 GameData["caster_damage"]["modifiers"]["modifier_10"]["modifier"]["shield_of_faith"] = false
 GameData["center_target_on_owner"] = false
-GameData["child_ability_name"] = [[]]
+GameData["child_ability_name"] = [[inquisition_bearers_of_knowlage_child_1]]
 GameData["child_activation_percent"] = 100
 GameData["child_jump_event"] = [[]]
 GameData["child_range"] = 0

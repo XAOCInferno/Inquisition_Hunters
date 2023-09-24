@@ -1054,12 +1054,12 @@ function InfantryTactic:CheckForDetach()
 	-- Set detach health
 	local fDetachHealth = self.m_fCommanderAttachHealth + 0.2
 
-    -- Detach healthy commanders after combat.
-    if (not self.squad_ai:IsInCombat() and not self.squad_ai:WasRecentlyHurt() and
-        self:CommanderAttached() and self.squad_ai:GetAttachedHealthPercentage() > fDetachHealth) then
-        self.squad_ai:DoDetachSquad()
-        self.squad_ai:DoSetDefaultMeleeStance()
-    end
+	-- Detach healthy commanders after combat. guards stay attached	
+	if (self:CommanderAttached() and (self.squad_ai:IsCapturing() or
+		(self.squad_ai:GetAttachedHealthPercentage() > fDetachHealth and self.squad_ai:IsRanged()))) then
+		self.squad_ai:DoDetachSquad()
+		self.squad_ai:DoSetDefaultMeleeStance()
+	end
 	
 	-- Detach commander from broken/capturing
 	if ((self.squad_ai:IsBroken() or self.squad_ai:IsCapturing()) and
