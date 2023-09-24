@@ -35,7 +35,7 @@ GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_04"]["armour_piercing_value"] = 83
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_04"]["armour_type"] = Reference([[type_armour\tp_infantry_heavy_med.lua]])
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_04"]["armour_type"]["screen_name_id"] = [[$90105]] -- Heavy Infantry
-GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_05"]["armour_piercing_value"] = 71
+GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_05"]["armour_piercing_value"] = 74
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_05"]["armour_type"] = Reference([[type_armour\tp_infantry_heavy_high.lua]])
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_05"]["armour_type"]["screen_name_id"] = [[$90105]] -- Heavy Infantry
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_06"]["armour_piercing_value"] = 60
@@ -69,10 +69,10 @@ GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_15"]["armour_type"] = Reference([[type_armour\tp_builder.lua]])
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["armour_piercing_types"]["entry_15"]["armour_type"]["screen_name_id"] = [[$90101]] -- Builder
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["life_leech_damage"] = 0
-GameData["area_effect"]["weapon_damage"]["armour_damage"]["max_damage"] = 89.25
-GameData["area_effect"]["weapon_damage"]["armour_damage"]["min_damage"] = 67.75
+GameData["area_effect"]["weapon_damage"]["armour_damage"]["max_damage"] = 85.25
+GameData["area_effect"]["weapon_damage"]["armour_damage"]["min_damage"] = 57.75
 GameData["area_effect"]["weapon_damage"]["armour_damage"]["min_damage_value"] = 4.5
-GameData["area_effect"]["weapon_damage"]["armour_damage"]["morale_damage"] = 25
+GameData["area_effect"]["weapon_damage"]["armour_damage"]["morale_damage"] = 15
 GameData["area_effect"]["weapon_damage"]["hit_events"]["entry01"]["event"] = [[hit_events/psychic_hit_short]]
 GameData["area_effect"]["weapon_damage"]["hit_events"]["entry02"]["event"] = [[hit_events/psychic_hit_short]]
 GameData["area_effect"]["weapon_damage"]["hit_events"]["entry03"]["event"] = [[hit_events/psychic_hit_short]]
