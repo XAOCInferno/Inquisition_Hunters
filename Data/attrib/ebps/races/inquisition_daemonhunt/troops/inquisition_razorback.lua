@@ -10,8 +10,6 @@ GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_01"
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_01"]["weapon"] = [[weapon\inquisition_assault_cannon_razorback.lua]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_02"]["name_for_this_weapon_choice"] = [[Space_Marines_Lascannon]]
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_02"]["weapon"] = [[weapon\inquisition_lascannon_razorback.lua]]
-GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_05"]["muzzle"]["y"] = 0.5
-GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_05"]["origin"]["y"] = 0.5
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_09"] = nil
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_10"] = nil
 GameData["combat_ext"]["hardpoints"]["hardpoint_01"]["weapon_table"]["weapon_11"] = nil
